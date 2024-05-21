@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Justin Dollman">
+<meta name="dcterms.date" content="2023-01-24">
+<meta name="description" content="What can we learn through text?">
+
+<title>Justin Dollman - The Ezra Klein Show</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Justin Dollman</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../section_immigration.html">
+ <span class="menu-text">Immigration Policy</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../section_ur.html">
+ <span class="menu-text">Urban-Rural Polarization</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../section_text.html">
+ <span class="menu-text">Text Analysis</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../section_about.html">
+ <span class="menu-text">About Me</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">The Ezra Klein Show</h1>
+                  <div>
+        <div class="description">
+          What can we learn through text?
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">tidytext</div>
+                <div class="quarto-category">text analysis</div>
+                <div class="quarto-category">Ezra Klein</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Justin Dollman </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 24, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="welcome" class="level2">
+<h2 class="anchored" data-anchor-id="welcome">Welcome</h2>
+<p>For reasons lost to oblivion, I decided to analyze transcripts of Ezra Klein’s podcasts using elementary text analysis. The following was the result.</p>
+</section>
+<section id="interviewing-style" class="level2">
+<h2 class="anchored" data-anchor-id="interviewing-style">Interviewing Style</h2>
+<p>Before even looking at the content of the episodes, before looking at what words are said, sentiments are expressed and topics are covered, we can look at volume of speaking.</p>
+<p><br> <img src="generous_interviewer.png" class="img-fluid"> <br></p>
+<p>We can also compare this distribution of how much Ezra speaks as interviewer to how much other interviewers speak. After all, it’s hard to really feel what the numbers in the graph above mean without comparing them to the relative talkativeness of other interviewers. Below is a comparison of Ezra with two other interviewers, both of whom have had Ezra on as a guest on their programs: Rob Wiblin (<a href="https://80000hours.org/podcast/">80,000 Hours</a>) and Tyler Cowen (<a href="https://conversationswithtyler.com/">Conversations with Tyler</a>).</p>
+<p><img src="three_hosts2.png" class="img-fluid"></p>
+<p>This is a little more interesting, I think.</p>
+<p>My hypothesis before crunching these data was that Tyler was speak the least (and it wouldn’t be close), then Rob, then Ezra. And that turned out to be right.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> After all, Ezra speaks quiet a bit because people tune into Ezra’s show <em>in order to listen to Ezra</em>. Though Tyler’s show does have “Tyler” in the name, he frequently announces that his interviews are the interviews that <em>he</em> wants, not what the listeners might want. And his listener-be-damned approach often results in quick questions and abrupt topic changes. The 80,000 Hours podcast has this intermediate position where Rob often positions himself as a listener might and restates what the speaker said, gives the conventional wisdom against which the interviewee can react, and ask follow-up questions.</p>
+</section>
+<section id="ezras-words" class="level2">
+<h2 class="anchored" data-anchor-id="ezras-words">Ezra’s Words</h2>
+<p>Alright, so what does this ingenious interviewer from Irvine actually talk about? Among the ways of answering that question, one is to just look at the words he uses. The simplest way of operationalizing ‘words used’ is to look at “unigrams,” which result from splitting the unstructured text at every whitespace<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, making each whitespace-separated unit into a row in a dataframe, and counting how many rows each token (word) appears in that resulting dataframe. Ezra’s result is below.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p><br></p>
+<p><img src="unigrams.png" class="img-fluid" alt="This image, as well as most others, look much better if you right-click them and open in a new tab"> <br></p>
+<p>But you can also get slighly more sophisticated and look at contiguous words. So, instead of splitting at every whitespace, you split at every second or third whitespace. The nice thing about that is you start to see phrases, turns of speech. For example, if you were curious why “people,” “lot,” and” bit” appear in the unigrams, the bottom-most panel will give you your answer.</p>
+<p><br> <img src="bigrams_trigrams.png" class="img-fluid"> <br></p>
+<p>Among the bigrams and trigrams, an Ezra Klein Show fan will also be pleased to see Ezra’s pat phrases for parts of his podcast: “final question”, “books you’d recommend,” and “email [is] ezrakleinshow@nytimes.com.” I’m not sure if seeing these phrases is <em>interesting</em>, but they are nice proofs of concept for the method. You also see that the bigrams are dominated by pairs of words that, yes, do have a space between them, but they are lexically one thing. I’d argue that “past couple” and “minute ago” are only instances of more-or-less independent words coming together.</p>
+<p>Now let’s try something potentially more interesting. We can also look at how he uses words differentially. Why would that be useful? Well, just looking at the words he uses might tell us that he’s a guy with a show that covers topics X, Y, and Z that use the words associated with those topics.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> One way we can “control for” topic is to contrast Ezra’s words with those of his guest. Abstractly, the idea is that if person A and B are talking about subject S, the words that differentiate A and B are <em>not</em> going to be those that generically describe subject S. Rather, they will be the words idiosyncratically associated with each interlocutor.</p>
+<p><img src="ezra_guests.png" class="img-fluid"></p>
+<p>This surprised me. Sure, one would expect most words to be along the diagonal line which indicates that the word is used in equal proportions by both Ezra and his guests, but I really expected this to show more unique usages in the off-diagonal space.</p>
+<p>We can also compare the words of the Ezra Klein Show to the words used in introductory political science textbooks. The idea of such an analysis would be to ask, “When Ezra talks politics, which topics (proxied by words) does he dedicate space to than an introduction to politics? Which topics does he spend less time one?” From these results one could hope to find out something about which aspects of politics Ezra finds interesting and important, and which less so. Unfortunately, I carried out the analysis and the result is below:</p>
+<p><br> <img src="words.png" class="img-fluid"></p>
+<p><br> I call this ‘analysis’ “unfortunate” because it doesn’t generate any insight. I mean, what are you really supposed to get from this? One takeaway for the practitioner of text analysis is that you might have to do a decent amount of preprocessing before you can make impactful deliverables. Two useful ways you can preprocess raw text here are lemmatizing (or stemming) and using a parts-of-speech tagger to extract only nouns. What both of those steps share is the winnowing out (or consolidating) of noise/chaff. In a subsequent post I’ll try these feature-space-shrinking techniques out.</p>
+</section>
+<section id="sentiment-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="sentiment-analysis">Sentiment Analysis</h2>
+<p>I think most listeners of The Ezra Klein Show have noticed that Ezra is unique among interviewers in his emotionality. Not emotionality in a histrionic sense, but more like “general emotional urgency.”<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> So, in theory it would be interesting to use text analysis to get at this aspect of The Ezra Klein Show that sets the show out from others and uniquely characterizes Ezra as an interviewer. My hunch, however, is that the basic methods of sentiment analysis are <em>not</em> up to the task. In a forthcoming post I’ll dive deeper into <em>why</em> (and what methods would yield more insightful results), but for now let’s very briefly look at the results of these <a href="https://www.tidytextmining.com/sentiment.html">dictionary-based methods</a>.</p>
+<p>As <a href="https://en.wikipedia.org/wiki/Anna_Karenina_principle">Tolstoy famously noted</a>, if there are bad ways of doing something, they’ll bad in different ways. Let’s put that to the test with sentiment dictionaries. There are various ‘sentiment lexicons’ that will limpet onto your text to give you the raw materials for calculating sentiment scores at whatever level aggregation you choose. Here I’ve chosen three supposedly general-purpose dictionaries and calculated the sentiment score for each episode of TEKS. As you can see in the table below, their episode-level correlations are very high.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th>BING</th>
+<th>AFINN</th>
+<th>NRC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BING</td>
+<td>1</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>AFINN</td>
+<td>0.91</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>NRC</td>
+<td>0.83</td>
+<td>0.85</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>Nice. <a href="https://en.wikipedia.org/wiki/Convergent_validity">Convergent validity</a>✅. And now I don’t have to read <em>Anna Karenina</em>.</p>
+<p>If we want to be a little more aesthetic (💅🏻), we can look at sentiment scores with a plot over time.</p>
+<p><img src="weekly_sentiment_scores.png" class="img-fluid"></p>
+<p>Sure enough, it looks like the three dictionaries’ scores also (unsurprisingly) strongly correlate at the week level as well. We also see that, by and large, the overall sentiment of episodes is positive.</p>
+<p>I’ve also highlighted which episode each dictionary picks out as the most extreme, both positive and negative While they disagreed on most positive (hence the three positive episodes), there was three-way agreement on the most negative: his interview Rachel Zoffness’s author of <em>The Pain Management Workbook</em>. So it’s hardly surprising that these out-of-the-box algorithms would rank it as the most negative. It is disappointing, though. I went back and listened to the episode after finding out it was universally declared the most negative and … isn’t actually that negative. The post October 7<sup>th</sup> episodes on the situation in Israel and Gaza are <em>much much</em> more negative. Lesson: convergent validity does <em>not</em> imply <a href="https://en.wikipedia.org/wiki/Construct_validity">construct validity</a>.</p>
+<p>Right, so the simple valence continuum (positive/negative) was mostly a flop. How about using a sentiment dictionary that maps words to eight different emotions and seeing which emotions predominate in The Ezra Klein Show? Eight is four times bigger than two, so that sounds promising. Below is what that looks like over time.</p>
+<p><img src="eight_emotions.png" class="img-fluid"></p>
+<p>Ok, <em>this</em> could be interesting. We see that trust is consistently the great contributor to the show’s positivity and fear to its negativity. Ideally we’d compare these numbers to those of another show. But one way we can kick the tires on this analysis is by seeing what words drive trust and fear’s respective high-rankings.</p>
+<p><img src="sentiment_breakdown.png" class="img-fluid"></p>
+<p>I’m just … not sure about this. You see why dictionary-based isn’t a particularly valid way of inferring emotion from word usage. Just looking at the <strong>Trust</strong> side of things, “kind” appears in collocations like “kind of bad,” (which would have the valence wrong) and, “kind of [entity],” which is not usually valenced. It’s certainly not always (probably not even usually) an indicator of trust. You can go down the list and find similar (and other!) problems with every other word. I’m honestly not sure how people take this seriously.</p>
+</section>
+<section id="concluding-thoughts" class="level2">
+<h2 class="anchored" data-anchor-id="concluding-thoughts">Concluding Thoughts</h2>
+<p>I’m not sure if I would have predicted this beforehand, but by far the most interesting plots here are the two looking at simple volume of speaking. Why is this? I think it has to be because it’s the only case where the method (counting, in this case) adequately represents the thing it purports to measure. I suppose word counts do that as well, but there’s no spice when there’s no implicit contrast (as is the case simple word counts) and then when there is contrast (in those graphs that plot proportions against each other), nothing pops out. <em>Ex ante</em> it might have be unknowable that was going to happen.</p>
+</section>
+<section id="acknowledgements-and-arigatos" class="level2">
+<h2 class="anchored" data-anchor-id="acknowledgements-and-arigatos">Acknowledgements and Arigatos</h2>
+<p>Andrew Heiss’s <a href="https://datavizs21.classes.andrewheiss.com/">data visualization course</a> inspired (and enabled) me to have nice(ish) looking text on my graphs. If you know some <code>ggplot2</code> and are looking to become high-intermediate in your <code>ggplot2</code> skills, I highly recommend his course.</p>
+<p>The vast majority of the analyses you see here I learned back in the day from Julia Silge and Dave Robinson’s <a href="https://www.tidytextmining.com/"><em>Tidy Text Mining with R</em></a> book. I recommend it to anyone as a jumping off point for doing text analysis. Most of the analyses here don’t go (too far) beyond what you can do with the tools you pick up in that book</p>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>I sadly didn’t preregister these hypotheses, so you have to reason to believe me.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>You can also split on other delimiters as well. Various non-alphanumeric characters would do<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>For the following two graphs, I recommend right-clicking them and opening in a new window. The proportions are terrible on this page. My sincerest aesthetic apologies.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>If we wanted a topic analysis we’d head down to the last section of this page!<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>I’m not sure I like that term (and I don’t think it conveys anything to someone unfamiliar with the podcast), but I’ll leave it there as a placeholder for now.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="jdollman/second-person" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

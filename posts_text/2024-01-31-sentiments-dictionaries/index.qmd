@@ -1,0 +1,398 @@
+---
+title: "Notes on Sentiment Dictionaries"
+description: "For Reference Purposes"
+author: Justin Dollman
+date: 01-31-2023
+date-modified: 03-10-2024
+categories: [sentiment analysis, R, text analysis, lexicon]
+image: dict.webp
+draft: false
+---
+
+```{r echo=FALSE, message=FALSE}
+library(glue)
+library(tidyverse)
+library(tidytext)
+library(sentimentr)
+library(lexicon)
+library(ggupset)
+
+theme_set(theme_minimal(base_family = 'IBM Plex Sans'))
+
+# tibble(x = seq(0, 2*pi, by = 0.001)) %>% 
+#   ggplot(aes(x)) +
+#   # geom_hline(yintercept = 0) +
+#   # stat_function(fun = sin) +
+#   geom_ribbon(data = tibble(x = seq(0, pi, by = 0.001), y = sin(x)),
+#               mapping = aes(ymin = 0, ymax = y), fill = 'cornsilk') +
+#   geom_ribbon(data = tibble(x = seq(pi, 2*pi, by = 0.001), y = sin(x)),
+#               mapping = aes(ymin = y, ymax = 0), fill = 'grey20') +
+#   annotate(geom = 'point', x = c(0, pi, 2*pi), y = c(0, 0, 0), 
+#            size = 3, alpha = 0.9) +
+#   theme_void() +
+#   annotate(geom = 'text',
+#            x = c(0.10, pi * 1.97),
+#            y = c(-.07, .07),
+#            label = c('Happiness', 'Sadness'),
+#            hjust = 'inward',
+#            family = 'IBM Plex Sans',
+#            fontface = 'bold',
+#            size = rel(5))
+
+tibble(x = seq(0, 2*pi, by = 0.001)) %>% 
+  ggplot(aes(x)) +
+  # geom_hline(yintercept = 0) +
+  # stat_function(fun = sin) +
+  geom_ribbon(data = tibble(x = seq(0, pi, by = 0.001), y = sin(x)),
+              mapping = aes(ymin = 0, ymax = y), fill = 'cornsilk') +
+  geom_ribbon(data = tibble(x = seq(pi, 2*pi, by = 0.001), y = sin(x)),
+              mapping = aes(ymin = y, ymax = 0), fill = 'grey20') +
+  annotate(geom = 'point', x = c(0, pi, 2*pi), y = c(0, 0, 0), 
+           size = 3, alpha = 0.9) +
+  theme_void() +
+  annotate(geom = 'text',
+           x = c(0.18, pi * 1.95),
+           y = c(.08, -.07),
+           label = c('Happiness', 'Sadness'),
+           hjust = 'inward',
+           family = 'IBM Plex Sans',
+           fontface = 'bold',
+           size = rel(6),
+           color = c('grey20', 'cornsilk'))
+```
+
+# Introduction
+
+Chances are, if you're going to do a mid-2000s to mid-2010s style sentiment analysis, you're going to use a sentiment dictionary^[These are also referred to as sentiment *lexicons*].^[Or, you might be a colleague of mine and [publishing an article](https://www.pnas.org/doi/10.1073/pnas.2210988119) in PNAS in 2022. Congrats!] When reaching for one of these things, you've got quite a few options. This *embarras de richesse* should raise the question, *Which should I use?* I say "*should* raise the question" because I feel like all too often these dictionaries are presented as issue-free, 'sure just go ahead and use it' tools. For anyone who has studied measurement or thought about scale validation that is a truly apoplexy-inducing idea.
+
+Both for your and my future reference, below I (will, upon completion) have a description of 10 or so dictionaries that I've come across quite a few times and found worth investigating why they were invented and if they should *ever* still be used.^[For most of them the answer is probably not.] Regardless of what I say below, remember that you'll probably have to think about your application when choosing a dictionary; there is no one-size-fits-all best choice. Also, this post abstains from high-level thoughts about the entire enterprise of using sentiment dictionaries to get sentiment scores for sentences, utterances, documents, etc. That's a different kettle of fish.^[And I try to keep my distinct kettles of fish in distinct posts ([here](https://en.wikipedia.org/wiki/Separation_of_concerns))]
+
+With that, let's go through these things in alphabetical order.
+
+## AFINN
+
+The subtitle of [the original publication](https://arxiv.org/abs/1103.2903) says it all, "Evaluation of a word list for sentiment analysis in microblogs." In the paper's abstract, the great Dane and presumably the namesake of the lexicon, Finn Arup Nielsen, lays out more explicitly why he created a new sentiment lexicon, "There exist several affective word lists, e.g., ANEW (Affective Norms for English Words) developed before the advent of microblogging and sentiment analysis. I wanted to examine how well ANEW and other word lists performs for the detection of sentiment strength in microblog posts in comparison with a new word list specifically constructed for microblogs." There's AFINN's origin story.^[I think it's also the explanation for AFINN's name. It's a portmanteau of the 'A' from 'ANEW' and 'FINN', this guy's christian name.]
+
+One of the unique features of the AFINN lexicon is that words are mapped to integers instead of merely {*positive*, *negative*}. Here you can see a few words at each value:
+
+```{r }
+set.seed(1)
+
+get_sentiments('afinn') %>%
+  group_by(value) %>% 
+  add_count(name = 'count') %>% 
+  slice_sample(n = 4) %>%
+  summarise(
+    `no. words` = mean(count),
+    words = glue_collapse(word, sep = ', ')) %>% 
+  arrange(value) %>% filter(value != 0)
+```
+
+And yes, I did set the seed above to avoid randomly showing you certain words. 
+
+You might be wondering 
+
+a) why -5 to 5 and 
+b) how he assigned words to those numbers
+
+Quoting him on the former, "As SentiStrength it uses a scoring range from −5 (very negative) to +5 (very positive)." Convention is powerful. As for the latter, the question of how numbers were assigned to words, "Most of the positive words were labeled with +2 and most of the negative words with –2 [...]. I typically rated strong obscene words [...] with either –4 or –5." So he was basically winging it.
+
+Another unique feature: the dictionary has 15 bigrams, 10 of which are below.^["some kind" is the *only* entry in the dictionary with a 0 value.]
+
+```{r}
+set.seed(12)
+get_sentiments('afinn') %>%
+  filter(str_detect(word, ' ')) %>% 
+  slice_sample(n = 10)
+```
+
+
+* **Size**: 2477 entries
+* **Coverage**: In addition to the bog-standard sentiment words, it has words all the cool kids were saying in the late 2000, early 2010s.
+* **R Packages**: `tidytext`, `lexicon`, `textdata`
+* **Publication**: [Here](https://arxiv.org/abs/1103.2903)
+* **Bottom Line**: It's been superseded by VADER (below)
+
+## Bing (aka Hu and Liu)^[I'm not sure why this sentiment lexicon is occasionally referred to as "Bing" when Bing Liu is just one of the two creators, but so it is. Bing Liu *has* written a textbook on sentiment analysis and [his website](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html) is a thing of beauty, so I'd say he deserves all good things.]
+
+According to the man [himself](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html#lexicon), "This list [i.e., the lexicon] was compiled over many years starting from our first paper (Hu and Liu, KDD-2004)." I'm not sure what the post-publication compilation process was, but the original process is well-described in [the original publication](https://dl.acm.org/doi/abs/10.1145/1014052.1014073). Essentially, they started with adjectives^[Yes, only adjectives. Other parts of speech have since been added.] with obvious polarity (e.g., *great*, *fantastic*, *nice*, *cool*, *bad*, *dull*) as 'seed words' and collected synonyms (and antonyms) of those words, then synonyms and antonyms of those words, and so on, iteratively. To do this, they used [WordNet](https://wordnet.princeton.edu/), a chill-ass semantic network. One thing that's nice about the resulting lexicon is that it's topic general. That is, though they developed this lexicon for the specific purpose of determining people's opinions about product features in product reviews, it has a generality beyond that. 
+
+Actually looking at the words, you'll notice there's some weirdness.
+
+```{r}
+head(get_sentiments('bing'), 10)
+```
+
+First, I'm not sure what "2-faces" is. If you say that it's a solecistic rendering of "two-faced," I'd say probably. In their appropriate alphabetic order, both "two-faced" *and* "two-faces" appear later in the dictionary. Anyway, you'll notice as well that a lot of the words would reduce to a single lemma if we lemmatized the dictionary. You can think of that as a positive feature of the BING dictionary. It means you don't have to have lemmatized (or stemmed) text. But its inclusion of derived words seems a bit haphazard. The *abort*-*aborted* pair is there, but *abolish* is hanging out along without its past tense.
+
+* **Size**: In the `tidytext` package the BING dictionary has 6786 terms (matching what his website says, "around 6800 words")
+* **R Packages**: `tidytext`, `lexicon`, `textdata`
+* **Bottom Line**: It's a classic and got wide coverage, but not as good as VADER or NRC-EIL.
+
+## Loughran-McDonald Master Dictionary w/ Sentiment Word Lists
+
+I'm honestly why this dictionary is included in packages -- not because it's bad^[In fact, it's being actively maintained which is *nice*.], but because it's so (*so so so*) niche. If you're doing text analysis on financial text (or aware of cool research doing this), please drop me a line and tell me about it.
+
+If you want to learn about it, here's [the page](https://sraf.nd.edu/loughranmcdonald-master-dictionary/).
+
+* **R Packages**: `tidytext`, `lexicon`, `textdata`
+
+## NRC (original)
+
+[Saif Mohammad](http://saifmohammad.com/) and friends developed a few National Research Council (NRC) of Canada-sponsored sentiment dictionaries. The first of them assigns words not only polarity labels (positive, negative), but emotion labels as well:
+
+```{r}
+tidytext::get_sentiments('nrc') %>% 
+  count(sentiment, sort = TRUE)
+```
+
+These eight emotions below negative and positive were theorized by Bob Plutchik to be fundamental, or something.^[Before researching for this post, I hadn't heard of Plutchik or his theory of emotions. The idea of basic emotions is definitely a thing, however (see Ekman's "An argument for basic emotion"). To see if people are using this guy's ideas, I looked over a few syllabi for psychology of emotion courses and through Michelle Shiota and James Kalat's *Emotion* textbook. Nothing in the syllabi. He was mentioned in the textbook, but just as a proponent of basic emotion. Using their sole citation to a work of Plutchik's, I went to Google Scholar to see if people are citing this thing. The idea is that, if people are citing it, then it's an active theory, if not it's scientifically dead. What I found was that it's not being cited that much, but when it is, it's by people doing sentiment analysis. It reminds me a little of Freud-psychology situation: if you take Freud seriously, you're not taking psychology seriously. Maybe with Plutchik, if you take Plutchik seriously, you're not taking emotion research seriously?] I'm going to ignore those emotions in this subsection. I'm also not going to talk too much about this dictionary, because it's superseded by the real-valued its successors, the NRC-EIL and NRC-VAD (below).
+
+Before I leave this lexicon, though, one bizarre thing about it: 81 words are both positive and negative (???)
+
+```{r}
+get_sentiments('nrc') %>% 
+  filter(sentiment %in% c('negative', 'positive')) %>% 
+  add_count(word) %>% 
+  filter(n > 1) %>% select(-n)
+```
+
+As a matter of semantics, I get it for some of these (*balm* I do not get, though). Practically, if you're doing an analysis with this dictionary, you're probably going to want to remove all these terms before calculating sentiment scores.
+
+* **R Packages**: `tidytext`, `lexicon`, `textdata`
+* **Size**: 5464 words (positive and negative, not words with ambiguous polarity)
+* **Bottom Line**: Superseded by Saif Mohammed's subsequent efforts.
+
+## NRC-EIL
+
+This thing's value-added, as my economist friend likes to say, is that instead of a simple 'positive' or 'negative' value for each sentiment entry, there's a number *between* -1 and 1. "Real-valued," as measurement-heads say. This is actually *extremely* important if you're aggregating word-level sentiment into something bigger (which ... honestly, email me if you're doing anything other than that.) _How_ they got these real-valued polarity scores is actually a pretty interesting methods story if you're into that kind of thing, but I won't go into 'MaxDiff scaling' here. One very important thing to note about this dataset, though, is that valence is that **polarity isn't in this dataset**. This vexed me for a minute before I realized that it's in the real-valued NRC-VAD (below). So, on the off chance you're looking for the best measurement of Plutchik's eight basic emotions (and that's a very off chance), this is the best place to look.
+
+* **R Packages**: `textdata`
+* **Examples**: You can see an example of an analysis of Ezra Klein's podcasts [here](link forthcoming).
+* **Bottom Line**: I'm not sure *why* it exists, but it's the only lexicon doing what it's doing.
+
+## NRC-VAD
+
+Once you have a hammer, everything starts looking like a nail. That's how I explain the existence of this dictionary to myself. Saif Mohammed & Co. found these cool scaling technique and were like, "On what dimensions can we scale more words?" They seem to have stumbled on this idea the three most fundamental dimensions in concept space are valence, arousal, and dominance. Maybe it's an indictment of my memory, perhaps an indictment of the psychology department at the University of Arkansas, but I managed to graduate *summa cum laude* with a degree in psychology without ever hearing of this. Regardless of supposed fundamental dimensions in concept space, valence is fundamental and is just another word for polarity which is the main thing people are doing with sentiment dictionaries. 
+
+This also led to my favorite table in I've ever seen in an academic article
+
+![](horrid.png)
+
+Whenever I need to express that something is pure bad valence, I now reach for the phrase 'toxic nightmare shit.'
+
+* **R Packages**: `textdata`
+* **Bottom Line**: Hell yeah. This is a good one.
+
+## SOCAL
+
+It's the **S**emantic **O**rientation **CAL**culator! Like VADER (below), SOCAL is both a sentiment dictionary _and_ rules for modifying words' sentiment given the context in which they appear. Below, I'll only briefly consider the dictionary part. I recommend reading the publication both for more details on SOCAL itself as well as sentiment analysis generally. In a sea of sentiment articles that are slapdash publications from some "Proceedings of blah blah blah" or "Miniconference on yak yak yak" this one really stands out for its professionalism and thoroughness.^[Yes, I realize I'm valorizing professionalism after just writing "Miniconference on yak yak yak." I may not contain multitudes, but there are at least two wolves inside me (as the saying goes).] As for whether or not you should actually *use* this dictionary, uh, you should keep reading.
+
+One fun thing to note about SOCAL's dictionary: it has more entries with spaces than any other dictionary I've seen.
+
+```{r}
+hash_sentiment_socal_google %>% 
+  group_by(n_gram = str_count(x, ' ') + 1) %>% 
+  count(n_gram) %>% 
+  ungroup()
+```
+
+This dictionary has not only a huge bigrams:unigrams ratio, but it has sextagrams, a septagram, and even an octogram! This never happens! Let's look at the n-grams where n > 4
+
+```{r}
+hash_sentiment_socal_google %>% 
+  filter(str_count(x, ' ') > 3)
+```
+
+I, uh, don't really know what to make of these. There's actually a restaurant named "[Lambert's Cafe](https://throwedrolls.com/lamberts-cafe-ii/)" in Ozark, Missouri where you get peanuts in tin buckets and "throw your peanut shells on the floor" and, unless I'm remembering it wrong, it's something people _like_ about the place.
+
+Speaking of things that are starting to be concerning, the distribution of scores:
+
+```{r}
+library(ggtext)
+ggplot(hash_sentiment_socal_google, aes(y)) +
+  geom_density() +
+  labs(
+    y = '',
+    x = 'Valence Score',
+    title = '**What tale tell ye**, ye two thick tails?'
+  ) +
+  theme(plot.title = element_markdown(face = 'italic'))
+```
+
+No, that density plot isn't glitching. There really are words out there in the extremes:
+
+```{r}
+hash_sentiment_socal_google %>% 
+  filter(abs(y) > 15)
+```
+
+At this point, you might be wondering ... what scale is this? And what are values for our vanilla valence-indicators "good" and "bad"?
+
+```{r}
+hash_sentiment_socal_google %>% 
+  filter(x %in% c('good', 'bad'))
+```
+
+Ok, that's fine. Maybe. But here's something that probably isn't fine:
+
+```{r}
+hash_sentiment_socal_google %>% 
+  filter(str_detect(x, 'good|bad'))
+```
+
+Here is where I lost all faith. "Good intentioned" and "good natured" are negative?!
+
+At this point I'm going to call it a day with SOCAL. At some point I might write to the SOCAL authors or Tyler Rinker to see if something has gone wrong.
+
+* **Publication**: [Again, I truly recommend it](https://direct.mit.edu/coli/article/37/2/267/2105/Lexicon-Based-Methods-for-Sentiment-Analysis)
+* **Size**: 3290 entries
+* **R Packages**: `lexicon`
+
+## Syuzhet
+
+"The default method, "syuzhet" is a custom sentiment dictionary developed in the Nebraska Literary Lab. The default dictionary should be better tuned to fiction as the terms were extracted from a collection of 165,000 human coded sentences taken from a small corpus of contemporary novels."
+
+Now, it does include a lot of words *I* find to be neutral (e.g., "yes", "true")
+
+We can check out the distribution of the terms in my experimental sideways histogram below:
+
+```{r}
+# ggplot(key_sentiment_jockers, aes(value)) +
+#   geom_histogram(breaks = seq(-1, 1, by = 0.1), color = 'white') +
+#   theme(
+#     panel.grid.major.x = element_blank(),
+#     panel.grid.minor.x = element_blank(),
+#     axis.text.x = element_text(margin = margin(t = -10, b = 5)),
+#     plot.title = element_text(face = 'bold', size = rel(1.3))) +
+#   scale_y_continuous(breaks = c(500, 1000, 1500)) +
+#   labs(
+#     x = 'Jockers/Syuzhet Value',
+#     y = 'Terms in Dictionary',
+#     title = 'Distribution of Sentiment Values in Syuzhet Dictionary'
+#   )
+```
+
+```{r warning=FALSE}
+distinct_values <- pull(distinct(key_sentiment_jockers, value))
+
+ggplot(key_sentiment_jockers, aes(value)) +
+  geom_bar(width = .07, alpha = 0.8, fill = c(viridis::magma(8, direction = -1), viridis::mako(8))) +
+  geom_text(stat = 'count', aes(label = after_stat(count)), 
+            hjust = -0.1,
+            position = position_stack(),
+            family = 'IBM Plex Sans',
+            face = 'bold') +
+  scale_x_continuous(breaks = distinct_values) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    plot.title = element_text(face = 'bold'),
+    axis.text.y = element_text(margin = margin(r = -20))) +
+  coord_flip() +
+  labs(x = 'Valence Value in Syuzhet',
+       y = 'Counts',
+       title = 'Distribution of Sentiment Values in Syuzhet Dictionary') +
+  geom_vline(xintercept = 0)
+```
+
+
+* **R Packages**: `syuzhet`, `lexicon`
+* **Size**: 10,748 words
+* **Bottom Line**: Pending.
+
+## VADER
+
+Is VADER evil? Maybe. But it also stands for **V**alence **A**ware **D**ictionary and s**E**ntiment **R**easoner.^[This dictionary is definitely winning the marketing competition. I asked ChatGPT IV to make sentiment dictionary names corresponding to the initialisms SKYWALKER AND LEIA and got "Lexicon of Emotion Intensity and Analysis" for the latter. SKYWALKER was rough.] Impressively, the found "that VADER outperforms individual human raters" when classifying tweets as positive, accurate, or neutral.^[You should be wondering how it's _possible_ for this metric to be better than human raters at classifying tweets' sentiment if the ground truth of what a tweet's sentiment is comes from humans. Just to be impish, I'm actually not going to answer that question; I'll just that that the word _individual_ in "individual human raters" is very important.] Part (most?) of that impressiveness is due to the 'ER' of VADER. Nevertheless, here I'm only considering the *VAD* part. If you want to check out its ruled-based sentiment reasoning, check out its [github page](https://github.com/cjhutto/vaderSentiment) or [publication](https://ojs.aaai.org/index.php/ICWSM/article/view/14550).
+
+The lexicon has an impressive 7,500 entries, each with its associated polarity *and* intensity (-4 to 4). Did they get those intensities just winging it like Finn? Nope. Each potential entry was placed on the -4 to 4 scale by 10 Amazon Mechanical Turk workers.^[Not necessarily the same 10 workers for every word!] The score you *do* see in the dictionary means that a) raters' scores had a standard deviation of less than 2.5^[If there was no consensus (operationalized as a standard deviation > 2.5), the candidate word didn't make it into the dictionary.] and b) that the mean rating among the 10 raters was not 0.^[I wonder if they meant to say that it didn't _round_ to zero. If you had 9 people rate a word at 0 and a single person rate it at 1, the word wouldn't have a mean rating of zero, but ... c'mon. Note: After writing that as an obviously ridiculous footnote, I was looking through the dictionary and noticed _calmodulin_, a word I had never seen. It received 8 zeros and 2 ones.]
+
+One interesting feature of the lexicon is its inclusion of emoticons.
+
+```{r message=FALSE}
+vader <- read_delim('https://raw.githubusercontent.com/cjhutto/vaderSentiment/master/vaderSentiment/vader_lexicon.txt',
+                    delim = '\t', col_names = FALSE) %>% magrittr::set_names(c('token', 'score', 'sd', 'scores'))
+
+vader %>% 
+  filter(str_detect(token, '[A-Za-z1-9]', negate = TRUE)) %>% 
+  group_by(bin = score %/% 1) %>% 
+  mutate(y = row_number()) %>% 
+  ungroup() %>% 
+  ggplot(aes(bin, y, label = token)) +
+  geom_text(check_overlap = TRUE, fontface = 'bold', family = 'IBM Plex Sans') +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(
+    x = '',
+    caption = 'To reduce the real-valued chaos, I rounded down emoticons\' scores to the nearest integer'
+  ) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    axis.text = element_text(face = 'bold'),
+    panel.grid.minor.x = element_line(linetype = 2, color = 'grey35')
+  ) +
+  guides(color = 'none')
+```
+
+I don't want to make this dictionary seem trivial. Its creators also validated it using sentences from New York Times editorials, as well. It's just not every day that you can make a histogram of emoticons.
+
+* **R Packages**: As far as I know, it's not in any. You can get it directly from its [github repository](https://github.com/cjhutto/vaderSentiment/blob/master/vaderSentiment/vader_lexicon.txt).
+* **Side Benefit**: This is probably the one that your "pythonista" friends are familiar with, since it's in the `nltk` library.
+
+## Coverage Comparison for AFINN, BING, and NRC
+
+```{r}
+afinn <- get_sentiments(lexicon = 'afinn')
+bing <- get_sentiments(lexicon = 'bing')
+nrc_emotions <- filter(get_sentiments(lexicon = 'nrc'), 
+                    !(sentiment %in% c('positive', 'negative')))
+nrc_polar <- filter(get_sentiments(lexicon = 'nrc'), 
+                    sentiment %in% c('positive', 'negative'))
+```
+
+```{r warning=FALSE}
+bind_rows(
+  select(mutate(afinn, lexicon = 'AFINN'), word, lexicon),
+  select(mutate(bing, lexicon = 'BING'), word, lexicon),
+  select(mutate(nrc_polar, lexicon = 'NRC'), word, lexicon)) %>% 
+  summarise(Lexica = list(lexicon), .by = word) %>% 
+  ggplot(aes(Lexica)) +
+  geom_bar() +
+  scale_x_upset(n_intersections = 7) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    title = element_text(family = "IBM Plex Sans"),
+    plot.title = element_text(face = 'bold'),
+    plot.subtitle = element_markdown(),
+    axis.text = element_text(family = "IBM Plex Sans")
+  ) +
+  labs(
+    y = 'Set Size',
+    x = 'Set',
+    title = 'Are Bigger Dictionaries Mostly Supersets of Smaller Dictionaries?',
+    subtitle = "*No*, and that's weird"
+  )
+```
+
+We can see how many entries each dictionary has:
+
+```{r}
+c(nrow(afinn), nrow(bing), nrow(nrc_polar))
+```
+
+Here we see a surprising amount of non-overlap. Of Bing's 6786 terms, almost 4,000 do not appear in either of the other two dictionaries. Almost 3,000 of NRC's polarity entries aren't in either of the other two, as well. The third bar indicates that BING and NRC share just over 1,500 words. The short and long of this is that it *might* be important which dictionary we choose. They have very different coverages.^[This situation should seem strange. I'd argue that your priors should have closer to, "Bigger dictionaries will be more like supersets of smaller ones than mostly non-intersecting bigger sets." Think about it this way. If *you* were creating a sentiment dictionary, you'd try to gather all the most important emotion words and score their polarity. If you found out someone had created a bigger sentiment dictionary, you'd assume that either they included more generically obscure words or maybe words unique to a given time or application. In either case, you'd expect their dictionary contain at least most of your words.]
+
+## Still to do
+
+This page, like the rest of my life, is a work in progress. 
+
+1. I still have a few dictionaries to add. In Tyler Rinker's `lexicon` package there are: jockers (and jockers_rinker), emojis (and emojis_sentiment), senticnet, sentiword, slangsd. I've already covered all dictionaries in `tidytext` and `textdata`.
+2. Further comparison of dictionary overlap.
+  2a. Right now I look at three dictionaries' overlap. These three aren't the best, they're just the first ones I checked out. That's not a principled criterion for selecting dictionaries. I'll redo that section programmatically.
+  2b. I'm going to lemmatize/stem the dictionaries covered and get their size and overlaps as I did with AFINN, BING, and NRC above. It's possible that sizes are much more similar once you remove a bunch of morphological tangle.
+3. Inspired by this sentence from Nielsen, "The word list have a bias towards negative words (1598, corresponding to 65%) compared to positive words (878)" I'm also going to see what the respective positive/negative balances are of these dictionaries.
+
+# Recommended Usage and Tendentious Postscript
+
+Something a little wild to keep in mind. The way these dictionaries arrived at their codings of words ranges from a lower bound of sensible to downright impressive. That's obviously good. Keep in mind, however, that you're **not** categorizing words as good or bad. You're using words as features to get calculate sentiment at some level of aggregation, and there's a chasmic categorical difference between that task and (sub-)task of classifying words. Even if the word ratings had been arrived at perfectly, using "the dictionary approach" to measure aggregate sentiment is another task entirely, one that requires separate validation. It would entail having people rate the sentiment of sentences/utterances/paragraphs, taking those as ground truth, and then seeing how well these dictionaries capture that. As far as I know, only Mr. Finn Arup Nielsen did that for his AFINN dictionary (and to so-so results even *within* the domain of social media; external validity would be another matter). So, always keep in mind what you're doing. You're throwing a bunch of text into a blender that gives you a read-out of some of that text's ingredients. You're *not* getting a direct reading of the text's emotional valence

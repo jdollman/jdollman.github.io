@@ -1,0 +1,19 @@
+---
+title: "Using a Certain Generative Pre-trained Transformer to Code NSF Grants"
+# description: ""
+author: Justin Dollman
+date: 05-28-2024
+categories: [ChatGPT, coding, NSF]
+image: grant_writing.webp
+draft: false
+---
+
+'Coding' unstructured text into nice quantitative features is a time-consuming, mentally-draining, and eventually hellish task. Recently, tried this for a task that human^[It's wild that 'human' is going to become used more and more as a prepositive adjective in front of nouns we .... C'est le siècle le plus important] research assistants had done a poor job at. Sure enough, both ChatGPT (4) and Claude (Opus?) did pretty bad jobs. Google's Gemini didn't even try.
+
+A while back I was part of a project in which the principal investigator was looking at the broader impacts of NSF grants. A prior research assistant had manually coded 400 **project outcome reports**^[] along two dimensions: are the project's beneficiaries {advantaged, universal, disadvantaged} and is the relationship between the core activity of the grant and the beneficiaries {inherent, direct, or indirect}. I refer you [the resulting publication]() for elaboration on the whys and wherefores of this coding. By the time I was brought onto the project, the task was to figure out if certain types of broader impact strategies were associated with more or fewer publications. Given the complexities of the models I wanted to run (zero-inflated this-and-that, controlling for various institutional factors), the N = 400 sample was pretty meager. 
+
+My first foray into working with the API.
+
+* How similar are API responses to 'manual' responses?
+
+* Structure of a POR

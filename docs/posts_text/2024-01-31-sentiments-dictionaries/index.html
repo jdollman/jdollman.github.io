@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Justin Dollman">
+<meta name="dcterms.date" content="2023-01-31">
+<meta name="description" content="For Reference Purposes">
+
+<title>Justin Dollman - Notes on Sentiment Dictionaries</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Justin Dollman</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../section_immigration.html">
+ <span class="menu-text">Immigration Policy</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../section_ur.html">
+ <span class="menu-text">Urban-Rural Polarization</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../section_text.html">
+ <span class="menu-text">Text Analysis</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../section_about.html">
+ <span class="menu-text">About Me</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Notes on Sentiment Dictionaries</h1>
+                  <div>
+        <div class="description">
+          For Reference Purposes
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">sentiment analysis</div>
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">text analysis</div>
+                <div class="quarto-category">lexicon</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Justin Dollman </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 31, 2023</p>
+      </div>
+    </div>
+    
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">March 10, 2024</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Chances are, if you’re going to do a mid-2000s to mid-2010s style sentiment analysis, you’re going to use a sentiment dictionary<sup>[These are also referred to as sentiment <em>lexicons</em>].</sup>[Or, you might be a colleague of mine and <a href="https://www.pnas.org/doi/10.1073/pnas.2210988119">publishing an article</a> in PNAS in 2022. Congrats!] When reaching for one of these things, you’ve got quite a few options. This <em>embarras de richesse</em> should raise the question, <em>Which should I use?</em> I say “<em>should</em> raise the question” because I feel like all too often these dictionaries are presented as issue-free, ‘sure just go ahead and use it’ tools. For anyone who has studied measurement or thought about scale validation that is a truly apoplexy-inducing idea.</p>
+<p>Both for your and my future reference, below I (will, upon completion) have a description of 10 or so dictionaries that I’ve come across quite a few times and found worth investigating why they were invented and if they should <em>ever</em> still be used.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Regardless of what I say below, remember that you’ll probably have to think about your application when choosing a dictionary; there is no one-size-fits-all best choice. Also, this post abstains from high-level thoughts about the entire enterprise of using sentiment dictionaries to get sentiment scores for sentences, utterances, documents, etc. That’s a different kettle of fish.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>With that, let’s go through these things in alphabetical order.</p>
+<section id="afinn" class="level2">
+<h2 class="anchored" data-anchor-id="afinn">AFINN</h2>
+<p>The subtitle of <a href="https://arxiv.org/abs/1103.2903">the original publication</a> says it all, “Evaluation of a word list for sentiment analysis in microblogs.” In the paper’s abstract, the great Dane and presumably the namesake of the lexicon, Finn Arup Nielsen, lays out more explicitly why he created a new sentiment lexicon, “There exist several affective word lists, e.g., ANEW (Affective Norms for English Words) developed before the advent of microblogging and sentiment analysis. I wanted to examine how well ANEW and other word lists performs for the detection of sentiment strength in microblog posts in comparison with a new word list specifically constructed for microblogs.” There’s AFINN’s origin story.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>One of the unique features of the AFINN lexicon is that words are mapped to integers instead of merely {<em>positive</em>, <em>negative</em>}. Here you can see a few words at each value:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">'afinn'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(value) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_count</span>(<span class="at">name =</span> <span class="st">'count'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">no. words</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(count),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">words =</span> <span class="fu">glue_collapse</span>(word, <span class="at">sep =</span> <span class="st">', '</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(value) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(value <span class="sc">!=</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+   value `no. words` words                                      
+   &lt;dbl&gt;       &lt;dbl&gt; &lt;glue&gt;                                     
+ 1    -5          16 motherfucker, bitches, cocksuckers, bastard
+ 2    -4          43 scumbag, fucking, fraudsters, fucked       
+ 3    -3         264 moron, destroy, despair, scandals          
+ 4    -2         966 animosity, censors, robs, touts            
+ 5    -1         309 imposing, unclear, demonstration, uncertain
+ 6     1         208 share, extend, feeling, commit             
+ 7     2         448 tranquil, consent, supportive, sympathetic 
+ 8     3         172 audacious, classy, luck, gracious          
+ 9     4          45 exuberant, wonderful, rejoicing, wowww     
+10     5           5 hurrah, outstanding, superb, thrilled      </code></pre>
+</div>
+</div>
+<p>And yes, I did set the seed above to avoid randomly showing you certain words.</p>
+<p>You might be wondering</p>
+<ol type="a">
+<li>why -5 to 5 and</li>
+<li>how he assigned words to those numbers</li>
+</ol>
+<p>Quoting him on the former, “As SentiStrength it uses a scoring range from −5 (very negative) to +5 (very positive).” Convention is powerful. As for the latter, the question of how numbers were assigned to words, “Most of the positive words were labeled with +2 and most of the negative words with –2 […]. I typically rated strong obscene words […] with either –4 or –5.” So he was basically winging it.</p>
+<p>Another unique feature: the dictionary has 15 bigrams, 10 of which are below.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">'afinn'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(word, <span class="st">' '</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 2
+   word          value
+   &lt;chr&gt;         &lt;dbl&gt;
+ 1 cashing in       -2
+ 2 no fun           -3
+ 3 green wash       -3
+ 4 not good         -2
+ 5 dont like        -2
+ 6 not working      -3
+ 7 some kind         0
+ 8 green washing    -3
+ 9 cool stuff        3
+10 messing up       -2</code></pre>
+</div>
+</div>
+<ul>
+<li><strong>Size</strong>: 2477 entries</li>
+<li><strong>Coverage</strong>: In addition to the bog-standard sentiment words, it has words all the cool kids were saying in the late 2000, early 2010s.</li>
+<li><strong>R Packages</strong>: <code>tidytext</code>, <code>lexicon</code>, <code>textdata</code></li>
+<li><strong>Publication</strong>: <a href="https://arxiv.org/abs/1103.2903">Here</a></li>
+<li><strong>Bottom Line</strong>: It’s been superseded by VADER (below)</li>
+</ul>
+</section>
+<section id="bing-aka-hu-and-liu" class="level2">
+<h2 class="anchored" data-anchor-id="bing-aka-hu-and-liu">Bing (aka Hu and Liu)<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></h2>
+<p>According to the man <a href="https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html#lexicon">himself</a>, “This list [i.e., the lexicon] was compiled over many years starting from our first paper (Hu and Liu, KDD-2004).” I’m not sure what the post-publication compilation process was, but the original process is well-described in <a href="https://dl.acm.org/doi/abs/10.1145/1014052.1014073">the original publication</a>. Essentially, they started with adjectives<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> with obvious polarity (e.g., <em>great</em>, <em>fantastic</em>, <em>nice</em>, <em>cool</em>, <em>bad</em>, <em>dull</em>) as ‘seed words’ and collected synonyms (and antonyms) of those words, then synonyms and antonyms of those words, and so on, iteratively. To do this, they used <a href="https://wordnet.princeton.edu/">WordNet</a>, a chill-ass semantic network. One thing that’s nice about the resulting lexicon is that it’s topic general. That is, though they developed this lexicon for the specific purpose of determining people’s opinions about product features in product reviews, it has a generality beyond that.</p>
+<p>Actually looking at the words, you’ll notice there’s some weirdness.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">get_sentiments</span>(<span class="st">'bing'</span>), <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 2
+   word        sentiment
+   &lt;chr&gt;       &lt;chr&gt;    
+ 1 2-faces     negative 
+ 2 abnormal    negative 
+ 3 abolish     negative 
+ 4 abominable  negative 
+ 5 abominably  negative 
+ 6 abominate   negative 
+ 7 abomination negative 
+ 8 abort       negative 
+ 9 aborted     negative 
+10 aborts      negative </code></pre>
+</div>
+</div>
+<p>First, I’m not sure what “2-faces” is. If you say that it’s a solecistic rendering of “two-faced,” I’d say probably. In their appropriate alphabetic order, both “two-faced” <em>and</em> “two-faces” appear later in the dictionary. Anyway, you’ll notice as well that a lot of the words would reduce to a single lemma if we lemmatized the dictionary. You can think of that as a positive feature of the BING dictionary. It means you don’t have to have lemmatized (or stemmed) text. But its inclusion of derived words seems a bit haphazard. The <em>abort</em>-<em>aborted</em> pair is there, but <em>abolish</em> is hanging out along without its past tense.</p>
+<ul>
+<li><strong>Size</strong>: In the <code>tidytext</code> package the BING dictionary has 6786 terms (matching what his website says, “around 6800 words”)</li>
+<li><strong>R Packages</strong>: <code>tidytext</code>, <code>lexicon</code>, <code>textdata</code></li>
+<li><strong>Bottom Line</strong>: It’s a classic and got wide coverage, but not as good as VADER or NRC-EIL.</li>
+</ul>
+</section>
+<section id="loughran-mcdonald-master-dictionary-w-sentiment-word-lists" class="level2">
+<h2 class="anchored" data-anchor-id="loughran-mcdonald-master-dictionary-w-sentiment-word-lists">Loughran-McDonald Master Dictionary w/ Sentiment Word Lists</h2>
+<p>I’m honestly why this dictionary is included in packages – not because it’s bad<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>, but because it’s so (<em>so so so</em>) niche. If you’re doing text analysis on financial text (or aware of cool research doing this), please drop me a line and tell me about it.</p>
+<p>If you want to learn about it, here’s <a href="https://sraf.nd.edu/loughranmcdonald-master-dictionary/">the page</a>.</p>
+<ul>
+<li><strong>R Packages</strong>: <code>tidytext</code>, <code>lexicon</code>, <code>textdata</code></li>
+</ul>
+</section>
+<section id="nrc-original" class="level2">
+<h2 class="anchored" data-anchor-id="nrc-original">NRC (original)</h2>
+<p><a href="http://saifmohammad.com/">Saif Mohammad</a> and friends developed a few National Research Council (NRC) of Canada-sponsored sentiment dictionaries. The first of them assigns words not only polarity labels (positive, negative), but emotion labels as well:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tidytext<span class="sc">::</span><span class="fu">get_sentiments</span>(<span class="st">'nrc'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(sentiment, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 2
+   sentiment        n
+   &lt;chr&gt;        &lt;int&gt;
+ 1 negative      3318
+ 2 positive      2308
+ 3 fear          1474
+ 4 anger         1246
+ 5 trust         1230
+ 6 sadness       1187
+ 7 disgust       1056
+ 8 anticipation   837
+ 9 joy            687
+10 surprise       532</code></pre>
+</div>
+</div>
+<p>These eight emotions below negative and positive were theorized by Bob Plutchik to be fundamental, or something.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> I’m going to ignore those emotions in this subsection. I’m also not going to talk too much about this dictionary, because it’s superseded by the real-valued its successors, the NRC-EIL and NRC-VAD (below).</p>
+<p>Before I leave this lexicon, though, one bizarre thing about it: 81 words are both positive and negative (???)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">'nrc'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sentiment <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'negative'</span>, <span class="st">'positive'</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_count</span>(word) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 162 × 2
+   word       sentiment
+   &lt;chr&gt;      &lt;chr&gt;    
+ 1 abundance  negative 
+ 2 abundance  positive 
+ 3 armed      negative 
+ 4 armed      positive 
+ 5 balm       negative 
+ 6 balm       positive 
+ 7 boast      negative 
+ 8 boast      positive 
+ 9 boisterous negative 
+10 boisterous positive 
+# ℹ 152 more rows</code></pre>
+</div>
+</div>
+<p>As a matter of semantics, I get it for some of these (<em>balm</em> I do not get, though). Practically, if you’re doing an analysis with this dictionary, you’re probably going to want to remove all these terms before calculating sentiment scores.</p>
+<ul>
+<li><strong>R Packages</strong>: <code>tidytext</code>, <code>lexicon</code>, <code>textdata</code></li>
+<li><strong>Size</strong>: 5464 words (positive and negative, not words with ambiguous polarity)</li>
+<li><strong>Bottom Line</strong>: Superseded by Saif Mohammed’s subsequent efforts.</li>
+</ul>
+</section>
+<section id="nrc-eil" class="level2">
+<h2 class="anchored" data-anchor-id="nrc-eil">NRC-EIL</h2>
+<p>This thing’s value-added, as my economist friend likes to say, is that instead of a simple ‘positive’ or ‘negative’ value for each sentiment entry, there’s a number <em>between</em> -1 and 1. “Real-valued,” as measurement-heads say. This is actually <em>extremely</em> important if you’re aggregating word-level sentiment into something bigger (which … honestly, email me if you’re doing anything other than that.) <em>How</em> they got these real-valued polarity scores is actually a pretty interesting methods story if you’re into that kind of thing, but I won’t go into ‘MaxDiff scaling’ here. One very important thing to note about this dataset, though, is that valence is that <strong>polarity isn’t in this dataset</strong>. This vexed me for a minute before I realized that it’s in the real-valued NRC-VAD (below). So, on the off chance you’re looking for the best measurement of Plutchik’s eight basic emotions (and that’s a very off chance), this is the best place to look.</p>
+<ul>
+<li><strong>R Packages</strong>: <code>textdata</code></li>
+<li><strong>Examples</strong>: You can see an example of an analysis of Ezra Klein’s podcasts <a href="link forthcoming">here</a>.</li>
+<li><strong>Bottom Line</strong>: I’m not sure <em>why</em> it exists, but it’s the only lexicon doing what it’s doing.</li>
+</ul>
+</section>
+<section id="nrc-vad" class="level2">
+<h2 class="anchored" data-anchor-id="nrc-vad">NRC-VAD</h2>
+<p>Once you have a hammer, everything starts looking like a nail. That’s how I explain the existence of this dictionary to myself. Saif Mohammed &amp; Co.&nbsp;found these cool scaling technique and were like, “On what dimensions can we scale more words?” They seem to have stumbled on this idea the three most fundamental dimensions in concept space are valence, arousal, and dominance. Maybe it’s an indictment of my memory, perhaps an indictment of the psychology department at the University of Arkansas, but I managed to graduate <em>summa cum laude</em> with a degree in psychology without ever hearing of this. Regardless of supposed fundamental dimensions in concept space, valence is fundamental and is just another word for polarity which is the main thing people are doing with sentiment dictionaries.</p>
+<p>This also led to my favorite table in I’ve ever seen in an academic article</p>
+<p><img src="horrid.png" class="img-fluid"></p>
+<p>Whenever I need to express that something is pure bad valence, I now reach for the phrase ‘toxic nightmare shit.’</p>
+<ul>
+<li><strong>R Packages</strong>: <code>textdata</code></li>
+<li><strong>Bottom Line</strong>: Hell yeah. This is a good one.</li>
+</ul>
+</section>
+<section id="socal" class="level2">
+<h2 class="anchored" data-anchor-id="socal">SOCAL</h2>
+<p>It’s the <strong>S</strong>emantic <strong>O</strong>rientation <strong>CAL</strong>culator! Like VADER (below), SOCAL is both a sentiment dictionary <em>and</em> rules for modifying words’ sentiment given the context in which they appear. Below, I’ll only briefly consider the dictionary part. I recommend reading the publication both for more details on SOCAL itself as well as sentiment analysis generally. In a sea of sentiment articles that are slapdash publications from some “Proceedings of blah blah blah” or “Miniconference on yak yak yak” this one really stands out for its professionalism and thoroughness.<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> As for whether or not you should actually <em>use</em> this dictionary, uh, you should keep reading.</p>
+<p>One fun thing to note about SOCAL’s dictionary: it has more entries with spaces than any other dictionary I’ve seen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>hash_sentiment_socal_google <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">n_gram =</span> <span class="fu">str_count</span>(x, <span class="st">' '</span>) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(n_gram) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 2
+  n_gram     n
+   &lt;dbl&gt; &lt;int&gt;
+1      1  2071
+2      2  1097
+3      3    97
+4      4    17
+5      5     3
+6      6     3
+7      7     1
+8      8     1</code></pre>
+</div>
+</div>
+<p>This dictionary has not only a huge bigrams:unigrams ratio, but it has sextagrams, a septagram, and even an octogram! This never happens! Let’s look at the n-grams where n &gt; 4</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>hash_sentiment_socal_google <span class="sc">%&gt;%</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_count</span>(x, <span class="st">' '</span>) <span class="sc">&gt;</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;x&gt;
+                                                           x         y
+                                                      &lt;char&gt;     &lt;num&gt;
+1:                          darker and funnier than expected -4.092375
+2:                                     every other word is f -1.955614
+3:                          in your face everywhere you turn -5.357512
+4: lowbump bump bump bump bump bump bumpbumpbumpbump lowbump  5.622471
+5:                     throw your peanut shells on the floor -5.186874
+6:                                      trying to get on top -2.573428
+7:                               type stype suh huh uh huh's -4.281949
+8:                            write an awesome story to sell -6.262021</code></pre>
+</div>
+</div>
+<p>I, uh, don’t really know what to make of these. There’s actually a restaurant named “<a href="https://throwedrolls.com/lamberts-cafe-ii/">Lambert’s Cafe</a>” in Ozark, Missouri where you get peanuts in tin buckets and “throw your peanut shells on the floor” and, unless I’m remembering it wrong, it’s something people <em>like</em> about the place.</p>
+<p>Speaking of things that are starting to be concerning, the distribution of scores:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggtext)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hash_sentiment_socal_google, <span class="fu">aes</span>(y)) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">''</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">'Valence Score'</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">'**What tale tell ye**, ye two thick tails?'</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_markdown</span>(<span class="at">face =</span> <span class="st">'italic'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>No, that density plot isn’t glitching. There really are words out there in the extremes:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>hash_sentiment_socal_google <span class="sc">%&gt;%</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">abs</span>(y) <span class="sc">&gt;</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;x&gt;
+                            x         y
+                       &lt;char&gt;     &lt;num&gt;
+ 1:    almost mafiosio styled  15.61625
+ 2: automatically bestselling  17.60440
+ 3:        coming of age isms  17.62518
+ 4:           cushion handled  23.45929
+ 5:                 hop ified -30.16008
+ 6:          keyboard crafted  30.73891
+ 7:      more than palateable  25.61696
+ 8:          oven to stovetop  19.49040
+ 9:             piano blessed  30.40257
+10:   rustic yet contemporary  16.31055
+11:           slotted spooned  18.19201
+12:              thick spoked  20.43281</code></pre>
+</div>
+</div>
+<p>At this point, you might be wondering … what scale is this? And what are values for our vanilla valence-indicators “good” and “bad”?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>hash_sentiment_socal_google <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(x <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'good'</span>, <span class="st">'bad'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;x&gt;
+        x         y
+   &lt;char&gt;     &lt;num&gt;
+1:    bad -1.636520
+2:   good  1.872093</code></pre>
+</div>
+</div>
+<p>Ok, that’s fine. Maybe. But here’s something that probably isn’t fine:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>hash_sentiment_socal_google <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(x, <span class="st">'good|bad'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;x&gt;
+                  x          y
+             &lt;char&gt;      &lt;num&gt;
+1:     average good  0.4205258
+2:              bad -1.6365198
+3:        feel good  1.2984294
+4:             good  1.8720931
+5: good intentioned -4.1537399
+6:     good natured -1.5298719
+7:         half bad -3.9237520</code></pre>
+</div>
+</div>
+<p>Here is where I lost all faith. “Good intentioned” and “good natured” are negative?!</p>
+<p>At this point I’m going to call it a day with SOCAL. At some point I might write to the SOCAL authors or Tyler Rinker to see if something has gone wrong.</p>
+<ul>
+<li><strong>Publication</strong>: <a href="https://direct.mit.edu/coli/article/37/2/267/2105/Lexicon-Based-Methods-for-Sentiment-Analysis">Again, I truly recommend it</a></li>
+<li><strong>Size</strong>: 3290 entries</li>
+<li><strong>R Packages</strong>: <code>lexicon</code></li>
+</ul>
+</section>
+<section id="syuzhet" class="level2">
+<h2 class="anchored" data-anchor-id="syuzhet">Syuzhet</h2>
+<p>“The default method,”syuzhet” is a custom sentiment dictionary developed in the Nebraska Literary Lab. The default dictionary should be better tuned to fiction as the terms were extracted from a collection of 165,000 human coded sentences taken from a small corpus of contemporary novels.”</p>
+<p>Now, it does include a lot of words <em>I</em> find to be neutral (e.g., “yes”, “true”)</p>
+<p>We can check out the distribution of the terms in my experimental sideways histogram below:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(key_sentiment_jockers, aes(value)) +</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_histogram(breaks = seq(-1, 1, by = 0.1), color = 'white') +</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   theme(</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     panel.grid.major.x = element_blank(),</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     panel.grid.minor.x = element_blank(),</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     axis.text.x = element_text(margin = margin(t = -10, b = 5)),</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     plot.title = element_text(face = 'bold', size = rel(1.3))) +</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_y_continuous(breaks = c(500, 1000, 1500)) +</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   labs(</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co">#     x = 'Jockers/Syuzhet Value',</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co">#     y = 'Terms in Dictionary',</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="co">#     title = 'Distribution of Sentiment Values in Syuzhet Dictionary'</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>distinct_values <span class="ot">&lt;-</span> <span class="fu">pull</span>(<span class="fu">distinct</span>(key_sentiment_jockers, value))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(key_sentiment_jockers, <span class="fu">aes</span>(value)) <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">width =</span> .<span class="dv">07</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">fill =</span> <span class="fu">c</span>(viridis<span class="sc">::</span><span class="fu">magma</span>(<span class="dv">8</span>, <span class="at">direction =</span> <span class="sc">-</span><span class="dv">1</span>), viridis<span class="sc">::</span><span class="fu">mako</span>(<span class="dv">8</span>))) <span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">stat =</span> <span class="st">'count'</span>, <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">after_stat</span>(count)), </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_stack</span>(),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">'IBM Plex Sans'</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">face =</span> <span class="st">'bold'</span>) <span class="sc">+</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> distinct_values) <span class="sc">+</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">'bold'</span>),</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">r =</span> <span class="sc">-</span><span class="dv">20</span>))) <span class="sc">+</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">'Valence Value in Syuzhet'</span>,</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">'Counts'</span>,</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">'Distribution of Sentiment Values in Syuzhet Dictionary'</span>) <span class="sc">+</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li><strong>R Packages</strong>: <code>syuzhet</code>, <code>lexicon</code></li>
+<li><strong>Size</strong>: 10,748 words</li>
+<li><strong>Bottom Line</strong>: Pending.</li>
+</ul>
+</section>
+<section id="vader" class="level2">
+<h2 class="anchored" data-anchor-id="vader">VADER</h2>
+<p>Is VADER evil? Maybe. But it also stands for <strong>V</strong>alence <strong>A</strong>ware <strong>D</strong>ictionary and s<strong>E</strong>ntiment <strong>R</strong>easoner.<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> Impressively, the found “that VADER outperforms individual human raters” when classifying tweets as positive, accurate, or neutral.<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> Part (most?) of that impressiveness is due to the ‘ER’ of VADER. Nevertheless, here I’m only considering the <em>VAD</em> part. If you want to check out its ruled-based sentiment reasoning, check out its <a href="https://github.com/cjhutto/vaderSentiment">github page</a> or <a href="https://ojs.aaai.org/index.php/ICWSM/article/view/14550">publication</a>.</p>
+<p>The lexicon has an impressive 7,500 entries, each with its associated polarity <em>and</em> intensity (-4 to 4). Did they get those intensities just winging it like Finn? Nope. Each potential entry was placed on the -4 to 4 scale by 10 Amazon Mechanical Turk workers.<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a> The score you <em>do</em> see in the dictionary means that a) raters’ scores had a standard deviation of less than 2.5<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a> and b) that the mean rating among the 10 raters was not 0.<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a></p>
+<p>One interesting feature of the lexicon is its inclusion of emoticons.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>vader <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">'https://raw.githubusercontent.com/cjhutto/vaderSentiment/master/vaderSentiment/vader_lexicon.txt'</span>,</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">delim =</span> <span class="st">'</span><span class="sc">\t</span><span class="st">'</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> magrittr<span class="sc">::</span><span class="fu">set_names</span>(<span class="fu">c</span>(<span class="st">'token'</span>, <span class="st">'score'</span>, <span class="st">'sd'</span>, <span class="st">'scores'</span>))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>vader <span class="sc">%&gt;%</span> </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(token, <span class="st">'[A-Za-z1-9]'</span>, <span class="at">negate =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">bin =</span> score <span class="sc">%/%</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">y =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(bin, y, <span class="at">label =</span> token)) <span class="sc">+</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">check_overlap =</span> <span class="cn">TRUE</span>, <span class="at">fontface =</span> <span class="st">'bold'</span>, <span class="at">family =</span> <span class="st">'IBM Plex Sans'</span>) <span class="sc">+</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">''</span>,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">'To reduce the real-valued chaos, I rounded down emoticons</span><span class="sc">\'</span><span class="st"> scores to the nearest integer'</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">'bold'</span>),</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_line</span>(<span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">'grey35'</span>)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>I don’t want to make this dictionary seem trivial. Its creators also validated it using sentences from New York Times editorials, as well. It’s just not every day that you can make a histogram of emoticons.</p>
+<ul>
+<li><strong>R Packages</strong>: As far as I know, it’s not in any. You can get it directly from its <a href="https://github.com/cjhutto/vaderSentiment/blob/master/vaderSentiment/vader_lexicon.txt">github repository</a>.</li>
+<li><strong>Side Benefit</strong>: This is probably the one that your “pythonista” friends are familiar with, since it’s in the <code>nltk</code> library.</li>
+</ul>
+</section>
+<section id="coverage-comparison-for-afinn-bing-and-nrc" class="level2">
+<h2 class="anchored" data-anchor-id="coverage-comparison-for-afinn-bing-and-nrc">Coverage Comparison for AFINN, BING, and NRC</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>afinn <span class="ot">&lt;-</span> <span class="fu">get_sentiments</span>(<span class="at">lexicon =</span> <span class="st">'afinn'</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>bing <span class="ot">&lt;-</span> <span class="fu">get_sentiments</span>(<span class="at">lexicon =</span> <span class="st">'bing'</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>nrc_emotions <span class="ot">&lt;-</span> <span class="fu">filter</span>(<span class="fu">get_sentiments</span>(<span class="at">lexicon =</span> <span class="st">'nrc'</span>), </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                    <span class="sc">!</span>(sentiment <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'positive'</span>, <span class="st">'negative'</span>)))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>nrc_polar <span class="ot">&lt;-</span> <span class="fu">filter</span>(<span class="fu">get_sentiments</span>(<span class="at">lexicon =</span> <span class="st">'nrc'</span>), </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                    sentiment <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'positive'</span>, <span class="st">'negative'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">mutate</span>(afinn, <span class="at">lexicon =</span> <span class="st">'AFINN'</span>), word, lexicon),</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">mutate</span>(bing, <span class="at">lexicon =</span> <span class="st">'BING'</span>), word, lexicon),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">mutate</span>(nrc_polar, <span class="at">lexicon =</span> <span class="st">'NRC'</span>), word, lexicon)) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Lexica =</span> <span class="fu">list</span>(lexicon), <span class="at">.by =</span> word) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(Lexica)) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_upset</span>(<span class="at">n_intersections =</span> <span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"IBM Plex Sans"</span>),</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">'bold'</span>),</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_markdown</span>(),</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"IBM Plex Sans"</span>)</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">'Set Size'</span>,</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">'Set'</span>,</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">'Are Bigger Dictionaries Mostly Supersets of Smaller Dictionaries?'</span>,</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"*No*, and that's weird"</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see how many entries each dictionary has:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">nrow</span>(afinn), <span class="fu">nrow</span>(bing), <span class="fu">nrow</span>(nrc_polar))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2477 6786 5626</code></pre>
+</div>
+</div>
+<p>Here we see a surprising amount of non-overlap. Of Bing’s 6786 terms, almost 4,000 do not appear in either of the other two dictionaries. Almost 3,000 of NRC’s polarity entries aren’t in either of the other two, as well. The third bar indicates that BING and NRC share just over 1,500 words. The short and long of this is that it <em>might</em> be important which dictionary we choose. They have very different coverages.<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a></p>
+</section>
+<section id="still-to-do" class="level2">
+<h2 class="anchored" data-anchor-id="still-to-do">Still to do</h2>
+<p>This page, like the rest of my life, is a work in progress.</p>
+<ol type="1">
+<li>I still have a few dictionaries to add. In Tyler Rinker’s <code>lexicon</code> package there are: jockers (and jockers_rinker), emojis (and emojis_sentiment), senticnet, sentiword, slangsd. I’ve already covered all dictionaries in <code>tidytext</code> and <code>textdata</code>.</li>
+<li>Further comparison of dictionary overlap. 2a. Right now I look at three dictionaries’ overlap. These three aren’t the best, they’re just the first ones I checked out. That’s not a principled criterion for selecting dictionaries. I’ll redo that section programmatically. 2b. I’m going to lemmatize/stem the dictionaries covered and get their size and overlaps as I did with AFINN, BING, and NRC above. It’s possible that sizes are much more similar once you remove a bunch of morphological tangle.</li>
+<li>Inspired by this sentence from Nielsen, “The word list have a bias towards negative words (1598, corresponding to 65%) compared to positive words (878)” I’m also going to see what the respective positive/negative balances are of these dictionaries.</li>
+</ol>
+</section>
+</section>
+<section id="recommended-usage-and-tendentious-postscript" class="level1">
+<h1>Recommended Usage and Tendentious Postscript</h1>
+<p>Something a little wild to keep in mind. The way these dictionaries arrived at their codings of words ranges from a lower bound of sensible to downright impressive. That’s obviously good. Keep in mind, however, that you’re <strong>not</strong> categorizing words as good or bad. You’re using words as features to get calculate sentiment at some level of aggregation, and there’s a chasmic categorical difference between that task and (sub-)task of classifying words. Even if the word ratings had been arrived at perfectly, using “the dictionary approach” to measure aggregate sentiment is another task entirely, one that requires separate validation. It would entail having people rate the sentiment of sentences/utterances/paragraphs, taking those as ground truth, and then seeing how well these dictionaries capture that. As far as I know, only Mr.&nbsp;Finn Arup Nielsen did that for his AFINN dictionary (and to so-so results even <em>within</em> the domain of social media; external validity would be another matter). So, always keep in mind what you’re doing. You’re throwing a bunch of text into a blender that gives you a read-out of some of that text’s ingredients. You’re <em>not</em> getting a direct reading of the text’s emotional valence</p>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>For most of them the answer is probably not.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>And I try to keep my distinct kettles of fish in distinct posts (<a href="https://en.wikipedia.org/wiki/Separation_of_concerns">here</a>)<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>I think it’s also the explanation for AFINN’s name. It’s a portmanteau of the ‘A’ from ‘ANEW’ and ‘FINN’, this guy’s christian name.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>“some kind” is the <em>only</em> entry in the dictionary with a 0 value.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>I’m not sure why this sentiment lexicon is occasionally referred to as “Bing” when Bing Liu is just one of the two creators, but so it is. Bing Liu <em>has</em> written a textbook on sentiment analysis and <a href="https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html">his website</a> is a thing of beauty, so I’d say he deserves all good things.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Yes, only adjectives. Other parts of speech have since been added.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>In fact, it’s being actively maintained which is <em>nice</em>.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Before researching for this post, I hadn’t heard of Plutchik or his theory of emotions. The idea of basic emotions is definitely a thing, however (see Ekman’s “An argument for basic emotion”). To see if people are using this guy’s ideas, I looked over a few syllabi for psychology of emotion courses and through Michelle Shiota and James Kalat’s <em>Emotion</em> textbook. Nothing in the syllabi. He was mentioned in the textbook, but just as a proponent of basic emotion. Using their sole citation to a work of Plutchik’s, I went to Google Scholar to see if people are citing this thing. The idea is that, if people are citing it, then it’s an active theory, if not it’s scientifically dead. What I found was that it’s not being cited that much, but when it is, it’s by people doing sentiment analysis. It reminds me a little of Freud-psychology situation: if you take Freud seriously, you’re not taking psychology seriously. Maybe with Plutchik, if you take Plutchik seriously, you’re not taking emotion research seriously?<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Yes, I realize I’m valorizing professionalism after just writing “Miniconference on yak yak yak.” I may not contain multitudes, but there are at least two wolves inside me (as the saying goes).<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>This dictionary is definitely winning the marketing competition. I asked ChatGPT IV to make sentiment dictionary names corresponding to the initialisms SKYWALKER AND LEIA and got “Lexicon of Emotion Intensity and Analysis” for the latter. SKYWALKER was rough.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>You should be wondering how it’s <em>possible</em> for this metric to be better than human raters at classifying tweets’ sentiment if the ground truth of what a tweet’s sentiment is comes from humans. Just to be impish, I’m actually not going to answer that question; I’ll just that that the word <em>individual</em> in “individual human raters” is very important.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p>Not necessarily the same 10 workers for every word!<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>If there was no consensus (operationalized as a standard deviation &gt; 2.5), the candidate word didn’t make it into the dictionary.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14"><p>I wonder if they meant to say that it didn’t <em>round</em> to zero. If you had 9 people rate a word at 0 and a single person rate it at 1, the word wouldn’t have a mean rating of zero, but … c’mon. Note: After writing that as an obviously ridiculous footnote, I was looking through the dictionary and noticed <em>calmodulin</em>, a word I had never seen. It received 8 zeros and 2 ones.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15"><p>This situation should seem strange. I’d argue that your priors should have closer to, “Bigger dictionaries will be more like supersets of smaller ones than mostly non-intersecting bigger sets.” Think about it this way. If <em>you</em> were creating a sentiment dictionary, you’d try to gather all the most important emotion words and score their polarity. If you found out someone had created a bigger sentiment dictionary, you’d assume that either they included more generically obscure words or maybe words unique to a given time or application. In either case, you’d expect their dictionary contain at least most of your words.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://utteranc.es/client.js" repo="jdollman/second-person" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

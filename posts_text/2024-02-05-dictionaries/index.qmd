@@ -1,0 +1,10 @@
+---
+title: "Notes on Sentiment Dictionaries"
+description: "Ezra Klein Show"
+author: Justin Dollman
+date: 05-02-2024
+categories: [R, sentiment analysis, text analysis]
+draft: true
+---
+
+On February 5th there will be copious, beautiful notes on sentiment dictionaries here.
