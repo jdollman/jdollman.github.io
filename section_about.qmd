@@ -2,11 +2,9 @@
 title: "About Me"
 ---
 
-Hello and welcome to this extremely minimally designed space. Sorry I didn't make it nice for you -- you _do_ deserve better. 
-
 Since this site's *raison d'être* is professional, I should say a word or two about me *qua* wage laborer. 
 
-I'm a <s>graduate student</s> PhD candidate in political science at SUNY Stony Brook where I'm working on my dissertation under the advisement of [Michael Peress](http://www.michaelperess.com/). During my time here I've had the pleasure of taking courses with such luminaries as [Stanley Feldman](https://en.wikipedia.org/wiki/Stanley_Feldman_(political_scientist)), [Andy Delton](https://sites.google.com/site/andrewdeltonpubs/), [Yanna Krupnikov](https://en.wikipedia.org/wiki/Yanna_Krupnikov), and [Vittorio Mérola](http://vittoriomerola.com/).
+I'm a PhD candidate in political science at SUNY Stony Brook where I'm working on my dissertation under the advisement of [Michael Peress](http://www.michaelperess.com/). During my time here I've had the pleasure of taking courses with such luminaries as [Stanley Feldman](https://en.wikipedia.org/wiki/Stanley_Feldman_(political_scientist)), [Andy Delton](https://sites.google.com/site/andrewdeltonpubs/), [Yanna Krupnikov](https://en.wikipedia.org/wiki/Yanna_Krupnikov), and [Vittorio Mérola](http://vittoriomerola.com/).
 
 At Stony Brook I've been the 'instructor of record' for Introduction to Statistics (undergraduate and graduate) and Experiments in Political Science (undergraduate). In addition to those bureaucratically sanctioned courses, I also taught an Introductory Math Camp to incoming PhD students and, along with my esteemed former colleague [Pei-Hsun Hsieh](https://phsieh.com/), I co-taught a weekly introduction to `R` during the Fall 2019 semester to graduate students from sundry social sciences (the infamous [flyer](seven-ds.pdf)). Simultaneously with the courses here at Stony Brook, I've been teaching statistics and data analysis to students from other graduate programs as well as MBA students.
 
