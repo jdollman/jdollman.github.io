@@ -7,4 +7,4 @@ listing:
   categories: false
 ---
 
-Many moons ago, I read Julia Silge and David Robinson's [Text Mining with R](https://www.tidytextmining.com/) and then Emil Hvitfeldt and Silge's and [Supervised Machine Learning for Text Analysis in R](https://smltar.com/). Though I have never done anything professional with text analysis, I've done a few things here and there. Some of them are here, below. 
+Many moons ago, I read Julia Silge and David Robinson's [*Text Mining with R*](https://www.tidytextmining.com/) and then Emil Hvitfeldt and Silge's and [*Supervised Machine Learning for Text Analysis in R*](https://smltar.com/). Though I have never done anything professional with text analysis, I've done a few things here and there. Some of them are here, below. 
