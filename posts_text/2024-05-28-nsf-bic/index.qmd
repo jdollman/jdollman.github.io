@@ -5,37 +5,14 @@ author: Justin Dollman
 date: 05-28-2024
 categories: [ChatGPT, coding, NSF]
 image: grant_writing.webp
-draft: false
+draft: true
 ---
 
-```{r}
-library(tidyverse)
-library(stringr)
-
-# Sample Data
-df <- data.frame(
-  id = 1:3,
-  text = c("This is line1. And here is line2!", 
-           "Some. Text. To. Split.",
-           "No splits here.")
-)
-
-# Regex Pattern (customize this!)
-pattern <- "[.!?]"  # Split on periods, exclamation points, or question marks
-
-# Splitting & Unnesting
-df_split <- df %>%
-  mutate(text = str_split(text, pattern)) %>%  # Split into lists
-  unnest(text) %>%  # Unnest the lists into rows
-  mutate(text = trimws(text))   # Remove extra whitespace
-
-# (Optional) Filter out empty rows if needed
-# df_split <- df_split %>%
-#   filter(text != "") 
-
-```
 
 The original version of this post was going to demonstrate a fully scaled coding endeavor of tens of thousands of documents. Unfortunately for the world (mostly me, though) OpenAI's batch processing is still working out some glitches that prevent (link to forthcoming document)
+
+https://docs.google.com/document/d/1GAKfoEW-7FIF5wyN1p_ag72vjUPdyZiI/edit
+https://academic.oup.com/rev/article/32/2/348/6972169
 
 Outline for forthcoming document (which you should post!) -- Basically, the plan is as follows 
 
