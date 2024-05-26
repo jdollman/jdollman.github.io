@@ -8,8 +8,9 @@
 
 <meta name="author" content="Justin Dollman">
 <meta name="dcterms.date" content="2024-05-28">
+<meta name="description" content="Using a Certain Generative Pre-trained Transformer to Code NSF Grants">
 
-<title>Justin Dollman - Using a Certain Generative Pre-trained Transformer to Code NSF Grants</title>
+<title>Justin Dollman - An LLM Experiment</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,6 +23,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -61,6 +125,7 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -107,8 +172,13 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Using a Certain Generative Pre-trained Transformer to Code NSF Grants</h1>
-                                <div class="quarto-categories">
+      <h1 class="title">An LLM Experiment</h1>
+                  <div>
+        <div class="description">
+          Using a Certain Generative Pre-trained Transformer to Code NSF Grants
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">ChatGPT</div>
                 <div class="quarto-category">coding</div>
                 <div class="quarto-category">NSF</div>
@@ -147,56 +217,153 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>The original version of this post was going to demonstrate a fully scaled coding endeavor of tens of thousands of documents. Unfortunately for the world (mostly me, though) OpenAI’s batch processing is still working out some glitches that prevent (link to forthcoming document)</p>
-<p>https://docs.google.com/document/d/1GAKfoEW-7FIF5wyN1p_ag72vjUPdyZiI/edit https://academic.oup.com/rev/article/32/2/348/6972169</p>
-<p>Outline for forthcoming document (which you should post!) – Basically, the plan is as follows</p>
-<ol type="1">
-<li>Carve up each NSF grant abstract into smaller parts (✅, easy regex solution)</li>
-</ol>
-<ul>
-<li>Should increase performance of downstream coding (FN. Though this is an empirical question. Part of the reason I’m going on this circuitous route is to see if it’s true!)</li>
-<li>Saves tokens. Immediately it costs more time and tokens, but</li>
-<li></li>
-</ul>
-<ol start="2" type="1">
-<li>Send a sample of those to ChatGPT to code for the <em>presence</em> of broader impacts (❌), this is where it would be nice if I could batch</li>
-<li>Using the now labelled data, build a classifier (✅, using a subsample…)</li>
-<li>Generate predicted probabilities for which segment of the NSF abstract contains a broader impact. 4a. The goal is that one of its n segments has a much higher probability than the rest 4b.</li>
-<li>Send each grant’s (probably) BI-containing segment to be coded</li>
-</ol>
-<p>So, <a href="">separating my concerns</a>, this post will concern only the prompt-engineering considerations for getting ChatGPT to accurately code unstructured text along two somewhat subtle dimensions. The next post will implement</p>
-<p>What are Broader Impacts? https://new.nsf.gov/funding/learn/broader-impacts</p>
-<p>‘Coding’ unstructured text into nice quantitative features is a time-consuming, mentally-draining, and eventually hellish task. Recently, tried this for a task that human<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> research assistants had done a poor job at. Sure enough, both ChatGPT (4) and Claude (Opus?) did pretty bad jobs. Google’s Gemini didn’t even try.</p>
-<p>A while back I was part of a project in which the principal investigator was looking at the broader impacts of NSF grants. A prior research assistant had manually coded 400 <strong>project outcome reports</strong><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> along two dimensions: are the project’s beneficiaries <code>{advantaged, universal, disadvantaged}</code> and is the relationship between the core activity of the grant and the beneficiaries <code>{inherent, direct, or indirect}</code>. I refer you <a href="">the resulting publication</a> for elaboration on the whys and wherefores of this coding. By the time I was brought onto the project, the task was to figure out if certain types of broader impact strategies were associated with more or fewer publications. Given the complexities of the models I wanted to run (zero-inflated this-and-that, controlling for various institutional factors), the N = 400 sample was pretty meager.</p>
-<p>My first foray into working with the API.</p>
-<ul>
-<li><p>How similar are API responses to ‘manual’ responses?</p></li>
-<li><p>Structure of a POR</p></li>
-</ul>
-<p>Download grants here: https://www.nsf.gov/awardsearch/download.jsp</p>
-<p>Keyword extraction Useful for (at least) three reasons Let the PI check the behavior of the classifier quickly Give the model ‘time to think’ Have information to do more in-depth analyses later</p>
-<p>key values to get out description of broader impact (one or two English sentences) beneficiaries relationship between project and beneficiaries (training, etc.) immediacy_code inclusion_code</p>
-<p>What about first using it to build a classifier</p>
-<section id="appendices" class="level1">
-<h1>Appendices</h1>
-<section id="a1-broader-impact-classifier" class="level2">
-<h2 class="anchored" data-anchor-id="a1-broader-impact-classifier">A1: Broader Impact Classifier</h2>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>A while back I was brought on as part of a project in which the principal investigator was looking at the <strong>broader impacts</strong> of NSF grants. I’ll go into a little more detail below, but broader impacts are basically a researcher’s statement of how their research benefits society generally. A prior research assistant had manually coded 400 broader impacts along two dimensions: who are the project’s primary beneficiaries and to what degree is the project’s broader impact connected to its <strong>intellectual merit</strong>, the core scientific part of the endeavor. By the time I was brought onto the project, the task was to figure out if certain types of broader impact strategies were associated with more or fewer publications. Given the complexities of the models I wanted to run (zero-inflated this-and-that, controlling for various institutional factors), the <span class="math inline">\(N = 400\)</span> sample was pretty meager. There were some marginally significant parameters, but most estimates were very imprecise, meaning we oftentimes couldn’t say whether a given association was positive or negative, much less if it was large or nugatory.</p>
+<p>That was three years ago. Since then, using LLMs to to code and classify text started to gain acceptance as an alternative to the slow and costly procedure of having humans code text. This post is my initial foray into seeing if I can go from <span class="math inline">\(N = 400\)</span> to <span class="math inline">\(N \rightarrow\infty\)</span>, which means first seeing how seeing how an LLM behaves when it codes the same 400 NSF grants already coded by a (human) researcher. Different readers will find different parts of the post useful. I imagine it will be most useful for useful any social scientist looking to code data herself. Even if the topic <em>per se</em> might not be of interest, all the steps in the analysis are relevant are the kinds of things she would have to do in her own analysis. Lastly, as will be apparent from repeated hand-waiving ‘in lieu of a conclusion’ moments in this post, it is implicitly a “Part 1” of a n-part series on this project.</p>
+<section id="nsf-grants-and-broader-impacts" class="level2">
+<h2 class="anchored" data-anchor-id="nsf-grants-and-broader-impacts">NSF Grants and Broader Impacts</h2>
+<p>For the purposes of this mostly technical post, the only thing you need to know about the National Science Foundation (NSF) is something you likely already know: it’s like a science sugar daddy. You’ve got this cool project you want to do, and if you can convince the NSF that it indeed is as cool as you say it is, you’ll get an award (a monetary grant, a lump of money) to carry out this project. Now maybe for the part you don’t know. Since 1997, the NSF has used two criteria to determine grant funding: intellectual merit and broader impact.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Respectively, these are “the potential to advance knowledge” and “the potential to benefit society and contribute to the achievement of specific, desired societal outcomes” (<a href="https://web.archive.org/web/20230226215437/https://nsf-gov-resources.nsf.gov/2022-09/Broader_Impacts_0.pdf">here</a>). This NSF site is a bit more direct about what a broader impact proposal should be. “It answers the following question: How does your research benefit society?” (<a href="https://web.archive.org/web/20240317032312/https://new.nsf.gov/funding/learn/broader-impacts">here</a>).<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>As with most things, you’ll get a better idea much quick of what broader impacts are all about via examples. The NSF website gives nice examples of the types of benefits can fall into:</p>
+<p><img src="images/nsf_bi_types.png" class="img-fluid"></p>
+<p>And because I know you’re still curious, here are three specific broader impacts written up by NSF grantees. In 2021 the Durham Technical Community College received a <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2100014&amp;HistoricalAwards=false">grant</a> to create an inclusive <a href="https://en.wikipedia.org/?title=Makerspace&amp;redirect=no">makerspace</a> and implement support services in order to promote gender equity in technical fields and create welcoming learning environments for all students. In that case, the broader impact of the grant took center stage. In another <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2100015&amp;HistoricalAwards=false">case</a>, a researcher at Northeastern University received a grant to develop a tool to detect code injection vulnerabilities. The researcher described the broader impact thusly, “This project involves undergraduate and graduate students in research. All software and curricula resulting from this project will be freely and publicly available; the resulting tools will be publicly disseminated and are expected to be useful for other testing and security researchers.” And sometimes the broader impact is dispatched with in just a few words, as when a <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2100013&amp;HistoricalAwards=false">grantee</a> ended his abstract on using Deep Neural Networks to learn error-correcting codes by noting that the project “should lead to both theoretical and practical advances of importance to the communications and computer industry.”</p>
+<p>Now that your curiosity about broader impacts is sated, I’ll move on.</p>
+<p>As I mentioned in the opening paragraph, I was brought on as a data guy to analyze associations between different types of broader impact activities and other grant characteristics (e.g., number of publications resulting from the grant, $ize of the award, the award’s directorate, etc.). These types of broader impacts don’t come pre-labeled. They have to be <strong>coded</strong> using the unstructured text made public by the NSF (big footnote on coding if you’re interested).<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> That project used the <strong>Inclusion-Immediacy Criterion</strong> <a href="https://doi.org/10.1093/scipol/scab072">(IIC)</a> developed by Thomas Woodson rubric to code grants’ broader impacts. Inclusion and immediacy are two independent dimensions along which a grant’s BI can vary. The first dimension refers to who the primary beneficiaries of the grant are. The inclusion dimension’s possible values are <code>{universal, advantaged, inclusive}</code>. These labels characterize grants that, respectively, benefit everyone indiscriminately (as a public good), grants that benefit those currently in positions of power, and then those that primarily benefit marginalized groups. The second dimension, immediacy, refers the degree of interconnectedness between the main activity of the grant and its broader impact. Its three values are <code>{intrinsic, direct, extrinsic}</code>. As described by the <a href="https://web.archive.org/web/20230226215437/https://nsf-gov-resources.nsf.gov/2022-09/Broader_Impacts_0.pdf">NSF</a>, “‘Broader Impacts’ may be accomplished through the research itself [inherent], through activities that are directly related to specific research projects [direct], or through activities that are directly supported by, but are complementary to, the project [extrinsic]” (there will be more explanation and examples in the prompt where I explain these categories to <code>gpt-4o</code>).</p>
+<p>In tabular form:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="bis_table.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">From Woodson (2022)</figcaption><p></p>
+</figure>
+</div>
+<p>Before going on, it’s important to note that this is a relatively difficult coding situation. The authors of the 2022 paper wrote that they did an initial round of coding, resulting in a “low” reliability score. After discussing discrepancies and coding more data, they achieved a “moderate” degree of reliability, though it’s unclear how much of the ‘unreliability’ resulted from categories extraneous to the IIC (for details, you’ll have to read the paper). This difficulty stems from both the complexity and fuzziness of the concepts in the coding rubric<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> and the vague descriptions given by researchers writing up their projects. On the last point, the authors wrote in a section titled “Lack of Detail,” “At times, the BIs in the PORS were vague and difficult to code. Some researchers included an aspirational statement about the potential impacts of their work without explaining the specific interventions intended to bring about those impacts.” I say this to make readers aware that even humans, which are presumed to be the “gold standard” coders, often are unsure of what the correct coding is and disagree amongst themselves. I’ll come back to this point in the conclusion, but given where the vibes are at in this cottage industry, I think it’s important to say that LLM coding implementations should be judged in relation to the human coding implementations they’re likely to supplant, not perfection.</p>
 </section>
-<section id="a2-results-of-text-length-experiment" class="level2">
-<h2 class="anchored" data-anchor-id="a2-results-of-text-length-experiment">A2: Results of Text-Length Experiment</h2>
-<p>RQ: How much does irrelevant text degrade the (coding/keyword) capabilities of of ChatGPT?</p>
-<p>If you could separate the abstract or project out report ’at the joints, you could send each part to ChatGPT to label it as involving a broader impact or not. Then, with that labelled data you could build a classifier. In a second go through, you’d only send the part about the broader impact to ChatGPT for the coding. This would ultimately save you a lot of tokens (because you only send a relatively small sample to ChatGPT) and likely increase performance (recency/first-thing bias is even worse for LLMs than for humans)</p>
+</section>
+<section id="prompt" class="level1">
+<h1>The Prompt</h1>
+<p>Below you’ll see the prompt I cobbled together by first describing the nature of the task that the LLM was about to undertake, followed by a description of the Inclusion-Immediacy Criterion with liberal (unattributed) quoting of Thomas Woodson’s own exposition from his his 2022 <a href="https://doi.org/10.1093/scipol/scab072">paper</a>, followed by detailed instructions on what the desired response format. Without further ado, here’s the prompt <code>gpt-4o</code> received:</p>
+<blockquote class="blockquote">
+<p>You are a sharp, conscientious, and unflagging researcher who skilled at evaluating scientific grants across all areas of study. You will be presented with an NSF grant project outcome report. NSF grant project outcome reports contain information on both the intellectual merit of a project (how the project will advance science) and its broader impact (how the project will benefit society). Your task is to find and describe the broader impact, then code it along two dimensions: inclusion and immediacy. Pay close attention to the meanings of words in backticks below.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>The first dimension, inclusion, refers to who will primarily receive the benefits of the broader impact. A broader impact is classified as <code>universal</code> if anyone could at least in theory benefit from it. Public goods such as improving primary school teaching practices or developing a better municipal water filter are examples of universal impacts. A broader impact is classified as <code>advantaged</code> if the primary benefit will be experienced by advantaged groups and/or maintain status hierarchies. Scientists, as well as wealthy people and institutions count as advantaged. Along the inclusion dimension, a broader impact is <code>inclusive</code> if its main beneficiaries are marginalized or underrepresented people. Common examples of inclusive broader impacts are programs that help women, people of color, and people with disabilities advance in STEM fields.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>The second dimension, immediacy, refers to the centrality of the broader impact to the main part of research project. A broader impact is <code>intrinsic</code> if the broader impact is inherent to and inseparable from the main principal purpose of the grant. For example, if a project is developing carbon capture and sequestration technology, the research and societal benefits of reducing greenhouse gases overlap and thus the broader impact is intrinsic to the project. Some broader impacts are <code>extrinsic</code>. These broader impacts are separate from the main intellectual merit of the research project, and often the project is only tenuously related to it. For example, if a cell biologist studying proteins creates a presentation for a local high school about STEM careers, the broader impact is extrinsic. The outreach to high school students is a separate endeavor that takes place outside, or is extrinsic to, the research. Along the immediacy dimension, a broader impact is classified as <code>direct</code> if its impact flows directly from the research but is not the specific goal of the research. Training graduate students is a quintessential direct broader impact. For most research grants, training a graduate student is not the purpose of the research. Rather, researchers train graduate students in order to complete a research project. The training is directly related to the research, but it is not the point or purpose of the research.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Please code the following NSF grant along the two dimensions of inclusion and immediacy. Take a deep breath, reason step by step, and respond in machine-readable json output. Use the following format, writing your responses where the triple backticked json values are (but you should use double quotes since that is correct json formatting):</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>[{“broader_impact_description”: ```Write a one or two sentence description of broader impact staying as close as possible to the text.```, “principal_beneficiaries”: ```Who are the primary beneficiaries of the broader impact. Are they mentioned explicitly or are you making an inference?```, “reasoning”: ```In a sentence, relate the broader impact to the coding rubric```, “inclusion_code”: ```Choose from {universal, advantaged, inclusive}```, “immediacy_code”: ```Chose from {intrinsic, direct, extrinsic}```}]</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Note: if a grant has more than one explicitly mentioned broader impact, reason about each one separately and give each its own json response, separating them with a comma. Do not use any formatting such as newlines, backticks, or escaped characters.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
+</blockquote>
+<p>This message is given to OpenAI’s <code>chat-completion</code> endpoint as a <code>system</code> message, basically giving it the context it needs to appropriate respond to the <code>user</code> messages it’s about to receive. You can think of <code>system</code> messages as “mindset” messages and <code>user</code> messages as inputs. In this case, the <code>user</code> messages are going to be the grants’ <strong>project outcome reports</strong>.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> When I sent the <code>user</code> message I received an <code>assistant</code> message with output that, ignoring some important details, had the following format:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"broader_impact_description"</span><span class="fu">:</span> <span class="st">"The consensus paper from the meeting aims to produce clear benefits to science and society by establishing best practices for cognitive training studies, which could enhance cognition in elderly individuals and reduce achievement gaps in STEM fields."</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"principal_beneficiaries"</span><span class="fu">:</span> <span class="st">"The primary beneficiaries include scientists, regulatory bodies, funding agencies, the general public, elderly individuals, and students in STEM fields. This is inferred from the text."</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"reasoning"</span><span class="fu">:</span> <span class="st">"The broader impact is universal as it aims to benefit a wide range of groups including the general public, elderly individuals, and students in STEM fields. The impact is direct because it flows from the research but is not the specific goal of the research."</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"inclusion_code"</span><span class="fu">:</span> <span class="st">"universal"</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"immediacy_code"</span><span class="fu">:</span> <span class="st">"direct"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In a way, that’s it. If you overlook a thousand devils in a thousand details, conceptually it’s pretty simple to have an LLM code text. You create a prompt that explains the procedure and then you give it text <em>en masse</em>.</p>
+<p>The most basic question one can ask everything so far is, <em>Will ChatGPT be able to do this?</em> Will it be able to respond sensibly? If the responses are sensible, will they match the human codings? I’ll get to answering those questions in the second section of the results.</p>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
+<p>I’m going to break down the results into two sections. First, how did <code>gpt-4o</code> with my prompt compare to the human coder? Second, how consistent <code>gpt-4o</code> with itself across variations in the exact prompting I used?</p>
+<section id="comparison-with-human-coder" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-with-human-coder">Comparison with Human Coder</h2>
+<p>In the current transitional era from humans to LLMs, the main comparison of interest still isn’t AIs with themselves, but AIs with humans. That’s what we’ll look at in this section.</p>
+<p><img src="images/heatmaps_patchwork_prop.png" class="img-fluid"></p>
+<p><img src="images/marginal_plot.png" class="img-fluid"></p>
+<p>If we look at the heatmaps again, but this time with numbers instead of percent, you <em>might</em> notice something a bit off.</p>
+<p><img src="images/heatmaps_patchwork_n.png" class="img-fluid"></p>
+<p>The eagle-eyed observer will notice that, in every single cell, the LLM has more broader impacts than the human coder.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> That’s not a data error. We can look at a grant-level scatter plot to see how this happened:</p>
+<p><img src="images/llma_sb_nbis.png" class="img-fluid"></p>
+<p>Ok, fine. What about IRR? I’ll look at IRR for the joint categories, as opposed to the looking at the two jointly. This means transforming the data into the following format for all six joint codings:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+llm_detect    1    0    0    1    1    0    0    1    0     0     1     0
+ra_detect     1    1    0    0    1    1    0    1    0     0     1     0</code></pre>
+</div>
+</div>
+<p>Even without know what the specific formula is for calculating IRR, your prior should be that the IRR shouldn’t be very high since the LLM detected so many more BIs than the human. Well, get ready to update downward, because it’s even worse than that:</p>
+<p><img src="images/irr.png" class="img-fluid"></p>
+<p>In case you’re wondering, that black horizontal line across the top of the plot is (one of) the proposed minimal values for an acceptable Krippendorff’s Alpha (the standard quantification of inter-rater reliability). None are in its neighborhood. Two of the IRR values are almost precisely zero, and one is slightly negative. If this were to happen to you as you were trying to get an LLM to code some text for an important project, it would definitely be a moment to close your laptop and taste test a few Belgian <a href="https://en.wikipedia.org/wiki/Quadrupel">quadrupels</a> before trying to rectify the situation.</p>
+</section>
+<section id="opening-statement-experiment" class="level2">
+<h2 class="anchored" data-anchor-id="opening-statement-experiment">Opening Statement Experiment</h2>
+<p>In addition to comparing the performance of the LLM against the human coder, we can also compare it against itself. Until now, I’ve kept mum about a few details of the experiment. For each grant, I didn’t only prompt GPT once, I prompted it three times, each time changing the first sentence. Here are the three openings, the first of which you read above.</p>
+<ol type="A">
+<li>
+“You are a sharp, conscientious, and unflagging researcher who skilled at evaluating scientific grants across all areas of study.”
+</li><li>
+“You are an intelligent, meticulous, and tireless researcher with expertise in reviewing scientific grants across various fields.”
+</li><li>
+“You are a bright, punctilious, and indefatigable researcher who is an expert at reading scientific grants across all disciplines.”
+</li></ol>
+<p>Now, if you’re not familiar with prompting lore, you’re probably wondering, <em>Why would he do that?</em><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> This was motivated by previous findings that seemingly insignificant changes can produce surprisingly different results. If were doing this over, though, I probably would choose less synonymous opening sentences. It’s probably important that each of the three roles be competent in this regard, but I really stacked the deck against myself by making these <em>so</em> similar. But, who knows, maybe one of descriptors sets <code>gpt-4o</code> down a different path. XXX Preregister your hypotheses now!</p>
+<p><img src="images/n_bis_openings.png" class="img-fluid"></p>
+<p><img src="images/code_marginal_identities.png" class="img-fluid"></p>
+</section>
+<section id="order-experiment" class="level2">
+<h2 class="anchored" data-anchor-id="order-experiment">Order Experiment</h2>
+<p><strong>Forthcoming</strong></p>
+</section>
+<section id="irr" class="level2">
+<h2 class="anchored" data-anchor-id="irr">IRR</h2>
+<p><strong>Forthcoming</strong></p>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p><strong>Forthcoming</strong></p>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<section id="abs-por" class="level2">
+<h2 class="anchored" data-anchor-id="abs-por">Abstract v. Project Outcome Report</h2>
+<p>In the interest of completeness, here’s a side-by-side comparison of an <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1359016&amp;HistoricalAwards=false">award</a>’s abstract and project outcome report.</p>
+</section>
+<div class="columns">
+<div class="column" style="width:50%;">
+<section id="abstract" class="level2" style="padding: 15px;">
+<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
+<p>This grant funds the National Research Experiences for Undergraduates Program (NREUP), administered by the Mathematical Association of America (MAA), headquartered in Washington, D.C., and held at various locations throughout the United States. The program is designed to provide undergraduates from underrepresented groups majoring in mathematics or a closely related field with challenging research opportunities and will offer these experiences during the summers of 2014, 2015 and 2016. The length of the experiences can vary from location to location but will be a minimum of six weeks. The program will reach minority students at a critical point in their career, midway through their undergraduate program through an undergraduate faculty member with whom they have a strong connection.</p>
+<p>NREUP will continue its track record of increasing minority students’ interest in obtaining advanced degrees in mathematics. NREUP will invite mathematical sciences faculty to host MAA Student Research Programs on their own campuses. The MAA will select the best from competing proposals. NREUP provides key components to encourage students to pursue graduate studies and careers in mathematics: enriching and rewarding mathematical experiences, mentoring by active researchers, and intellectual networking with peers. It also provides an annual full day program to assist the new REU director with management details of the program and the potential REU director with further refinement of his/her concept and proposal writing skills. It also assists attendees in expanding their knowledge of federal and non-federal funding sources and increasing their knowledge of and skills in student mentoring. Moreover, by supporting faculty at a diverse group of institutions to direct summer research experiences, this project supports not only undergraduate students but also the development of a community of skilled faculty mentors who are expected to provide ever-increasing opportunities for undergraduate research. This project is jointly supported by the Workforce and Infrastructure programs within the Division of Mathematical Sciences</p>
+</section>
+</div><div class="column" style="width:50%;">
+<section id="por" class="level2" style="background-color: lightblue; padding: 15px;">
+<h2 class="anchored" data-anchor-id="por">POR</h2>
+<p><strong>National Research Experience for Undergraduates Program</strong> (NREUP) of the Mathematical Association of America (MAA) provided challenging research experiences to undergraduates to increase their interest in obtaining advanced degrees in mathematics during the summers of 2014, 2015 and 2016. The students were from underrepresented minority groups and were majoring in mathematics or a closely related field. NREUP served a total of 130 undergraduates. Of these student participants 46.92% (61) were female, 53.08% (69) were African American, 38.46% (50) were Hispanic or Latino and 2.31% (3) were Native Americans. This project also received supplemental funding from the National Security Agency in 2015.</p>
+<p>NREUP sites were located in states across the nation, including Arkansas, California, the District of Columbia, Indiana, Michigan, North Carolina, New Jersey, New York, Pennsylvania, Puerto Rico, Texas and Virginia. A typical NREUP site consisted of one or two faculty members and four to six students who worked together on a research project for a minimum of six weeks. Funding was provided for faculty and student stipends, transportation, room and board, and supplies. Research areas included financial mathematics, graph theory, game theory, mathematical economics, mathematical modeling, and partial differential equations. Some research was of a theoretical nature and some was done in the context of a real-world problem such as disease modeling, forensic science and hurricane evacuation.</p>
+<p>Each student prepared a PowerPoint presentation or a written paper for submission to a undergraduate research journal. All gave on-campus presentations on their research at the end of the summer, and many presented posters and papers at regional and national mathematics conferences. Some continued working on their research during the following academic year.</p>
+<p>Project evaluation focused on student attitudes and pursuit of graduate degrees. Data confirmed that many students gained confidence in their ability to do mathematical research and succeed at the graduate level.</p>
+</section>
+</div>
+</div>
 
 
-</section>
 </section>
 
 
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>It’s wild that ‘human’ is going to become used more and more as a prepositive adjective in front of nouns we …. C’est le siècle le plus important<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"></li>
+<li id="fn1"><p>So, for example, if pull down NSF grant abstracts from the <a href="https://www.nsf.gov/awardsearch/download.jsp">archive</a>, they end with the line, <em>This award reflects NSF’s statutory mission and has been deemed worthy of support through evaluation using the Foundation’s intellectual merit and broader impacts review criteria.</em><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>There is of course a lot of interesting history and politics behind this. If you’re a person given to kvetching about wokeness, it probably doesn’t help that, as of current writing, the first example of a potential broader impact is “<em>Inclusion</em>: Increasing and including the participation of women, persons with disabilities and underrepresented minorities in STEM.” I would point out two things. First, in 1994 Republicans took the House for the first time in https://en.wikipedia.org/wiki/Republican_Revolution Importantly, these weren’t your granpappy’s Rockefeller Republicans. These were pugilistic, radio talk-show style Republicans. Everything was about to become nastier, and science wouldn’t come out unscathed. [Guy who talks about waste, makes book.] So, from a public choice perspective, you can think of forcing researchers to include societal benefits in their projects as a defensive move to prevent funding cuts to the NSF. Second, the rest of this article is going to be a dry-as-dust description of using LLMs to code text. If you somehow got here to learn about politics, I promise I won’t be offended if you stop reading now.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>For those blissfully unaware, “coding text” refers to the process of applying labels (or “annotations”) to text. Texts can be (all or part of) a news article, a speech, a TV commercial, a tweet, an interaction between Joe Rogan and his interviewee, etc. The labels thereto applied depend on the theoretical interest of the researcher. S/he might be interested in emotions (usually pretentiously referred to as either <em>affect</em> or <em>sentiment</em>) in which case the label applied could either come from the set {positive, negative}, or could come from a more expansive set like {joy, trust, fear, surprise, sadness, disgust, anger, anticipation}. Or perhaps the labels detect the presence of something, like “Is this about politics?” or “Is this hate speech?” These labels can then be used either descriptively in order to summarize large corpora, and/or they can also be used in regression modeling. They’re friendly and familiar to quantitative scientists, who not only spend most of their time working with quantitative information, but probably also consider it superior to qualitative information. The issue, though, is that turning unstructured text into nice quantitative features is a time-consuming, mentally-draining, and downright hellish if you do it for long enough.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Interestingly, when I gave my description of the IIC to ChatGPT for comment, one of the “challenges and considerations” it mentioned was, “Subjectivity in Assessment: While the IIC aims to provide a clear framework, the evaluation of inclusion and immediacy can still be somewhat subjective, depending on the reviewers’ perspectives and expertise.”<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Just in case your curious, the prompt has around 800 tokens. Current rates are $0.005 per 1k tokens of input and $0.015 per 1k tokens of output.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>You can think of an NSF grant’s project outcome report (POR) as a description of what the researcher(s) did grant funding from the NSF. If an NSF abstract is the <em>prospective</em> project description, the POR is the <em>retrospective</em> project description.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>And the eagle-<em>minded</em> reader will have noticed that I haven’t brought up <strong>inter-rater reliability</strong>, the ubiquitous measure of the extent to which two (or more) annotaters agree in their ratings. The reason for that omission is neither unknowing ignorance nor knowing rejection, but the fact that it’s not a great measure when raters disagree on the fundamental number of dimensions of the thing that they’re coding.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>If you’re wondering why I’m giving the AI an identity <em>at all</em>, I’m going to do the laziest thing ever and refer you to chapters two and three of this <a href="https://www.amazon.com/Co-Intelligence-Living-Working-Ethan-Mollick/dp/059371671X">book</a>.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

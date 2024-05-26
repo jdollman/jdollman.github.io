@@ -1,6 +1,6 @@
 ---
-title: "Using a Certain Generative Pre-trained Transformer to Code NSF Grants"
-# description: ""
+description: "Using a Certain Generative Pre-trained Transformer to Code NSF Grants"
+title: "An LLM Experiment"
 author: Justin Dollman
 date: 05-28-2024
 categories: [ChatGPT, coding, NSF]
@@ -8,63 +8,159 @@ image: grant_writing.webp
 draft: true
 ---
 
+# Introduction
 
-The original version of this post was going to demonstrate a fully scaled coding endeavor of tens of thousands of documents. Unfortunately for the world (mostly me, though) OpenAI's batch processing is still working out some glitches that prevent (link to forthcoming document)
+A while back I was brought on as part of a project in which the principal investigator was looking at the **broader impacts** of NSF grants. I'll go into a little more detail below, but broader impacts are basically a researcher's statement of how their research benefits society generally. A prior research assistant had manually coded 400 broader impacts along two dimensions: who are the project's primary beneficiaries and to what degree is the project's broader impact connected to its **intellectual merit**, the core scientific part of the endeavor. By the time I was brought onto the project, the task was to figure out if certain types of broader impact strategies were associated with more or fewer publications. Given the complexities of the models I wanted to run (zero-inflated this-and-that, controlling for various institutional factors), the $N = 400$ sample was pretty meager. There were some marginally significant parameters, but most estimates were very imprecise, meaning we oftentimes couldn't say whether a given association was positive or negative, much less if it was large or nugatory.
 
-https://docs.google.com/document/d/1GAKfoEW-7FIF5wyN1p_ag72vjUPdyZiI/edit
-https://academic.oup.com/rev/article/32/2/348/6972169
+That was three years ago. Since then, using LLMs to to code and classify text started to gain acceptance as an alternative to the slow and costly procedure of having humans code text. This post is my initial foray into seeing if I can go from $N = 400$ to $N \rightarrow\infty$, which means first seeing how seeing how an LLM behaves when it codes the same 400 NSF grants already coded by a (human) researcher. Different readers will find different parts of the post useful. I imagine it will be most useful for useful any social scientist looking to code data herself. Even if the topic *per se* might not be of interest, all the steps in the analysis are relevant are the kinds of things she would have to do in her own analysis. Lastly, as will be apparent from repeated hand-waiving 'in lieu of a conclusion' moments in this post, it is implicitly a "Part 1" of a n-part series on this project.
 
-Outline for forthcoming document (which you should post!) -- Basically, the plan is as follows 
+## NSF Grants and Broader Impacts
 
-1. Carve up each NSF grant abstract into smaller parts (✅, easy regex solution)
-  * Should increase performance of downstream coding (FN. Though this is an empirical question. Part of the reason I'm going on this circuitous route is to see if it's true!)
-  * Saves tokens. Immediately it costs more time and tokens, but 
-  * 
-2. Send a sample of those to ChatGPT to code for the *presence* of broader impacts (❌), this is where it would be nice if I could batch
-3. Using the now labelled data, build a classifier (✅, using a subsample...)
-4. Generate predicted probabilities for which segment of the NSF abstract contains a broader impact.
-  4a. The goal is that one of its n segments has a much higher probability than the rest
-  4b. 
-5. Send each grant's (probably) BI-containing segment to be coded
+For the purposes of this mostly technical post, the only thing you need to know about the National Science Foundation (NSF) is something you likely already know: it's like a science sugar daddy. You've got this cool project you want to do, and if you can convince the NSF that it indeed is as cool as you say it is, you'll get an award (a monetary grant, a lump of money) to carry out this project. Now maybe for the part you don't know. Since 1997, the NSF has used two criteria to determine grant funding: intellectual merit and broader impact.^[So, for example, if pull down NSF grant abstracts from the [archive](https://www.nsf.gov/awardsearch/download.jsp), they end with the line, *This award reflects NSF's statutory mission and has been deemed worthy of support through evaluation using the Foundation's intellectual merit and broader impacts review criteria.*] Respectively, these are "the potential to advance knowledge" and "the potential to benefit society and contribute to the achievement of specific, desired societal outcomes" ([here](https://web.archive.org/web/20230226215437/https://nsf-gov-resources.nsf.gov/2022-09/Broader_Impacts_0.pdf)). This NSF site is a bit more direct about what a broader impact proposal should be. "It answers the following question: How does your research benefit society?" ([here](https://web.archive.org/web/20240317032312/https://new.nsf.gov/funding/learn/broader-impacts)).^[There is of course a lot of interesting history and politics behind this. If you're a person given to kvetching about wokeness, it probably doesn't help that, as of current writing, the first example of a potential broader impact is "*Inclusion*: Increasing and including the participation of women, persons with disabilities and underrepresented minorities in STEM." I would point out two things. First, in 1994 Republicans took the House for the first time in https://en.wikipedia.org/wiki/Republican_Revolution
+Importantly, these weren't your granpappy's Rockefeller Republicans. These were pugilistic, radio talk-show style Republicans. Everything was about to become nastier, and science wouldn't come out unscathed. [Guy who talks about waste, makes book.]
+So, from a public choice perspective, you can think of forcing researchers to include societal benefits in their projects as a defensive move to prevent funding cuts to the NSF. Second, the rest of this article is going to be a dry-as-dust description of using LLMs to code text. If you somehow got here to learn about politics, I promise I won't be offended if you stop reading now.]
 
-So, [separating my concerns](), this post will concern only the prompt-engineering considerations for getting ChatGPT to accurately code unstructured text along two somewhat subtle dimensions. The next post will implement 
+As with most things, you'll get a better idea much quick of what broader impacts are all about via examples. The NSF website gives nice examples of the types of benefits can fall into:
 
-What are Broader Impacts?
-https://new.nsf.gov/funding/learn/broader-impacts
+![](images/nsf_bi_types.png)
 
-'Coding' unstructured text into nice quantitative features is a time-consuming, mentally-draining, and eventually hellish task. Recently, tried this for a task that human^[It's wild that 'human' is going to become used more and more as a prepositive adjective in front of nouns we .... C'est le siècle le plus important] research assistants had done a poor job at. Sure enough, both ChatGPT (4) and Claude (Opus?) did pretty bad jobs. Google's Gemini didn't even try.
+And because I know you're still curious, here are three specific broader impacts written up by NSF grantees. In 2021 the Durham Technical Community College received a [grant](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2100014&HistoricalAwards=false) to create an inclusive [makerspace](https://en.wikipedia.org/?title=Makerspace&redirect=no) and implement support services in order to promote gender equity in technical fields and create welcoming learning environments for all students. In that case, the broader impact of the grant took center stage. In another [case](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2100015&HistoricalAwards=false), a researcher at Northeastern University received a grant to develop a tool to detect code injection vulnerabilities. The researcher described the broader impact thusly, "This project involves undergraduate and graduate students in research. All software and curricula resulting from this project will be freely and publicly available; the resulting tools will be publicly disseminated and are expected to be useful for other testing and security researchers." And sometimes the broader impact is dispatched with in just a few words, as when a [grantee](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2100013&HistoricalAwards=false) ended his abstract on using Deep Neural Networks to learn error-correcting codes by noting that the project "should lead to both theoretical and practical advances of importance to the communications and computer industry."
 
-A while back I was part of a project in which the principal investigator was looking at the broader impacts of NSF grants. A prior research assistant had manually coded 400 **project outcome reports**^[] along two dimensions: are the project's beneficiaries `{advantaged, universal, disadvantaged}` and is the relationship between the core activity of the grant and the beneficiaries `{inherent, direct, or indirect}`. I refer you [the resulting publication]() for elaboration on the whys and wherefores of this coding. By the time I was brought onto the project, the task was to figure out if certain types of broader impact strategies were associated with more or fewer publications. Given the complexities of the models I wanted to run (zero-inflated this-and-that, controlling for various institutional factors), the N = 400 sample was pretty meager. 
+Now that your curiosity about broader impacts is sated, I'll move on. 
 
-My first foray into working with the API.
+As I mentioned in the opening paragraph, I was brought on as a data guy to analyze associations between different types of broader impact activities and other grant characteristics (e.g., number of publications resulting from the grant, $ize of the award, the award's directorate, etc.). These types of broader impacts don't come pre-labeled. They have to be **coded** using the unstructured text made public by the NSF (big footnote on coding if you're interested).^[For those blissfully unaware, "coding text" refers to the process of applying labels (or "annotations") to text. Texts can be (all or part of) a news article, a speech, a TV commercial, a tweet, an interaction between Joe Rogan and his interviewee, etc. The labels thereto applied depend on the theoretical interest of the researcher. S/he might be interested in emotions (usually pretentiously referred to as either _affect_ or _sentiment_) in which case the label applied could either come from the set {positive, negative}, or could come from a more expansive set like {joy, trust, fear, surprise, sadness, disgust, anger, anticipation}. Or perhaps the labels detect the presence of something, like “Is this about politics?” or “Is this hate speech?” These labels can then be used either descriptively in order to summarize large corpora, and/or they can also be used in regression modeling. They're friendly and familiar to quantitative scientists, who not only spend most of their time working with quantitative information, but probably also consider it superior to qualitative information. The issue, though, is that turning unstructured text into nice quantitative features is a time-consuming, mentally-draining, and downright hellish if you do it for long enough.] That project used the **Inclusion-Immediacy Criterion** [(IIC)](https://doi.org/10.1093/scipol/scab072) developed by Thomas Woodson rubric to code grants' broader impacts. Inclusion and immediacy are two independent dimensions along which a grant's BI can vary. The first dimension refers to who the primary beneficiaries of the grant are. The inclusion dimension's possible values are `{universal, advantaged, inclusive}`. These labels characterize grants that, respectively, benefit everyone indiscriminately (as a public good), grants that benefit those currently in positions of power, and then those that primarily benefit marginalized groups. The second dimension, immediacy, refers the degree of interconnectedness between the main activity of the grant and its broader impact. Its three values are `{intrinsic, direct, extrinsic}`. As described by the [NSF](https://web.archive.org/web/20230226215437/https://nsf-gov-resources.nsf.gov/2022-09/Broader_Impacts_0.pdf), "'Broader Impacts' may be accomplished through the research itself [inherent], through activities that are directly related to specific research projects [direct], or through activities that are directly supported by, but are complementary to, the project [extrinsic]" (there will be more explanation and examples in the prompt where I explain these categories to `gpt-4o`).
 
-* How similar are API responses to 'manual' responses?
+In tabular form:
 
-* Structure of a POR
+![From Woodson (2022)](bis_table.png)
 
-Download grants here: https://www.nsf.gov/awardsearch/download.jsp
+Before going on, it's important to note that this is a relatively difficult coding situation. The authors of the 2022 paper wrote that they did an initial round of coding, resulting in a "low" reliability score. After discussing discrepancies and coding more data, they achieved a "moderate" degree of reliability, though it's unclear how much of the 'unreliability' resulted from categories extraneous to the IIC (for details, you'll have to read the paper). This difficulty stems from both the complexity and fuzziness of the concepts in the coding rubric^[Interestingly, when I gave my description of the IIC to ChatGPT for comment, one of the "challenges and considerations" it mentioned was, "Subjectivity in Assessment: While the IIC aims to provide a clear framework, the evaluation of inclusion and immediacy can still be somewhat subjective, depending on the reviewers' perspectives and expertise."] and the vague descriptions given by researchers writing up their projects. On the last point, the authors wrote in a section titled "Lack of Detail," "At times, the BIs in the PORS were vague and difficult to code. Some researchers included an aspirational statement about the potential impacts of their work without explaining the specific interventions intended to bring about those impacts." I say this to make readers aware that even humans, which are presumed to be the "gold standard" coders, often are unsure of what the correct coding is and disagree amongst themselves. I'll come back to this point in the conclusion, but given where the vibes are at in this cottage industry, I think it's important to say that LLM coding implementations should be judged in relation to the human coding implementations they're likely to supplant, not perfection.
 
-Keyword extraction
-Useful for (at least) three reasons
-Let the PI check the behavior of the classifier quickly
-Give the model 'time to think'
-Have information to do more in-depth analyses later
 
-key values to get out
-description of broader impact (one or two English sentences)
-beneficiaries
-relationship between project and beneficiaries (training, etc.)
-immediacy_code
-inclusion_code
+# The Prompt {#prompt}
 
-What about first using it to build a classifier
+Below you'll see the prompt I cobbled together by first describing the nature of the task that the LLM was about to undertake, followed by a description of the Inclusion-Immediacy Criterion with liberal (unattributed) quoting of Thomas Woodson's own exposition from his his 2022 [paper](https://doi.org/10.1093/scipol/scab072), followed by detailed instructions on what the desired response format. Without further ado, here's the prompt `gpt-4o` received:
 
-# Appendices
+> You are a sharp, conscientious, and unflagging researcher who skilled at evaluating scientific grants across all areas of study. You will be presented with an NSF grant project outcome report. NSF grant project outcome reports contain information on both the intellectual merit of a project (how the project will advance science) and its broader impact (how the project will benefit society). Your task is to find and describe the broader impact, then code it along two dimensions: inclusion and immediacy. Pay close attention to the meanings of words in backticks below. 
 
-## A1: Broader Impact Classifier
+> The first dimension, inclusion, refers to who will primarily receive the benefits of the broader impact. A broader impact is classified as `universal` if anyone could at least in theory benefit from it. Public goods such as improving primary school teaching practices or developing a better municipal water filter are examples of universal impacts. A broader impact is classified as `advantaged` if the primary benefit will be experienced by advantaged groups and/or maintain status hierarchies. Scientists, as well as wealthy people and institutions count as advantaged. Along the inclusion dimension, a broader impact is `inclusive` if its main beneficiaries are marginalized or underrepresented people. Common examples of inclusive broader impacts are programs that help women, people of color, and people with disabilities advance in STEM fields. 
 
-## A2: Results of Text-Length Experiment
+> The second dimension, immediacy, refers to the centrality of the broader impact to the main part of research project. A broader impact is `intrinsic` if the broader impact is inherent to and inseparable from the main principal purpose of the grant. For example, if a project is developing carbon capture and sequestration technology, the research and societal benefits of reducing greenhouse gases overlap and thus the broader impact is intrinsic to the project. Some broader impacts are `extrinsic`. These broader impacts are separate from the main intellectual merit of the research project, and often the project is only tenuously related to it. For example, if a cell biologist studying proteins creates a presentation for a local high school about STEM careers, the broader impact is extrinsic. The outreach to high school students is a separate endeavor that takes place outside, or is extrinsic to, the research. Along the immediacy dimension, a broader impact is classified as `direct` if its impact flows directly from the research but is not the specific goal of the research. Training graduate students is a quintessential direct broader impact. For most research grants, training a graduate student is not the purpose of the research. Rather, researchers train graduate students in order to complete a research project. The training is directly related to the research, but it is not the point or purpose of the research. 
 
-RQ: How much does irrelevant text degrade the (coding/keyword) capabilities of of ChatGPT?
+> Please code the following NSF grant along the two dimensions of inclusion and immediacy. Take a deep breath, reason step by step, and respond in machine-readable json output. Use the following format, writing your responses where the triple backticked json values are (but you should use double quotes since that is correct json formatting):
 
-If you could separate the abstract or project out report 'at the joints, you could send each part to ChatGPT to label it as involving a broader impact or not. Then, with that labelled data you could build a classifier. In a second go through, you'd only send the part about the broader impact to ChatGPT for the coding. This would ultimately save you a lot of tokens (because you only send a relatively small sample to ChatGPT) and likely increase performance (recency/first-thing bias is even worse for LLMs than for humans)
+> [{"broader_impact_description": \`\`\`Write a one or two sentence description of broader impact staying as close as possible to the text.\`\`\`, "principal_beneficiaries": \`\`\`Who are the primary beneficiaries of the broader impact. Are they mentioned explicitly or are you making an inference?\`\`\`, "reasoning": \`\`\`In a sentence, relate the broader impact to the coding rubric\`\`\`, "inclusion_code": \`\`\`Choose from {universal, advantaged, inclusive}\`\`\`, "immediacy_code": \`\`\`Chose from {intrinsic, direct, extrinsic}\`\`\`}] 
+
+> Note: if a grant has more than one explicitly mentioned broader impact, reason about each one separately and give each its own json response, separating them with a comma. Do not use any formatting such as newlines, backticks, or escaped characters.^[Just in case your curious, the prompt has around 800 tokens. Current rates are \$0.005 per 1k tokens of input and \$0.015 per 1k tokens of output.]
+
+This message is given to OpenAI's `chat-completion` endpoint as a `system` message, basically giving it the context it needs to appropriate respond to the `user` messages it's about to receive. You can think of `system` messages as "mindset" messages and `user` messages as inputs. In this case, the `user` messages are going to be the grants' **project outcome reports**.^[You can  think of an NSF grant's project outcome report (POR) as a description of what the researcher(s) did grant funding from the NSF. If an NSF abstract is the *prospective* project description, the POR is the *retrospective* project description.] When I sent the `user` message I received an `assistant` message with output that, ignoring some important details, had the following format:
+
+```{json}
+{
+    "broader_impact_description": "The consensus paper from the meeting aims to produce clear benefits to science and society by establishing best practices for cognitive training studies, which could enhance cognition in elderly individuals and reduce achievement gaps in STEM fields.",
+    "principal_beneficiaries": "The primary beneficiaries include scientists, regulatory bodies, funding agencies, the general public, elderly individuals, and students in STEM fields. This is inferred from the text.",
+    "reasoning": "The broader impact is universal as it aims to benefit a wide range of groups including the general public, elderly individuals, and students in STEM fields. The impact is direct because it flows from the research but is not the specific goal of the research.",
+    "inclusion_code": "universal",
+    "immediacy_code": "direct"
+}
+```
+
+In a way, that's it. If you overlook a thousand devils in a thousand details, conceptually it's pretty simple to have an LLM code text. You create a prompt that explains the procedure and then you give it text *en masse*. 
+
+The most basic question one can ask everything so far is, *Will ChatGPT be able to do this?*  Will it be able to respond sensibly? If the responses are sensible, will they match the human codings? I'll get to answering those questions in the second section of the results.
+
+# Results
+
+I'm going to break down the results into two sections. First, how did `gpt-4o` with my prompt compare to the human coder? Second, how consistent `gpt-4o` with itself across variations in the exact prompting I used?
+
+## Comparison with Human Coder
+
+In the current transitional era from humans to LLMs, the main comparison of interest still isn't AIs with themselves, but AIs with humans. That's what we'll look at in this section.
+
+![](images/heatmaps_patchwork_prop.png)
+
+![](images/marginal_plot.png)
+
+If we look at the heatmaps again, but this time with numbers instead of percent, you *might* notice something a bit off.
+
+![](images/heatmaps_patchwork_n.png)
+
+The eagle-eyed observer will notice that, in every single cell, the LLM has more broader impacts than the human coder.^[And the eagle-*minded* reader will have noticed that I haven't brought up **inter-rater reliability**, the ubiquitous measure of the extent to which two (or more) annotaters agree in their ratings. The reason for that omission is neither unknowing ignorance nor knowing rejection, but the fact that it's not a great measure when raters disagree on the fundamental number of dimensions of the thing that they're coding.] That's not a data error. We can look at a grant-level scatter plot to see how this happened:
+
+![](images/llma_sb_nbis.png)
+
+Ok, fine. What about IRR? I'll look at IRR for the joint categories, as opposed to the looking at the two jointly. This means transforming the data into the following format for all six joint codings:
+
+```{r echo=FALSE}
+k <- readRDS('krippy.rds')
+k
+```
+
+Even without know what the specific formula is for calculating IRR, your prior should be that the IRR shouldn't be very high since the LLM detected so many more BIs than the human. Well, get ready to update downward, because it's even worse than that:
+
+![](images/irr.png)
+
+In case you're wondering, that black horizontal line across the top of the plot is (one of) the proposed minimal values for an acceptable Krippendorff's Alpha (the standard quantification of inter-rater reliability). None are in its neighborhood. Two of the IRR values are almost precisely zero, and one is slightly negative. If this were to happen to you as you were trying to get an LLM to code some text for an important project, it would definitely be a moment to close your laptop and taste test a few Belgian [quadrupels](https://en.wikipedia.org/wiki/Quadrupel) before trying to rectify the situation.
+
+## Opening Statement Experiment
+
+In addition to comparing the performance of the LLM against the human coder, we can also compare it against itself. Until now, I've kept mum about a few details of the experiment. For each grant, I didn't only prompt GPT once, I prompted it three times, each time changing the first sentence. Here are the three openings, the first of which you read above.
+
+<ol type="A">
+  <li>"You are a sharp, conscientious, and unflagging researcher who skilled at evaluating scientific grants across all areas of study."
+  <li>"You are an intelligent, meticulous, and tireless researcher with expertise in reviewing scientific grants across various fields."
+  <li>"You are a bright, punctilious, and indefatigable researcher who is an expert at reading scientific grants across all disciplines."
+</ol>
+
+
+Now, if you're not familiar with prompting lore, you're probably wondering, *Why would he do that?*^[If you're wondering why I'm giving the AI an identity *at all*, I'm going to do the laziest thing ever and refer you to chapters two and three of this [book](https://www.amazon.com/Co-Intelligence-Living-Working-Ethan-Mollick/dp/059371671X).] This was motivated by previous findings that seemingly insignificant changes can produce surprisingly different results. If were doing this over, though, I probably would choose less synonymous opening sentences. It's probably important that each of the three roles be competent in this regard, but I really stacked the deck against myself by making these *so* similar. But, who knows, maybe one of descriptors sets `gpt-4o` down a different path. XXX Preregister your hypotheses now!
+
+![](images/n_bis_openings.png)
+
+![](images/code_marginal_identities.png)
+
+## Order Experiment
+
+**Forthcoming**
+  
+## IRR
+
+**Forthcoming**
+
+# Conclusion
+
+**Forthcoming**
+
+
+
+# Appendix
+
+## Abstract v. Project Outcome Report {#abs-por}
+
+In the interest of completeness, here's a side-by-side comparison of an [award](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1359016&HistoricalAwards=false)'s abstract and project outcome report.
+
+
+
+::: {.columns}
+::: {.column width="50%"}
+::: {style="padding: 15px;"}
+## Abstract
+This grant funds the National Research Experiences for Undergraduates Program (NREUP), administered by the Mathematical Association of America (MAA), headquartered in Washington, D.C., and held at various locations throughout the United States. The program is designed to provide undergraduates from underrepresented groups majoring in mathematics or a closely related field with challenging research opportunities and will offer these experiences during the summers of 2014, 2015 and 2016. The length of the experiences can vary from location to location but will be a minimum of six weeks. The program will reach minority students at a critical point in their career, midway through their undergraduate program through an undergraduate faculty member with whom they have a strong connection.
+
+NREUP will continue its track record of increasing minority students' interest in obtaining advanced degrees in mathematics. NREUP will invite mathematical sciences faculty to host MAA Student Research Programs on their own campuses. The MAA will select the best from competing proposals. NREUP provides key components to encourage students to pursue graduate studies and careers in mathematics: enriching and rewarding mathematical experiences, mentoring by active researchers, and intellectual networking with peers. It also provides an annual full day program to assist the new REU director with management details of the program and the potential REU director with further refinement of his/her concept and proposal writing skills. It also assists attendees in expanding their knowledge of federal and non-federal funding sources and increasing their knowledge of and skills in student mentoring. Moreover, by supporting faculty at a diverse group of institutions to direct summer research experiences, this project supports not only undergraduate students but also the development of a community of skilled faculty mentors who are expected to provide ever-increasing opportunities for undergraduate research. This project is jointly supported by the Workforce and Infrastructure programs within the Division of Mathematical Sciences
+:::
+:::
+::: {.column width="50%"}
+::: {style="background-color: lightblue; padding: 15px;"}
+## POR
+**National Research Experience for Undergraduates Program** (NREUP) of the Mathematical Association of America (MAA) provided challenging research experiences to undergraduates to increase their interest in obtaining advanced degrees in mathematics during the summers of 2014, 2015 and 2016. The students were from underrepresented minority groups and were majoring in mathematics or a closely related field. NREUP served a total of 130 undergraduates.  Of these student participants 46.92% (61) were female, 53.08% (69) were African American, 38.46% (50) were Hispanic or Latino and 2.31% (3) were Native Americans.  This project also received supplemental funding from the National Security Agency in 2015. 
+
+NREUP sites were located in states across the nation, including Arkansas, California, the District of Columbia, Indiana, Michigan, North Carolina, New Jersey, New York, Pennsylvania, Puerto Rico, Texas and Virginia.  A typical NREUP site consisted of one or two faculty members and four to six students who worked together on a research project for a minimum of six weeks. Funding was provided for faculty and student stipends, transportation, room and board, and supplies. Research areas included financial mathematics, graph theory, game theory, mathematical economics, mathematical modeling, and partial differential equations. Some research was of a theoretical nature and some was done in the context of a real-world problem such as disease modeling, forensic science and hurricane evacuation. 
+
+Each student prepared a PowerPoint presentation or a written paper for submission to a undergraduate research journal. All gave on-campus presentations on their research at the end of the summer, and many presented posters and papers at regional and national mathematics conferences. Some continued working on their research during the following academic year. 
+
+Project evaluation focused on student attitudes and pursuit of graduate degrees. Data confirmed that many students gained confidence in their ability to do mathematical research and succeed at the graduate level.
+:::
+:::
+:::
+

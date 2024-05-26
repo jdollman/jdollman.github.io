@@ -7,4 +7,4 @@ listing:
   categories: false
 ---
 
-One of my (three) dissertation chapters is about immigration opinion and policy. Here you'll (soon) find assorted posts related to that project. For an overview of half of the project, you can check out my [AAPOR presentation](aapor_presentation original.html).
+One of my dissertation chapters is about immigration opinion and policy. Here you'll (soon) find assorted posts related to that project. For an overview of half of the project, you can check out my [AAPOR presentation](aapor_presentation original.html).
