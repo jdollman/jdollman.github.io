@@ -124,7 +124,7 @@ In addition to comparing the performance of the LLM against the human coder, we 
   <li>"You are a bright, punctilious, and indefatigable researcher who is an expert at reading scientific grants across all disciplines."
 </ol>
 
-Now, if you're not familiar with prompting lore, you're probably wondering, *Why would he do that?*^[If you're wondering why I'm giving the AI an identity *at all*, I'm going to do the laziest thing ever and refer you to chapter three of this [book](https://www.amazon.com/Co-Intelligence-Living-Working-Ethan-Mollick/dp/059371671X).] This was motivated by previous findings that seemingly insignificant changes to prompts can produce surprisingly different outputs. 
+Now, if you're not familiar with prompting lore, you're probably wondering, *Why would he do that?*^[If you're wondering why I'm giving the AI an identity *at all*, I'm going to do the laziest thing ever and refer you to chapter three of this [book](https://www.amazon.com/Co-Intelligence-Living-Working-Ethan-Mollick/dp/059371671X).] This was motivated by previous findings that seemingly insignificant changes to prompts can produce surprisingly different outputs. So, my thought was, why not try out different versions of the opening sentences that are synonmous to English speakers, but might set `gpt-4o` down different paths and generate weird results.
 
 First, let's see if the different openings led to different *numbers* of grants found:
 
@@ -138,7 +138,7 @@ We can also see if different first sentences led to different label distribution
 
 I've chosen to go with the barplot of marginal distributions instead of the heatmaps of joint distributions, but the takeaway would be the same either way: the three openings led to the same distributions in both variables.^[You can glean this from the almost identical height of each [dugtrio](https://pokemondb.net/pokedex/dugtrio) of bars.]
 
-If I were doing this over, I'd probably choose less synonymous opening sentences. Though it's important that each of the three roles is associated with competence in the task at hand, I really stacked the deck against myself by making these openings *so* similar. For example, instead of the LLM's identity always being that of a researcher, the LLM could have also been a journalist or a well-informed reader of popular science. Or, instead of being a *generic* researcher, the LLM might have been a sociologist, a historian, or even a political scientist. Hindsight is 20/20. But, who knows! Maybe one of synonymous descriptors I used sets `gpt-4o` down a different path from the other synonyms.
+If I were doing this over, I'd probably choose less synonymous opening sentences. Though it's important that each of the three roles is associated with competence in the task at hand, I really stacked the deck against myself by making these openings *so* similar. For example, instead of the LLM's identity always being that of a researcher, the LLM could have also been a journalist or a well-informed reader of popular science. Or, instead of being a *generic* researcher, the LLM might have been a sociologist, a historian, or even a political scientist. Hindsight is 20/20.
 
 ## Order Experiment
 
