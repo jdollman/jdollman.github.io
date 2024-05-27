@@ -57,7 +57,7 @@ Below you'll see the prompt I cobbled together by first describing the nature of
 
 > Note: if a grant has more than one explicitly mentioned broader impact, reason about each one separately and give each its own json response, separating them with a comma. Do not use any formatting such as newlines, backticks, or escaped characters.^[Just in case your curious, the prompt has around 800 tokens. Current rates are \$0.005 per 1k tokens of input and \$0.015 per 1k tokens of output.]
 
-This message is given to OpenAI's `chat-completion` endpoint as a `system` message, basically giving it the context it needs to appropriate respond to the `user` messages it's about to receive. You can think of `system` messages as "mindset" messages and `user` messages as inputs. In this case, the `user` messages are going to be the grants' **project outcome reports**.^[You can  think of an NSF grant's project outcome report (POR) as a description of what the researcher(s) did grant funding from the NSF. If an NSF abstract is the *prospective* project description, the POR is the *retrospective* project description.] When I sent the `user` message I received an `assistant` message with output that, ignoring some important details, had the following format:
+This message is sent to OpenAI's `chat-completion` endpoint as a `system` message, basically giving it the context it needs to appropriate respond to the `user` messages it's about to receive. You can think of `system` messages as "mindset" messages and `user` messages as inputs. In this case, the `user` messages are going to be the grants' **project outcome reports**.^[You can  think of an NSF grant's project outcome report (POR) as a description of what the researcher(s) did with the grant funding from the NSF.] After OpenAI's servers are done processing the `user` message (POR), they send back an `assistant` message with output that has the following format:^[This is glossing over some very important technical details. For those, I refer you to the technical document.]
 
 ```{json}
 {
@@ -69,9 +69,7 @@ This message is given to OpenAI's `chat-completion` endpoint as a `system` messa
 }
 ```
 
-In a way, that's it. If you overlook a thousand devils in a thousand details, conceptually it's pretty simple to have an LLM code text. You create a prompt that explains the procedure and then you give it text *en masse*. 
-
-The most basic question one can ask everything so far is, *Will ChatGPT be able to do this?*  Will it be able to respond sensibly? If the responses are sensible, will they match the human codings? I'll get to answering those questions in the second section of the results.
+In a way, that's it. If you overlook a thousand devils in a thousand details, conceptually it's pretty simple to have an LLM code text. You create a prompt that explains the procedure and then you give it text *en masse*.
 
 # Results
 
