@@ -3,12 +3,11 @@ description: "Using a Certain Generative Pre-trained Transformer to Code NSF Gra
 title: "An LLM Experiment"
 author: Justin Dollman
 date: 05-28-2024
+date-modified: 06-03-2024
 categories: [ChatGPT, coding, NSF]
 image: grant_writing.webp
 draft: false
 ---
-
-Note to readers: *I've published this in a beta stage so that the fine folks at Sage can read it. The prose is unpolished and the plots aren't as aesthetic as I'd like. There is at least one mention of a technical document that I'm yet to upload, and two sections end with an unceremonious "forthcoming." That said, I think it is very readable in its current state. Enjoy!*
 
 # Introduction
 
@@ -20,7 +19,7 @@ Lastly, this post is implicitly a "Part 1" of an $n$-part series on this project
 
 ## NSF Grants and Broader Impacts
 
-For the purposes of this mostly technical post, the only thing you need to know about the National Science Foundation (NSF) is something you likely already know: it's like a science sugar daddy. You, a researcher, have this cool project you want to do. If you can convince the NSF that your project is indeed is as cool as you say it is, you'll get an award^[Though these generically grant NSF seems ] to carry out this project. Now maybe for the part you don't know. Since 1997, the NSF has used two criteria to determine grant funding: intellectual merit and broader impact.^[So, for example, if pull down NSF grant abstracts from the [archive](https://www.nsf.gov/awardsearch/download.jsp), they end with the line, *This award reflects NSF's statutory mission and has been deemed worthy of support through evaluation using the Foundation's intellectual merit and broader impacts review criteria.*] Respectively, these are "the potential to advance knowledge" and "the potential to benefit society and contribute to the achievement of specific, desired societal outcomes" ([here](https://web.archive.org/web/20230226215437/https://nsf-gov-resources.nsf.gov/2022-09/Broader_Impacts_0.pdf)). This NSF site is a bit more direct about what a broader impact proposal should be. "It answers the following question: How does your research benefit society?" ([here](https://web.archive.org/web/20240317032312/https://new.nsf.gov/funding/learn/broader-impacts)).
+For the purposes of this mostly technical post, the only thing you need to know about the National Science Foundation (NSF) is something you likely already know: it's like a science *Patronus Munificus Dulcedinis*.^[Vulgarly rendered in English as "sugar daddy."] You, a researcher, have this cool project you want to do. If you can convince the NSF that your project is indeed is as cool as you say it is, you'll get an award^[Though these generically grant NSF seems ] to carry out this project. Now maybe for the part you don't know. Since 1997, the NSF has used two criteria to determine grant funding: intellectual merit and broader impact.^[So, for example, if pull down NSF grant abstracts from the [archive](https://www.nsf.gov/awardsearch/download.jsp), they end with the line, *This award reflects NSF's statutory mission and has been deemed worthy of support through evaluation using the Foundation's intellectual merit and broader impacts review criteria.*] Respectively, these are "the potential to advance knowledge" and "the potential to benefit society and contribute to the achievement of specific, desired societal outcomes" ([here](https://web.archive.org/web/20230226215437/https://nsf-gov-resources.nsf.gov/2022-09/Broader_Impacts_0.pdf)). This NSF site is a bit more direct about what a broader impact proposal should be. "It answers the following question: How does your research benefit society?" ([here](https://web.archive.org/web/20240317032312/https://new.nsf.gov/funding/learn/broader-impacts)).
 
 As with most things, you'll get a better idea of what broader impacts are all about much quicker via examples. The NSF website gives nice examples of the types of benefits can fall into:
 
@@ -41,7 +40,31 @@ Before going on, it's important to note that this is a difficult coding task, bo
 
 # The Prompt {#prompt}
 
-Below you'll see the prompt I cobbled together by first describing the nature of the task that the LLM was about to undertake, followed by a description of the Inclusion-Immediacy Criterion with liberal (unattributed) quoting of Thomas Woodson's own exposition from his his 2022 [paper](https://doi.org/10.1093/scipol/scab072), followed by detailed instructions on what the desired response format. Without further ado, here's the prompt `gpt-4o` received:
+As most readers probably know from first-hand experience, the `prompt` is the bit of text you give to the LLM in order to get back a reply. When working with the `chat-completions` API, it's one step more complicated. In addition to a prompt, which we'll now call the `user message`, there is also a `system message`, which gives the LLM the context in light of which it should interpret user messages.^[From [the documentation](https://platform.openai.com/docs/guides/text-generation/chat-completions-api), "The system message helps set the behavior of the assistant. For example, you can modify the personality of the assistant or provide specific instructions about how it should behave throughout the conversation. However note that the system message is optional and the model’s behavior without a system message is likely to be similar to using a generic message such as 'You are a helpful assistant.'"] It is this system message where I delivered the description of the Inclusion-Immediacy Criterion.
+
+The success of this labeling exercise rides on the back of being able to convey in the `system_message` the right information to cause the LLM to accurately label project outcome reports. My prompt-engineering considerations were as follows.
+
+* **Chain-of-Thought** (**CoT**) **Prompting**: In general, if one can increase a model's performance by asking that the model reason its way to an answer in a step-by-step fashion instead of simply spitting out the answer as the next series of tokens. This "CoT" prompting can be done by modeling reasoning in a few-shot learning prompt ([Wei et al., 2022](https://arxiv.org/abs/2201.11903)), or it can be accomplished simply by requesting "Let's think step by step" ([Kojima et al., 2022](https://arxiv.org/abs/2205.11916)). So, before I ask `GPT-4o` to assign the POR inclusion and immediacy labels, I ask it to 
+
+a) Describe the broader impact 
+b) Say who its primary beneficiaries are and 
+c) Relate the broader impact to the coding rubric.
+
+* This attempt to make the model explain itself was inspired by the Claude Crew @ Anthropic, who found that prompting the AI to decompose a question into sub-questions led to more faithful explanations for the AI's ultimate inference ([Radhakrishnan et al., 2023](https://arxiv.org/abs/2307.11768)). In their example, the model receives the prompt, "Could Scooby Doo fit in a Kangaroo Pouch?" Instead of answering, the model asks (and answers) the three following subquestions: 
+
+1. "What type of animal is Scooby Doo?" 
+2. "How big is an average Kangaroo Pouch?" and 
+3. "How big is an average Great Dane." 
+
+* With the original question and those three questions and answers in its context, it *only then* answers, "Based on the above, what is the single, most likely answer choice?"
+
+* Why were [Radhakrishnan et al., 2023](https://arxiv.org/abs/2307.11768) were interested in "faithful explanations," anyway? Previous researchers had found "that explanations generated by the LLMs may not entail the models’ predictions nor be factually grounded in the input" ([Ye & Durrett, 2022](https://arxiv.org/abs/2205.03401)).^[In my own prior experience, I had tried and failed to have ChatGPT-4 explain itself and determine its level of confidence in a different labeling task. Specifically, I asked the model to generate reasoning for why a given label should apply, then imagine why a different rater might disagree, and then finally after the dialectic, assign the most probable label and give a number between 0 and 1 indicating its confidence, given what it had just read. I remember finding that the hypothetical disagreeing rater was always *completely* different, whereas the vast majority of inter- and intra-subjective human disagreements on that task were between adjacent ratings.] As far as I know, this is still where the literature stands on this.^[Spoiler alert, though: I will not be getting into the *results* of an analysis of the model logical coherence in this numbers-only post. :/]
+
+* **Shots?** I'm relying on GPT-4o to be a zero-shot learner, meaning that I do not provide a single example of the task being carried out ([Kojima et al., 2023](https://arxiv.org/abs/2205.11916)). I took the approach [Gilardi, Alizadeh, and Kubli (2023)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10372638/), basically explaining the rubric to the LLM in the system message. That said, though I don't provide any examples user/assistant dialogue, the instructions themselves *do* exemplify the meanings of the labels in addition to giving their definitions.^[Why not include any user/agent example interactions? One would have to create at least six, probably nine examples (either one for each value of each dimension, $3 \times 2 = 6$, or an example for each possible combination values, $3 \times 3 = 9$). Given that the input text for each is the entire POR, providing one example for *each* of those 7.5 labeling outcomes would require me to spend token like there's no tomorrow. It's simply not feasible for this task. The reader might notice that I've assumed one would have as many "shots" as labeling outcomes. This needn't be the case, but as [Zhao et al. (2021)](https://arxiv.org/abs/2102.09690) wrote, "The majority label [i.e., not having the same number of 'shots' for each labeling outcome] bias also explains why we frequently observe a *drop in accuracy when moving from 0-shot to 1-shot*—we found that the drop is due to the model frequently repeating the class of the one training example" (emphasis added).]
+
+* **Wisdom of the Crowd**: Because of the near negligible marginal cost of getting an additional LLM inference on a project outcome report, it's practicable for researchers to have the same text coded $n \geq 2$ times. In the simplest case of a binary classification task, let $n$ be odd and you can reduce measurement error by selecting the majority class of the LLM-generated labels. For this task where two dimensions are each assigned one of three labels each, there isn't a straightforward application of this, though.^[I haven't thought this through, but it seems relatively straightforward to design an adaptive algorithm where you generate various labels for each input and if they match (or more generally come in under some acceptable variance threshold), you accept the label. If they do not, you see if further labelling can reduce your uncertainty. This could terminate either in successful labeling or a flag for a human to enter the loop. One approach I've seen is that of [Heseltine et al. (2024)](https://journals.sagepub.com/doi/10.1177/20531680241236239) who brought in humans to adjudicate any case where two LLMs had disagreed in a labeling task. I leave it to someone, possible me in the future, to carry this out.] You can, however, still get measures of interrater reliability (more below)
+
+And now, with no further ado, here's the prompt I created (with liberal unattributed quoting of Thomas Woodson's own exposition from his his 2022 [paper](https://doi.org/10.1093/scipol/scab072)).
 
 > You are a sharp, conscientious, and unflagging researcher who skilled at evaluating scientific grants across all areas of study. You will be presented with an NSF grant project outcome report. NSF grant project outcome reports contain information on both the intellectual merit of a project (how the project will advance science) and its broader impact (how the project will benefit society). Your task is to find and describe the broader impact, then code it along two dimensions: inclusion and immediacy. Pay close attention to the meanings of words in backticks below. 
 
@@ -55,7 +78,7 @@ Below you'll see the prompt I cobbled together by first describing the nature of
 
 > Note: if a grant has more than one explicitly mentioned broader impact, reason about each one separately and give each its own json response, separating them with a comma. Do not use any formatting such as newlines, backticks, or escaped characters.^[Just in case your curious, the prompt has around 800 tokens. Current rates are \$0.005 per 1k tokens of input and \$0.015 per 1k tokens of output.]
 
-This message is sent to OpenAI's `chat-completion` endpoint as a `system` message, basically giving it the context it needs to appropriate respond to the `user` messages it's about to receive. You can think of `system` messages as "mindset" messages and `user` messages as inputs. In this case, the `user` messages are going to be the grants' **project outcome reports**.^[You can  think of an NSF grant's project outcome report (POR) as a description of what the researcher(s) did with the grant funding from the NSF.] After OpenAI's servers are done processing the `user` message (POR), they send back an `assistant` message with output that has the following format:^[This is glossing over some very important technical details. For those, I refer you to the technical document.]
+As discussed above, the message above is sent to OpenAI's `chat-completion` endpoint as a `system` message, basically giving it the context it needs to appropriate respond to the `user` messages it's about to receive. You can think of `system` messages as "mindset" messages and `user` messages as inputs. In this case, the `user` messages are going to be the grants' **project outcome reports**.^[You can  think of an NSF grant's project outcome report (POR) as a description of what the researcher(s) did with the grant funding from the NSF.] After OpenAI's servers are done processing the `user` message (POR), they send back an `assistant` message with output that has the following format:^[This is glossing over some very important technical details. For those, I refer you to the technical document.]
 
 ```{json}
 {
@@ -158,15 +181,17 @@ I should at this point mention there's actually a third and final moving part of
 
 # Conclusion
 
-**Forthcoming**^[Maybe, conclusions are overrated. You can draw your own conclusions!]
+Above, I limited myself to looking at the LLM's quantitative output. This is an artifact of it being more straightforward to analyze.^[And the fact that this post is aimed most at those who are interested in labeling with LLMs, not the distribution of broader impacts in NSF grants.] If, however, this were part of a currently operating POR-labeling project, looking at the text output would probably be the first priority after seeing a disappointing human-LLM interrater reliability. To diagnose that low IRR, the most obvious place to look is the model's labeling behavior and reasoning in the cases where human and LLM disagree on a POR. In addition to looking at the LLM-human discrepancies, the quality of the reasoning in general is worth looking at. In fact, it's easy to imagine a situation where there is *no* labeled project outcome reports, in which case the quality of reasoning (and reasoning-labeling congruence) is the only qualitative measure of goodness the researcher has. In that case, a reasonable quality control measure might be to select a sample of grants (blocking on label), read the POR, read the LLM's "reasoning," then compare that reasoning to the labels ultimately generated. 
 
+Though the availability has increased the *relative* cost of having a human label data, it has the potential to decrease the *absolute* cost. In this particular case, it's easy for ChatGPT to use Python's [`Panel` library](https://panel.holoviz.org/) to create an interactive dashboard that displays the POR, allows the user to highlight the area of the text that mentions the broader impact(s), and ergonomically select the grant's immediacy and and inclusion values.
 
+I have many thoughts about the broader use of LLMs for labeling social science data, but they are those big capital-"T" Thoughts. This post rarely reached the level of lower case-"t" thought, so I'll have to leave those considerations for a weighter day.
 
 # Appendix
 
 ## Technical Documentation
 
-**Forthcoming**
+All materials for replication can be found [here](https://github.com/jdollman/nsfbic_replication).
 
 ## Abstract v. Project Outcome Report {#abs-por}
 
