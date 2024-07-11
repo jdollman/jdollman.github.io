@@ -13,7 +13,7 @@ about:
     - text: Google Scholar
       href: https://scholar.google.com/citations?user=jEcWv_UAAAAJ
     - text: CV
-      href: Dollman_CV.pdf
+      href: https://github.com/jdollman/jdollman.github.io/blob/main/Dollman_CV.pdf
     - text: Email
       href: mailto:justin.dollman@stonybrook.edu
 ---
