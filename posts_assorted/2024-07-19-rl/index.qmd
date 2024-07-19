@@ -1,0 +1,14 @@
+---
+description: "In lieu of a project"
+title: "RL Certificates"
+author: Justin Dollman
+date: 07-19-2024
+#date-modified: 06-03-2024
+categories: [AI, RL, coding]
+image: sam.webp
+draft: false
+---
+
+Until I've finished working through the exercises in Barto and Sutton's [classic](http://incompleteideas.net/book/the-book-2nd.html), I won't try my hand at a fun RL application. For now I'll just point to a few certificates as indications of my increasing competence in reinforcement learning.
+
+I've completed two DataCamp courses on Reinforcement Learning, [Reinforcement Learning in Gymnasium](../../certificates/rl_gym-certificate.pdf) [Deep Reinforcement Learning](../../certificates/drl-certificate.pdf), as well as Hugging Face's [DRL course](https://huggingface.co/learn/deep-rl-course/unit0/introduction).

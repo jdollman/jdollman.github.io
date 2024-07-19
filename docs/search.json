@@ -214,6 +214,13 @@
     "href": "section_assorted.html",
     "title": "Assorted Posts / Portfolio",
     "section": "",
-    "text": "No matching items"
+    "text": "RL Certificates\n\n\nIn lieu of a project\n\n\n\nJustin Dollman\n\n\nJul 19, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAn LLM Experiment\n\n\nUsing a Certain Generative Pre-trained Transformer to Code NSF Grants\n\n\n\nJustin Dollman\n\n\nMay 28, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNotes on Sentiment Dictionaries\n\n\nFor Reference Purposes\n\n\n\nJustin Dollman\n\n\nJan 31, 2023\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe Ezra Klein Show\n\n\nWhat can we learn through text?\n\n\n\nJustin Dollman\n\n\nJan 24, 2023\n\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts_assorted/2024-07-19-rl/index.html",
+    "href": "posts_assorted/2024-07-19-rl/index.html",
+    "title": "RL Certificates",
+    "section": "",
+    "text": "Until I’ve finished working through the exercises in Barto and Sutton’s classic, I won’t try my hand at a fun RL application. For now I’ll just point to a few certificates as indications of my increasing competence in reinforcement learning.\nI’ve completed two DataCamp courses on Reinforcement Learning, Reinforcement Learning in Gymnasium Deep Reinforcement Learning, as well as Hugging Face’s DRL course."
   }
 ]
