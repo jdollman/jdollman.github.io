@@ -1,0 +1,20 @@
+---
+title: "Dissertation Bits and Bobs"
+listing: 
+  contents: posts_immigration 
+  type: grid
+  sort: "date desc"
+  categories: false
+---
+
+When I'm done with my current round of data science and AI job applications and get back to writing my dissertation, I intend to post the most interesting parts as bite-sized posts. 
+
+## Immigration Opinion and Policy
+
+One of my dissertation chapters is about immigration opinion and policy. Here you'll (soon) find assorted posts related to that project. For an overview of half of the project, you can check out my [AAPOR presentation](aapor_presentation original.html).
+
+## Urban Rural Polarization
+
+**Forthcoming section**
+
+The other two chapters of my dissertation projects examine the urban-rural ideological divide globally. Most academic studies and journalistic commentary alike analyze the American urban-rural divide, but insofar as urbanity and rurality *per se* either cause or reflect dispositions and preferences linked to political ideology, this should be apparent in ideological self-placement, values, and voting the world over. Is it?

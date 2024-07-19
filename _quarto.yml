@@ -5,9 +5,8 @@ website:
   title: "Justin Dollman"
   navbar:
     right:
-      - section_immigration.qmd
-      - section_ur.qmd
-      - section_text.qmd
+      - section_dissertation.qmd
+      - section_assorted.qmd
       - section_about.qmd
 format:
   html:

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Justin Dollman - Text Analysis</title>
+<title>Justin Dollman - Assorted Posts / Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -70,9 +70,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: [{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+      searchColumns: [],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -112,16 +112,12 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./section_immigration.html">
- <span class="menu-text">Immigration Policy</span></a>
+    <a class="nav-link" href="./section_dissertation.html">
+ <span class="menu-text">Dissertation Bits and Bobs</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./section_ur.html">
- <span class="menu-text">Urban-Rural Polarization</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="./section_text.html" aria-current="page">
- <span class="menu-text">Text Analysis</span></a>
+    <a class="nav-link active" href="./section_assorted.html" aria-current="page">
+ <span class="menu-text">Assorted Posts / Portfolio</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./section_about.html">
@@ -143,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Text Analysis</h1>
+<h1 class="title">Assorted Posts / Portfolio</h1>
 </div>
 
 
@@ -158,88 +154,13 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>Many moons ago, I read Julia Silge and David Robinson’s <a href="https://www.tidytextmining.com/"><em>Text Mining with R</em></a> and then Emil Hvitfeldt and Silge’s and <a href="https://smltar.com/"><em>Supervised Machine Learning for Text Analysis in R</em></a>. Though I have never done anything professional with text analysis, I’ve done a few things here and there. Some of them are here, below.</p>
 
 
 
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="ChatGPT,coding,NSF" data-listing-date-sort="1716868800000" data-listing-file-modified-sort="1717390436998" data-listing-reading-time-sort="36.26">
-<a href="./posts_text/2024-05-28-nsf-bic/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts_text/2024-05-28-nsf-bic/grant_writing.webp" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-An LLM Experiment
-</h5>
-<div class="card-text listing-description">
-Using a Certain Generative Pre-trained Transformer to Code NSF Grants
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Justin Dollman
-</div>
-<div class="listing-date">
-May 28, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="sentiment analysis,R,text analysis,lexicon" data-listing-date-sort="1675141200000" data-listing-file-modified-sort="1716246831879" data-listing-reading-time-sort="21.97">
-<a href="./posts_text/2024-01-31-sentiments-dictionaries/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts_text/2024-01-31-sentiments-dictionaries/dict.webp" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Notes on Sentiment Dictionaries
-</h5>
-<div class="card-text listing-description">
-For Reference Purposes
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Justin Dollman
-</div>
-<div class="listing-date">
-Jan 31, 2023
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="R,tidytext,text analysis,Ezra Klein" data-listing-date-sort="1674536400000" data-listing-file-modified-sort="1716262630617" data-listing-reading-time-sort="9.005">
-<a href="./posts_text/2024-01-24-klein-text/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts_text/2024-01-24-klein-text/zissou_swirls2.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-The Ezra Klein Show
-</h5>
-<div class="card-text listing-description">
-What can we learn through text?
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Justin Dollman
-</div>
-<div class="listing-date">
-Jan 24, 2023
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
+
 </div>
 <div class="listing-no-matching d-none">
 No matching items
