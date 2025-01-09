@@ -2,7 +2,7 @@
 title: "The Gaza Conflict"
 subtitle: "& Strategic Social Dominance"
 author: "Justin Dollman"
-date: 12-01-2025
+date: 01-12-2025
 description: 'An investigation of power and norms.'
 format:
   html:
