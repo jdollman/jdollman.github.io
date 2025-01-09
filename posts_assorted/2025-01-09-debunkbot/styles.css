@@ -1,0 +1,25 @@
+body {
+    font-family: "IBM Plex Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #342346;
+}
+
+a {
+    color: #38AAAC;
+}
+
+a:visited {
+    color: #78D6AE;
+}
+
+/* For DataTables */
+.dataTables_wrapper {
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+/* For reactable */
+.ReactTable {
+  font-family: "IBM Plex Sans", sans-serif;
+}
