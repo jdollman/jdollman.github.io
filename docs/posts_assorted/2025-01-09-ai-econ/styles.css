@@ -1,0 +1,48 @@
+.red-text {
+  color: #38AAAC;
+}
+
+.col figure {
+  position: relative;
+  margin: 0;
+}
+
+.col figure figcaption {
+  visibility: hidden;
+  position: absolute;
+  bottom: 100%;  /* Position above the image */
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  z-index: 1;
+}
+
+.col figure:hover figcaption {
+  visibility: visible;
+}
+
+.mermaid {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+
+body {
+    font-family: "IBM Plex Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #342346;
+}
+
+a {
+    color: #38AAAC;
+}
+
+a:visited {
+    color: #78D6AE;
+}

@@ -1,0 +1,258 @@
+---
+title: "The Gaza Conflict"
+subtitle: "& Strategic Social Dominance"
+author: "Justin Dollman"
+date: 12-01-2025
+description: 'An investigation of power and norms.'
+format:
+  html:
+    grid:
+      margin-width: 350px
+    css: survey-style.css
+    html-math-method: katex
+    embed-resources: true
+execute:
+  echo: false
+reference-location: margin
+citation-location: margin
+image: cbum-constitution.webp
+---
+
+# NOTICE!
+
+This piece is currently up as a placeholder so that links in other pieces don't produce errors. The post will be finalized and posted the week of January 6th, 2025.
+
+# Introduction
+
+```{r include=FALSE}
+library(tidytext)
+library(tidyverse)
+library(ggtext)
+library(ggrepel)
+library(viridis)
+library(scales)
+library(ggsankey)
+
+theme_set(
+  theme_minimal(base_family = "IBM Plex Sans") +
+    theme(
+      strip.text = element_text(face = 'bold', size = rel(1.1)),
+      axis.text = element_text(face = "bold", size = 11),
+      axis.title = element_text(face = "bold", size = 12),
+      legend.text = element_text(face = 'bold')
+    )
+)
+
+update_geom_defaults("text",  list(family = "IBM Plex Sans"))
+update_geom_defaults("label", list(family = "IBM Plex Sans"))
+
+rf_model_out <- readRDS('rf_model_out.rds')
+d_clean <- readRDS('d_clean.rds')
+```
+
+- The theory tested in the experiment
+  - Strategic SDO
+  - Discussion of sample selection will be in the descriptive results!
+- The descriptive results
+  - Who entered the study is 'who cares about Israel and Gaza'
+  - A new form of bias/favouritism: The Favored Facts Method
+  - (Liberal) Norms of war (Really the core dependent variable, according to our theory)
+  - The path not tread: (Liberal) Speech norms (classic Stoffer stuff)
+
+# Appendix or "Descriptive Insights"
+
+## Sample Selection
+
+Unlike most studies, the method by which our sample entered provides information on the matter itself. As mentioned in the introduction, our design was to show partisans of the two sides either favorable or unfavorable information about the prospects of the side they identified with in post 10/7 conflict. Obviously, not everyone _is_ a partisan of one of the two sides. These people can't substantively participate in this experiment, so we wanted to detect them and have them participate in a different experiment (one where they could potentially contribute useful information). The very detection of these people provides the first interesting analysis.
+
+After asking a series of demographic questions, we asked the following question:
+
+```{=html}
+<div class="survey-container">
+    <div class="question">
+        <p class="question-text">
+            Recently there has been a lot of news about the conflict between Israelis and Palestinians in the Middle East. Which of the following statements best describes your feelings about the conflict?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="q1-1" name="question1">
+                <label for="q1-1">When I think about the conflict, I tend to identify more with the Israeli side</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="q1-2" name="question1">
+                <label for="q1-2">When I think about the conflict, I tend to identify more with the Palestinian side</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="q1-3" name="question1">
+                <label for="q1-3">When I think about the conflict, I tend not to identify with either side</label>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+```{r}
+lean_denom <- nrow(d_clean) - (sum(d_clean$id_israel) + sum(d_clean$id_palestine))
+```
+
+
+We started with 712 participants, 65 of whom were excluded from all analyses as they sped through the survey faster than one could have read and understood the materials.  under our consideration saw the first 
+
+
+
+Of the 647 non-speeders, `r sum(d_clean$id_israel)` (`r round(sum(d_clean$id_israel)/nrow(d_clean) * 100)`%) identified with the Israeli side, `r sum(d_clean$id_palestine)` (`r round(sum(d_clean$id_palestine)/nrow(d_clean) * 100)`%) identified with the Palestinian side, and the remaining `r lean_denom` (`r round(lean_denom/nrow(d_clean) * 100)`%) chose the third option. Those who chose the last option then saw:
+
+```{=html}
+<div class="survey-container">
+    <div class="question">
+        <p class="question-text">
+            Even if you do not tend to identify with either side, would you say that you lean towards one side or the other?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="q2-1" name="question2">
+                <label for="q2-1">I tend to lean toward the Israeli side</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="q2-2" name="question2">
+                <label for="q2-2">I tend to lean toward the Palestinian side</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="q2-3" name="question2">
+                <label for="q2-3">I do not lean toward either side</label>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+Of these, `r sum(d_clean$id_israel_lean, na.rm = TRUE)` (`r round(sum(d_clean$id_israel_lean, na.rm = TRUE)/lean_denom * 100)`%) indicated that they lean toward the Israeli side, while `r sum(d_clean$id_palestine_lean, na.rm = TRUE)` (`r round(sum(d_clean$id_palestine_lean, na.rm = TRUE)/lean_denom * 100)`%) leaned toward the Palestinian side. That leaves `r lean_denom - (sum(d_clean$id_israel_lean, na.rm = TRUE) + sum(d_clean$id_palestine_lean, na.rm = TRUE))` (`r round((lean_denom - (sum(d_clean$id_israel_lean, na.rm = TRUE) + sum(d_clean$id_palestine_lean, na.rm = TRUE)))/lean_denom * 100)`%) again choosing neither side.
+
+All in all, the flow of participants looks as follows:
+
+```{r}
+sankey_long = readRDS('sankey_long.rds')
+ggplot(sankey_long, aes(x = x, 
+               next_x = next_x, 
+               node = node, 
+               next_node = next_node,
+               fill = factor(node))) +
+  geom_sankey(alpha = 0.8, color = viridis(1, begin = 1, option = 'A')) +
+  theme_sankey(base_size = 13, base_family = 'IBM Plex Sans') +
+  theme(legend.title = element_text(face = 'bold', size = 11),
+        legend.text = element_text(hjust = 0.5),
+        legend.position = 'bottom',
+        axis.text.x = element_text(face = 'bold')) +
+  scale_fill_viridis_d(option = 'A', end = 0.8) +
+  scale_x_discrete(labels = c('Survey Speedster?', 'First Id. Chance', 'Lean Id.')) +
+  labs(x = '', y = '', fill = 'Final identification:') +
+  guides(color = 'none') 
+```
+
+Some may see this and think, so what? Some people identify with one side or the other and some identify with neither. It's life! But this _should_ be strange. First, leaving aside the particulars of the conflict, Americans are (in)famous for not caring about foreign affairs. The fact that `Neither` was the least frequent choice (by far) would rattle some _cocos_. Second, it would be very surprising to a time-traveller from just a few years ago that the plurality of a representative-ish sample identified with _Palestine_. Lastly and related to the previous points, the Gaza conflict has proven to be a subject that evokes passions.^[Upon reading a draft of this, a colleague remarked that, however stongly one feels about the two sides of the conflict over Gaza, the most odious group is, past any doubt, the survey speedsters. This colleague is a ne'er-do-well.] Among those who lean towards one of the two sides, there are likely those who were driven to change vote because of it, people protested, others counterprotested, etc. The causes and effects of this identification is worth studying.^[Let's hope even the associations are worth studying haha lol].
+
+### Background Variables
+
+To understand who identifies with which side (or no side at all), I ran a random forest model predicting respondents' ideological categorization into one of five categories (no identification, plus 'direct' and 'lean' identification with the two sides).^[For those unfamiliar with random forests, there is an explanation forthcoming!]
+
+Which demographic variables were important in determining whether people identified with Israel or Palestine?
+
+```{r}
+ggplot(rf_model_out, aes(Value, reorder_within(variable, Value, Metric), # `reorder_within` from `tidytext`
+             colour = color)) +
+  geom_point(size = 2.5) +
+  geom_text_repel(aes(label = variable), 
+                  nudge_y = 0.3, nudge_x = 1,
+                  size = 3.5,
+                  family = 'IBM Plex Sans') +
+  facet_wrap(~Metric, scales = 'free', strip.position = "bottom") +
+  #tidytext::scale_y_reordered() +
+  scale_y_reordered() +
+  labs(y = '', x = '', caption = '**Random Forest Variable Importance**<br>conflict_id ~ age + sex + jewish + muslim + edu + income + ideology + pol_interest + race') +
+  theme(
+    axis.title.y  = element_blank(),
+    axis.text.y   = element_blank(),
+    axis.ticks.y  = element_blank(),
+    strip.placement = "outside",
+    plot.caption = element_markdown()
+  ) +
+  guides(color = 'none') +
+  scale_color_viridis_c(option = 'A', begin = 0.1, end = 0.9)
+```
+
+```{r}
+ideo_acc_coef <- round(rf_model_out[with(rf_model_out, variable == 'Pol. Ideology' & Metric == 'Accuracy'),]$Value)
+```
+
+In the plot below we can see a result of political ideology's importance is such an important variable in determining which side (if any) a person identifies with in the conflict. The plurality of all types of liberals identifies with Palestine, the plurality of self-described moderates identifies with neither sid, and the plurality of conservatives identify with Israel.
+
+```{r}
+d_clean %>%
+  count(identification3, ideo_libcon3) %>%
+  mutate(prop = n/sum(n), .by = ideo_libcon3) %>%
+  mutate(ideo_libcon3 = fct_relabel(ideo_libcon3,
+                                   \(x){x %>% str_remove('/.*') %>%
+                                       str_replace(' ', '\n') %>%
+                                       str_to_title})) %>%
+  ggplot(aes(x = reorder_within(identification3, -prop, ideo_libcon3), y = prop, fill = identification3)) +
+  geom_col(position = position_dodge(), alpha = 0.8) +
+  geom_text(aes(label = paste0(round(prop * 100), '%')),
+            position = position_dodge(width = 0.9),
+            fontface = 'bold',
+            vjust = -0.2) +
+  scale_fill_viridis_d(option = 'A', end = 0.8) +
+  scale_y_continuous(labels = percent_format()) +
+  labs(x = '', y = '', caption = 'Percents represent share of conflict id. *within* an ideological camp') +
+  theme(
+    # legend.title = element_blank(), 
+    # legend.position = 'inside', 
+    # legend.position.inside = c(0.89, 0.85), 
+    legend.position = 'none',
+    axis.text.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        plot.caption = element_markdown()) +
+  facet_grid(cols = vars(ideo_libcon3), scales = 'free_x') +
+  tidytext::scale_x_reordered()
+```
+
+Similarly, we can see age's importance:
+
+```{r}
+d_clean %>%
+  filter(generation != 'Greatest Generation',
+         generation != 'Silent Generation') %>%
+  mutate(total = n(), .by = generation) %>%
+  summarise(prop = n()/first(total), .by = c(generation, identification3)) %>%
+  ggplot(aes(x = generation, y = prop, fill = identification3)) +
+  geom_col(position = 'dodge', alpha = 0.9) +
+  labs(x = '', y = '') +
+  scale_fill_viridis_d(option = 'A', end = 0.8) +
+  scale_y_continuous(labels = percent_format()) +
+  theme(legend.title = element_blank(),
+        legend.position = 'bottom',
+        panel.grid.major.x = element_blank())
+```
+
+You can think of this plot as telling you, "If you meet a random person from this generation, what is the probability that they fall into one of these buckets?" And you see extremely strong generational effects. Whereas the plurality of Baby Boomers and Gen Xers identify with Israel, Israel identification is the *least* chosen option among both millennials and gen z. In fact, in both of those groups, identification with the Palestinian side of the conflict is about *twice* as frequent as identification with Israel.
+
+### Political Interest
+
+Instead of asking which side people identify with, we can look at how quickly they identify as a function of their self-reported political interest.^[Political interested was measured with the question "How interested are you in politics?" to which people could choose among "{Not at all, Slightly, Somewhat, Very} Interested".<br>I should mention that it's very important to refer to political interest measured this way "_self-reported_ political interest" because political interest is like news consumption and voting in that all three conform to House MD's maxim, "Everyone lies."] As one would expect, the likelihood of identifying with one of the sides more than doubled going from those who said that they're not at all interested in politics to those who report being very interested in politics.
+
+```{r}
+d_clean %>%
+  mutate(total = n(), .by = pol_interest) %>%
+  # summarise(prop = n()/first(total), .by = c(pol_interest, identification3)) %>%
+  # ggplot(aes(x = pol_interest, y = prop, fill = identification3)) +
+  summarise(prop = n()/first(total), .by = c(pol_interest, identify)) %>%
+  ggplot(aes(x = pol_interest, y = prop, fill = identify)) +
+  geom_col(position = 'dodge', alpha = 0.9) +
+  labs(x = '', y = '') +
+  scale_fill_viridis_d(option = 'A', end = 0.8) +
+  scale_y_continuous(labels = percent_format()) +
+  theme(legend.title = element_blank(),
+        legend.position = 'bottom',
+        panel.grid.major.x = element_blank())
+  
+```
+

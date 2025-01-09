@@ -1,6 +1,6 @@
 ---
-description: "Using a Certain Generative Pre-trained Transformer to Code NSF Grants"
-title: "An LLM Experiment"
+title: "Using ChatGPT to Code NSF Grants"
+description: "An LLM Experiment"
 author: Justin Dollman
 date: 05-28-2024
 date-modified: 06-03-2024

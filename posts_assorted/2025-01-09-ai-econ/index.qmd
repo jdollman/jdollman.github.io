@@ -1,0 +1,889 @@
+---
+title: "AI Dislocation and Economic Ideology"
+subtitle: "Sometimes we barely live, we don't laugh, but we hopefully learn."
+description: 'Fully Automated Luxury Statuslessness'
+date: 01-09-2025
+author: "Justin Dollman"
+format:
+  html:
+    grid:
+      margin-width: 350px
+    fig-align: center
+    css: styles.css
+execute: 
+  echo: false
+  warning: false
+reference-location: margin
+citation-location: margin
+---
+
+```{r include=FALSE}
+library(viridis)
+library(ggtext)
+library(ggsankey)
+library(scales)
+library(patchwork)
+library(tidyverse)
+
+
+theme_set(
+  theme_minimal(base_family = "IBM Plex Sans") +
+    theme(
+      strip.text = element_text(face = 'bold', size = rel(1.1)),
+      axis.text = element_text(face = "bold", size = 11),
+      axis.title = element_text(face = "bold", size = 12),
+      legend.text = element_text(face = 'bold'),
+      legend.title = element_text(face = 'bold')
+    )
+)
+
+update_geom_defaults("text",  list(family = "IBM Plex Sans"))
+update_geom_defaults("label", list(family = "IBM Plex Sans"))
+
+sr <- readRDS('scale_reliabilities.rds') %>% map(., ~round(.x, 2))
+sankey_long = readRDS('sankey_long.rds')
+d_clean <- readRDS('d_clean.rds')
+nom_results <- readRDS('nom_results.rds')
+ai_view_tbl <- 
+  nom_results %>%
+  mutate(ai_treatment = ifelse(ai_treatment == 'positive', '+ Feedback', '- Feedback')) %>% 
+  filter(variable == 'ai_view', !is.na(ai_treatment)) %>% select(-variable, -var_type) %>% 
+  mutate(response = case_when(
+    str_detect(response_text, '^Important') & str_detect(response_text, 'good$') ~ 'Important/Good',
+    str_detect(response_text, '^Important') & str_detect(response_text, 'consequences$') ~ 'Important/Bad',
+    str_detect(response_text, '^Mostly') & str_detect(response_text, 'changes$') ~ 'Unimportant/Good',
+    TRUE ~ 'Unimportant/Bad'
+  ), .after = ai_treatment)
+```
+
+Since Trump's first presidential victory in 2016, the idea of "economic anxiety" or "economic threat" as a way of explaining Trump's appeal has been commonplace.^[Less materialist authors pointed out that, perhaps instead of/in addition to the (purely) economic threat these people felt, they also felt a _status_ threat ([here](https://www.pnas.org/doi/10.1073/pnas.1718155115), but [here](https://www.pnas.org/doi/10.1073/pnas.1718155115)).] Presumably, this would operate through people's economic ideology, as displayed in this diagram:
+
+```{mermaid}
+flowchart LR
+    A["Exposure to Economic<br/>Vulnerability<br/>(immigration, outsourcing,<br/>capital vs. labor)"] --> B["Preferences toward<br/>Protectionism and<br/>Restrictionism"]
+    B --> C["Support for Trump"]
+    
+    style A fill:#357BA2,stroke:#DEF5E5,stroke-width:3px,color:#DEF5E5
+    style B fill:#3E356B,stroke:#DEF5E5,stroke-width:3px,color:#DEF5E5
+    style C fill:#0B0405,stroke:#DEF5E5,stroke-width:3px,color:#DEF5E5
+
+    linkStyle 0,1 stroke:#DEF5E5,stroke-width:2px,length:20
+```
+
+This "economic anxiety" argument, though, is just one instance of a broader set of economic self-interest arguments, which are littered throughout the social sciences. Concerns about housing value lead to NIMBYism; union membership predicts vote choice; unemployment increases sentiment toward the welfare state; economic recession leads to punishing incumbents; having few credentials causes a preference for restrictionism.^[Though the economic self-interest thesis is *descriptive*, it also appears in *prescriptively*. For example, in the 1980 debate between Reagan and incumbent Carter, Reagan asked in his closing remarks, "Are you better off than you were 4 years ago? Is it easier for you to go and buy things in the stores than it was 4 years ago? Is there more or less unemployment in the country than there was 4 years ago? Is America as respected throughout the world as it was? Do you feel that our security is as safe, that we're as strong as we were 4 years ago?" Notice that the first two of his 'operationalizations' of being better off are economic. He was asking voters to think of economic interests when deciding whom to vote for. It also appears prescriptively in the lament, "The working class is voting against it's self-interest." Here, interestingly, economic self-interest appears as a desirable thing people are failing to do -- so it's prescriptive but _not_ descriptive.]
+
+This study is part of that universe. Here, we're asking, **If learning that your economic horizon is bleak (or positive), do you shift leftward (or rightward) in your economic ideology?** Specifically, do you endorse more socialist (or capitalist) norms and descriptions of the world? 
+
+In writing the materials for the study, we took advantage of the fact that artificial intelligence is widely believed be on the precipice of revolutionizing (at least) the labor market. In the history of research on economic self-interest, it has always been those who are already less well-off who find out they are even worse off. For example, it was the declining manufacturing sector that was hit by the 'China shock' of the 1990s. AI is unique in the history of economic shocks because it at least has the potential to hit those at the top hardest. This enables us to credibly inform participants who may be successful in the labor market that that success might be coming to a sudden end.
+
+Somewhat unique among other studies in this area, we wanted to pinpoint the relative status facet of economic well-being and try to find out what would happen when people's _relative_ economic standing increased or decreased. Speficially, does this change in relative status change people's views of the most desirable economic institutions (understood in a broad sense to include the government's role in the economy as well as the structural characteristics of an economy)? Soon I will get to why I'm not sure we pinpointed that aspect of economic interest so precisely, but that is best accomplished in the context of describing the sample and the study itself.
+
+## Sample
+
+Before we begin, a brief word on the sample. The respondents are only one arm of an experiment I ran with Adam Panish in mid-2024. We started with a demographically representative sample of around 700 from [CloudResearch](https://www.cloudresearch.com/products/connect-for-participants/), but most of the participants went into an experiment designed to test a 'strategic social dominance' hypothesis we had (see the [post]()). Those that ended up in _this_ experiment did so because they did _not_ identify with either the Israeli or Palestinian sides of that conflict. Specifically, after answering demographic questions, participants were asked if they identified with either Israel or Palestine in the Gaza conflict (with `Neither` being an explicit third option). In a follow-up question, those who chose `Neither` were asked if they _lean_ toward either side. Those who identified with either side, either in response to the initial or follow-up questions, were shunted into the Israel-Palestin' study arm. You can think of that experimental arm as the primary one, but for its materials to make sense we needed subjects that identified with one of those two sides. Those for whom the materials would have been meaningless wound up here. Because most subjects _did_ identify with one of the two sides, this AI-dislocation study had 204 subjects enter it, 178 of which passed a minimal requirement of having spent at least 15 minutes on the study and are included in these results. This, then, is a small sample by post-[Replication Crisis](https://statmodeling.stat.columbia.edu/2018/02/18/low-power-replication-crisis-learned-since-2004-1984-1964/) standards.
+
+Because they're fun, here's a Sankey diagram showing who ended up in the sample:
+
+```{r}
+ggplot(sankey_long, aes(x = x, 
+               next_x = next_x, 
+               node = node, 
+               next_node = next_node,
+               fill = factor(node))) +
+  geom_sankey(alpha = 0.8, color = viridis(1, begin = 1, option = 'mako')) +
+  theme_sankey(base_size = 13, base_family = 'IBM Plex Sans') +
+  theme(legend.title = element_text(face = 'bold', size = 11),
+        legend.text = element_text(hjust = 0.5),
+        legend.position = 'bottom',
+        axis.text.x = element_text(face = 'bold')) +
+  scale_fill_viridis_d(option = 'mako', end = 0.8) +
+  scale_x_discrete(labels = c('Survey Speedster?', 'First Id. Chance', 'Lean Id.')) +
+  labs(x = '', y = '', fill = 'Final identification:') +
+  guides(color = 'none') 
+```
+
+In case you continuous to be curious about the sample, there is more information in the [appendix](#biotsff).
+
+## Experimental Treatment and Outcomes
+
+To set up the experimental treatment, all participants read a short, two-paragraph excerpt from an article^[It was really a pastiche of information I picked up] about how AI would upend the economy. The article emphasized the two points that "AI will reshape wealth and income distribution, [and] the ultimate winners and losers of the coming AI revolution are far from obvious" You can read the [full text](#ma) below. We then gave them what we sold as a personality test in the style of THESE FOUR QUESTIONS YOU'D NEVER SUSPECT SAY EVERYTHING ABOUT YOUR FUTURE. The quiz was simply four questions that were *prima facie* relevant to one's economic prospects ([questions](#ma) below), though we told participants that we would be able "to calculate the most likely effects of AI on your future employment." After they answered the questions, we told them we were processing the results with a fancy algorithm. This was not the case. In reality, we randomly assigned half of participants to receive a positive message and the other half to receive a negative message. Those messages are printed below:^[The subjects also saw those images. They were displayed on the screen while the participant was waiting for the oracular algorithm to calculate their future.]
+
+:::: {layout-ncol=2}
+
+::: {.col}
+### Negative Feedback
+
+![](feedback_neg.png)
+
+Your responses indicate a potential vulnerability to the disruptions AI will bring. Of course, within each group of respondents with similar profiles, some will do better and others worse. That said, respondents with your socio-occupational profile are projected to move down in the income distribution. As a group, people with such profiles will likely lose prestige and relative income.
+:::
+::: {.col}
+### Positive Feedback
+![](feedback_pos.png)
+
+We have good news! Those with your profile are projected to do well in the upcoming labor market transformation, sitting atop^[Notice the spatially-encoded status language in the feedback: The unfortunate souls are likely to "move *down* in the income distribution" and "lose prestige and relative income," while the happy ones will "sit *atop* the income distribution and "experience gains in prestige and [relative] income." The spatial bit may not be important, but George Lakoff approves.] the income distribution. As AI becomes more important in the economy, you and similar respondents are likely to experience gains in prestige and income relative to those with different profiles.
+:::
+::::
+
+That was it! Maybe it's hard to believe, but that kind of thing passes for a treatment in political psychology. You might notice that the main point of the feedback was to impress them that they will lose out in a _relative_ sense. That is, we say nothing about their _absolute_ quality of life in the post-AGI regime, we instead focus on _relative_ income, their place in the income distribution, and prestige (classic relational good). This specificity was very important to us at the time of writing the materials, because we had in mind a specific theory about how a person's relative standing is an important input to their attitudes about supporting norms. Though I still give credit to the theory, I do not think it's profitable to think about this experiment in such specific terms. Instead, the treatment represents a kind of economic shock and the outcomes will measure broad left-right economic ideology.
+
+### Check yourself, check your manipulation
+
+To gauge respondents' opinions of the four-question quiz and the ensuing feedback, we asked them, "Briefly, what do you think of the results of the accuracy of feedback you just received?" and they responded in an open text box. I also had my crackerjack research assistant "Claude" code all the responses as positive, negative, or neutral in order to see if those in the positive feedback treatment group actually a positive evaluation of the feedback.^[I told Claude, "You are an expert coder of open-ended responses. Below you will see five responses to the question, \"What do you think of the results of the accuracy of feedback you just received?\" For each, create a set keywords that describes the respondent's stance toward, or beliefs about, the feedback. The only constraint is that you must describe the stance as positive, negative, or neutral as the first of the keywords. Example responses:<br><br>[positive, accurate, exciting]<br>[negative, inaccurate]<br>[neutral, irrelevant]<br><br>Your response should be five sets of keywords in square brackets separated by newline characters."]
+
+The plot shows the probability of a negative, neutral, or positive evaluation between the two treatment groups:
+
+```{r echo=FALSE}
+nom_results %>%
+  filter(variable == 'open_response',
+         !is.na(ai_treatment)) %>% 
+  select(-variable, -var_type) %>%
+  mutate(response_text = str_to_title(response_text),
+         response_text = ifelse(response_text == 'Negative', 
+                                paste0(response_text, ' Evaluation'),
+                                response_text),
+         ai_treatment = ifelse(ai_treatment == 'positive', '+ Feedback', '- Feedback')) %>% 
+  ggplot(aes(x = response_text, , y = estimate, 
+             color = ai_treatment, fill = ai_treatment)) +
+    annotate("rect",
+           xmin = 1.5,
+           xmax = 2.5,
+           ymin = -Inf,
+           ymax = Inf,
+           fill = "gray90",
+           alpha = 0.3) +
+  # geom_point(shape = 21, size = 3, color = 'white',
+  #            position = position_dodge(width = 0.5)) +
+  geom_errorbar(
+    aes(ymin = ci_lower, ymax = ci_upper),
+    width = 0.1,
+    position = position_dodge(width = 0.5)) +
+  geom_label(aes(label = round(estimate * 100)), fill = 'white', position = position_dodge(width = 0.5), show.legend = FALSE) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    y = '',
+    x = '',
+    color = 'Treatment Condition:'
+  ) +
+  theme(legend.position = 'bottom',
+        plot.caption = element_markdown(),
+        legend.justification = 'right',
+        # legend.title.position = 'top',
+        legend.title = element_text(hjust = 0.5),
+        axis.title.x = element_text(hjust = 1/3)) +
+  guides(fill = 'none', label = 'none') +
+  scale_color_viridis_d(option = 'mako', begin = 0.2, end = 0.8) +
+  scale_fill_viridis_d(option = 'mako', begin = 0.2, end = 0.8)
+```
+
+Now that's social science! If you give people negative feedback, people will think (more) negatively of that feedback. If you give people positive feedback, people will think (more) positively of that feedback. But you might also worry about the fact that, among the group that received positive feedback, a full 23% had a negative evaluation of it (and only 57% had a positive opinion of it). As I'll mention later regarding respondent inattentiveness, ideally I would have had a larger sample so as to be able to look at treatment effect heterogeneity among different groups of treatment evaluation. Given my limited sample size, the most rectitudinous thing I can do is display these data an say *C'est la vie*.
+
+Here are some illustrative responses for the raw-data crowd:
+
+:::: {layout="[[33,33, 33]]"}
+
+:::{.col}
+**Positive Evaluations**
+
+- "The results are interesting and I would say accurate"
+- "The result makes me happy. But I'm not sure if that would happen."
+- "I extremely relieved. I am also thankful for those results."
+- "Accurate"
+:::
+
+:::{.col}
+**Neutral Evaluations**
+
+- "Immaterial as I am close to retirement"
+- "Okay"
+- "I believe AI will take over portions of my job" 
+- "Hard to say, maybe 50% accurate?"
+:::
+:::{.col}
+**Negative Evaluations**
+
+- "I doubt it's accurate and I don't trust it for a second."
+- "I think it's made up"
+- "I think it is fake and predetermined by the researchers."
+- "Totally inaccurate. I am retired and get my income from SS and savings. I'll be fine."^[One thing I learned in all this is to screen out retirees if you're (even directly) studying labor market dynamics.]
+:::
+::::
+
+In addition to seeing what people thought of the feedback, we can (and did) ask respondents what they thought of AI, generally. We asked the following question with response categories below:
+
+**"More generally, what is your opinion of artificial intelligence?"**
+
+* Important and a force for good (**Important/Good**)^[This **bold** text to the right of the response did _not_ appear to the participants, but allows you to link the response wording to the labels in the plot below]
+* Important and likely bringing about negative consequences	(**Important/Bad**)
+* Mostly unimportant, but will cause small positive changes	(**Unimportant/Good**)
+* Mostly unimportant, like to cause negative consequences if any (**Unimportant/Bad**)
+
+Similar to the last plot, the plot below gives the probabilities of selecting one of those four responses broken down by treatment group.,]
+
+```{r echo=FALSE}
+# ai_view_plotly <- readRDS('../EXPERIMENT ANALYSIS/plots/ai_view_plotly.rds')
+# ai_view_plotly
+
+ggplot(
+  ai_view_tbl,
+  aes(
+    x = response,
+    y = estimate,
+    color = ai_treatment,
+    fill = ai_treatment)) +
+      annotate("rect",
+           xmin = c(1.5, 3.5),
+           xmax = c(2.5, Inf),
+           ymin = -Inf,
+           ymax = Inf,
+           fill = "gray90",
+           alpha = 0.3) +
+  geom_errorbar(
+    aes(ymin = ci_lower, ymax = ci_upper),
+    width = 0.1,
+    position = position_dodge(width = 0.5)
+  ) +
+  geom_point(size = 3, position = position_dodge(width = 0.5)) +
+  geom_label(aes(label = round(estimate * 100)), fill = 'white', position = position_dodge(width = 0.5), show.legend = FALSE) +
+  labs(y = 'Percent Agreement', x = '') +
+  scale_y_continuous(labels = label_percent()) +
+  theme(
+    legend.title = element_blank(),
+    legend.position = 'inside',
+    legend.position.inside = c(.892, .82),
+    axis.title.x.bottom = element_text(hjust = 1)
+  ) +
+  scale_fill_viridis_d(begin = 0.2,
+                       end = 0.8,
+                       option = 'mako') +
+  scale_color_viridis_d(begin = 0.2,
+                        end = 0.8,
+                        option = 'mako')
+```
+
+Here, our treatment was (directionally) effective: those who received positive feedback were almost twice as likely to pick the statement 'AI is important and a force for good' than those who received negative feedback.^[This is one of those cases where a control group would have been nice.] The positive-feedback receivers were also half as likely to say that AI is unimportant and bad (6% versus 12%, but this effect is less dramatic in absolute difference, which is what pops out on the plot).
+
+We thanked them for completing that exercise and let them know we wanted to "know about your economic views more generally." These economic views were the outcome variables of the study.
+
+## Results
+
+Respondents' economic views were measured with four groups of outcomes:
+
+1. A single item measuring respondents' willingness to punitively 'soak' the rich even at the cost of redistributing _less_ to the poor. Its [authors](https://doi.org/10.1073/pnas.1703801114) describe it as measuing a "wealthy-harming preference."
+2. A scale consisting of seven items measuing 'capitalist values.'
+3. A 10-item scale measure (dis)agreement with statements expressing either a socialist or *laissez faire* worldview.
+4. The 13-item anti-hierarchical aggression subscale from Costello et al.'s (2022) left-wing authoritarianism scale.^[Doing my best imitation of a p-hacker, I also extracted *post hoc* four items from this scale that mention "the rich" after seeing that they form a unique cluster. That's the genesis of "A-HA (Rich Items)" in the plot below.]
+
+This is the results section for those who want to read the short of it. For those interested in the long of it (looking at individual items instead of pre-summated scales, etc.), a [longer version of this section](#res-long) appears in the appendix.
+
+I analyzed each outcome by regressing it on nothing other than treatment (positive feedback, negative feedback). Specifically, I regressed the outcome onto a dummy for having been in the positive treatment group.^[In the case of the three scales, I performed this regression as the structral part of a measurement model where each scale item was taken as an indicator of a latent (endogeneous) variable. For those who care, I used `lavaan::sem()` in `R`. In the case of the socialism/*laissez faire* items, I treated the indicators as ordinal. In the case of the seven-category response to the A-HA items, the reported results come from a model treating the indicators as interval variables. The results don't change either way.] This means that the expected effects are _negative_, since larger outcome values mean a more 'lefty' response and larger treatment variables (i.e., 1 instead of 0) means 'in the positive feedback group (and thus not negative feedback group).' For those whose eyes glazed over reading the immediately foregoing, no worries. The results are actually very easy to interpret. In fact, I can summarize the results with the following plot:
+
+```{r}
+all_outcomes_summary <- readRDS('all_outcomes_summary.rds')
+
+ggplot(all_outcomes_summary,
+       aes(
+         y = reorder(variable, estimate),
+         x = estimate,
+         color = variable,
+         fill = variable
+       ))+
+  annotate(geom = 'text', y = c('sr', 'ovs', 'slf', 'aha', 'aha (rich)'), x = -0.32,
+           label = c('Soak the Rich', 'Capitalist Values', 'Socialism vs. Laissez Faire', 'Anti-Hierarchichal Aggression', 'A-HA (Rich Items)'),
+           hjust = 0,
+           vjust = -0.3,
+           fontface = 'bold') +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.7) +
+  geom_linerange(aes(xmin = ci_lower, xmax = ci_upper)) +
+  geom_point(size = 3, shape = 21, color = 'white') +
+  scale_color_viridis_d(end = 0.8) +
+  scale_fill_viridis_d(end = 0.8) +
+  theme(legend.position = 'none',
+        axis.text.y = element_blank()) +
+  labs(y = '', x = 'Estimate')
+```
+
+As you can see, the uncertainty bars for all four (/five) outcomes overlap 0, meaning that none of the results are statistically distinguishable from 0 (ergo no "significant" effects). The point estimate for the capitalist values scale even ruins the story that at least all point estimates were on the expected side of 0.
+
+## Post-Mortem
+
+So, wherefore this null finding? Leaving the possibility that the null is true for last, let's briefly run through the 'boring' possibilities.
+
+First, could it have been respondent in inattentiveness? As mentioned in the sample section, I excluded participants who took the survey in quicker than 15 minutes. That is an extremely conservative cutoff in the sense that it was really only remove the people who did a speedrun through this thing. Ideally, what I would do were the sample larger, would be to calculate the treatment effect among different subsets of respondents defined by their level of attentiveness (which time in survey is a proxy for). For example, one could do a tercile split of response times to divide them into the quickest, middle, and fastest terciles. If those who were more attentive 'absorbed' more of the treatment (and time is a good proxy for attentiveness), then we would see the treatment effect grow across the terciles.
+
+Second, perhaps the sample size was too small. Every survey experiment is an exercise in signal detection, sample size is a key signal amplifier, and in this case the sample just couldn't beat out the noise. Given that so many of the estimates were on the "right side" of zero, I could choose to hold onto this thread of hope. Regardless, I also have to chastise myself a little, because had this been a study with big insitutional backing the fact that I didn't to an *ex ante* sample size calculation would be quite damning -- perhaps there was no real chance I would have seen a true positive from any plausible effect size.^[See [here](https://chatgpt.com/share/677d6c8d-b908-800d-94d1-5eed9f1cf898) for an example of how one would determine a minimum viable sample size.] 
+
+Related to the small sample size, there is the issue that the sample might be of the wrong type (age-wise).
+
+```{r}
+p1 <- 
+d_clean %>% 
+  filter(!is.na(ai_treatment)) %>%
+  mutate(age = 2024 - birth_yr) %>% 
+  ggplot(aes(x = age)) +
+  geom_histogram(binwidth = 5, 
+                 color = mako(1, begin = 0.3),
+                 fill = mako(1, begin = 0.2),
+                 alpha = 0.9) +
+    geom_text(stat = "bin",
+            aes(y = after_stat(count), 
+                label = after_stat(count)),
+            vjust = -0.3,
+            binwidth = 5,
+            fontface = 'bold') +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.text.y = element_blank()) +
+  labs(x = 'Age (five year bins)', y = '') +
+  scale_x_continuous(breaks = 20 + 0:12 * 5)
+
+p2 <- 
+  d_clean %>% 
+  filter(!is.na(ai_treatment)) %>%
+  mutate(age = 2024 - birth_yr) %>%
+  arrange(age) %>% 
+  mutate(y_axis = row_number(),
+         y_axis = y_axis / max(y_axis)) %>% 
+  ggplot(aes(x = age, y = y_axis)) +
+  geom_line(aes(group = 1), color = mako(1, begin = 0.4)) +
+  labs(x = 'Age', y = '', title = 'Cumulative Distribution of Age in AI Sample') +
+  scale_x_continuous(breaks = 20 + 10 * 0:6)
+
+library(plotly)
+
+p <- d_clean %>% 
+  filter(!is.na(ai_treatment)) %>%
+  mutate(age = 2024 - birth_yr) %>%
+  arrange(age) %>% 
+  mutate(y_axis = row_number(),
+         y_axis = y_axis / max(y_axis)) %>%
+  ggplot(aes(x = age, y = y_axis, group = 1,
+             text = paste0(round(y_axis * 100, 1), "% of the sample is ", age, " or younger"))) +
+  geom_area(fill = mako(1, begin = 0.2)) +
+  geom_line(color = mako(1, begin = 0.9), linewidth = 1.5) +
+  labs(x = '', y = '', caption = 'Cumulative Distribution of Age in AI Sample') +
+  scale_x_continuous(breaks = 20 + 10 * 0:6) +
+  theme(plot.caption = element_text(face = 'bold')) + 
+  scale_y_continuous(labels = percent_format()) +
+  annotate(geom = 'text', x = 80, y = 0.03, label = 'Age', 
+           fontface = 'bold', 
+           hjust = 1,
+           vjust = -1,
+           color = mako(1, begin = 0.9))
+
+# Convert to plotly
+ggplotly(p, tooltip = "text") %>% style(hoverinfo = "none", traces = 1)
+```
+
+:::{.column-margin}
+```{r}
+#| fig-cap: "For the curious, here is age's histogram."
+p1
+```
+:::
+
+Let's say that you think the treatment could only be effective among an age subgroup defined by being less than a certain age. For example, you might think that those 55+ are close enough any news they hear about the labor market, they think, "Well, sounds like a problem for the next guy to sort out!" In that case, you could look at the cumulative distribution, draw a vertical line up from the x-axis where 55 would be, eyeball the point where it intersects the cumulative distribution, and that point's y-coordinate is what proportion of our sample even *could* have produced a theoretically interesting result.^[In this case it would be 75%] You can use this to calculate something like an "effective sample size," which would be some (smaller) proportion of the _nominal_ sample size of `r sum(!is.na(d_clean$ai_treatment))`.^For example, [$F(\text{age}) \times$ `r sum(!is.na(d_clean$ai_treatment))`, where $F(\text{age})$ is the $y$-coordinate given a certain age, a number between 0 and 1.]
+
+So, the sample might be inattentive, generically too small, or too small in the demo. But another reason for the null accuses the researcher a bit more. That is simply that the materials were shite-proximate.^[*Terminus technicus*, don't look at me.] As I show in the appendix, the outcome variable scales really do seem to be picking up meaningful differences among the respondents, so bad dependent variables does not seem to be the culprit. That leaves a potentially ineffectual manipulation. In its favor, you might adduce that you wouldn't be able to pick out the stimuli used here from a lineup of lab psychology studies. On the other hand, you might point out that psychology was until very recently a methodological cesspool. In this particular case, I'd ask if we even should be trying to manipulate beliefs about the self, in this case perceived (relative) wealth or status, through (mostly) passive, (mostly) text-only interventions. Even economic windfalls, such as winning a lottery or participating in a universal-basic income experiment, seem to have only inconsistent effects on economic ideology ( [These](https://econpapers.repec.org/paper/izaizadps/dp7934.htm) [two](https://www.nber.org/system/files/working_papers/w32777/w32777.pdf) papers find the effect, while [these](https://www.sciencedirect.com/science/article/pii/S0047272723001214) [two](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5040547) largely do not). If that is the case, then what hope did we have in trying to manipulate economic views with some text? I think this is an extremely strong point. If actually changing someone's socio-economic status doesn't reliably shift their beliefs, then how would telling people that their socio-economic status *might* change possibly affect their beliefs?^[This doesn't rule out using humble manipulations such as those here, as long as they use normative argumentation rather than appealing weakly to self-interest.]
+
+
+![](if this doesnt change dispositions, your manipulation wont bruh.png){fig-align='center'}
+
+
+Lastly, could the null be true?^[Yes, I know. The null is never going to be _true_, but you know what I mean. The actual effect is smaller than anything we'd care about.] Yes, of course! But I find it very implausible that information about one's economic future has _no_ impact on one's economic ideology. Just imagine that you are a down-on-your-luck center-left person in this study and you "find out" that your economic prospects are bleak. In happier moments, you might **slightly _disagree_** with "We need to replace the established order by any means necessary," but mightn't the camel's back have broken with the information that your economic future is downhill and now you instead **slightly _agree_**? I don't know. It's worth a thought.
+
+# Appendix
+## Results (Long) {#res-long}
+
+For the time-wealthy, I have a more detailed break down of the outcomes and results. Instead of presenting the scales as aggregates, you can see them disaggregated by individual question. I also show their partisan and ideological breakdowns, so you can get an idea of whether or not you think these scales are measuring anything at all!
+
+### To Soak or Not to Soak
+
+The first item^[I believe it originates with [Sznycer et al. (2017)](https://doi.org/10.1073/pnas.1703801114).] presents respondents with the following two scenarios and asks them to select the one they prefer:
+
+1. The **top 1% wealthiest individuals pay an extra 50% of their income** in additional taxes, and as a consequence of that **the poor get an additional $100 million** (the extra 50% in taxes paid in former fiscal years leaving the wealthiest with relatively less taxable income.)
+2. The **top 1% wealthiest individuals pay an extra 10% of their income** in additional taxes, and as a consequence of that **the poor get an additional $200 million** (the extra 10% in taxes paid in former fiscal years leaving the wealthiest with relatively more taxable income.)^[The bold text also appears bold in the experiment.]
+
+This item is nice because it pits two (potential) desires against each other: the punitive desire to harm the rich and the make the less well-off better-off. If you think that e.g., ['Every billionaire is a policy failure'](https://archive.md/UrGS1), then you'll be drawn toward the first option. If, however, you think that the contemporary focus on inequality is [a misguided worry about the poor](https://www.jstor.org/stable/j.ctvc77dq3), you'll be drawn to the second.^[A sophisticated survey taker might also have [positional](https://en.wikipedia.org/wiki/Positional_good) and [efficiency](https://mru.org/courses/principles-economics-microeconomics/deadweight-loss-definition-yacht-tax) considerations, but I'll leave those aside.]
+
+Unfortunately for me, but also consistent reasonable prior of minimal effects, there was no significant effect of the treatment on this outcome. Had I seen the plot below, which shows that punitive taxation (perhaps surprisingly) does *not* change that much across the ideological spectrum, the null finding should *not* be surprising.
+
+```{r}
+soak_bsp <- readRDS('soak_ideology_bsp.rds')
+
+soak_bsp %>% 
+  ggplot(aes(x = ideo_libcon, y = mean, color =ideo_libcon)) +
+  geom_hline(yintercept = 0.5, linetype = 2, alpha = 0.8) +
+  geom_errorbar(aes(ymin = ci_lower,
+                      ymax = ci_upper,
+                    ), width = 0.1) +
+  geom_label(aes(label = paste0(round(mean, 2) * 100, '%')),
+             fontface = 'bold') +
+  labs(x = '', y = '',
+       caption = '**Pct. Choosing to Soak the Rich**<br>Sample means with 95% bootstrap confidence interval') +
+  scale_y_continuous(labels = percent_format()) +
+  theme(plot.caption = element_markdown()) +
+  scale_color_viridis_d(option = 'mako', end = 0.8) +
+  guides(color = 'none')
+```
+
+And although we see substantively different point estimates (e.g., liberals are more than twice as likely to assent than conservatives), the within-group heterogeneity is such that we would have needed a much larger sample to detect any differences caused by the AI treatment.^[For the curious, Sznycer et. al (2017) found that "dispositional envy" was the only reliable predictor of this outcome, and Lin et al. (2024) similarly found a strong (and unique) association between they called "malicious envy" and this measure. So perhaps this measure only works to the extent that a treatment induces envy.]
+
+### Capitalist Values
+
+We took the following seven items from the capitalist values scale from [Chong, McClosky, and Zaller's (1983)](https://doi.org/10.1017/S0007123400003343) Opinions and Values Survey.^[Their original capitalist values scale contained 28 (!!) items.]
+
+- **Getting ahead in the world is mostly a matter of ...**
+  - good luck
+  - ability and hard work
+
+- **When it comes to taxes, corporations and wealthy people ...**
+  - don’t pay their fair share
+  - pay their fair share and more
+
+- **Free-market economies ...**
+  - survive by keeping the poor down
+  - give everyone a fair chance
+
+- **The profits a company or business can earn should be ...**
+  - strictly limited by law to a certain level
+  - as large as they can fairly earn
+
+- **Competition, whether in school, work, or business ...**
+  - is often wasteful and destructive
+  - leads to better performance and a desire for excellence
+
+- **Most business people ...**
+  - do important work and deserve high salaries
+  - receive more income than they deserve
+
+- **The government taking over a larger share of the economy to limit the profit motive would be ...**
+  - a good idea
+  - a bad idea
+  
+As with the 'soak the rich' item, each capitalist values item presents respondents with a binary choice (this time in a sentence-completion format. One choice is (directionally) congruent with a pro-capitalism worldview while the other choice is not.^[If the reader is interested in an analysis of America's twin traditions of capitalism and democracy, I encourage readers to go read either the original 1983 article whence these items came or McClosky and Zaller's book, *The American Ethos: Public Attitudes Toward Capitalism and Democracy*, that came out the following year.] For the purpose of this appendix, however, I will eschew theorizing and merely note that the items 'work' in that they pick up different priorities among ideological groups:
+
+```{r}
+ovs_ideo_bsp <- readRDS('ovs_ideo_bsp.rds')
+
+n_categories <- length(unique(ovs_ideo_bsp$variable))
+
+ovs_ideo_bsp %>% 
+  mutate(variable = str_to_title(str_remove(variable, 'ovs_'))) %>% 
+  ggplot(aes(x = reorder(variable, mean, FUN = max), y = mean, fill = ideo_libcon3)) +
+  annotate(
+    "rect",
+    xmin = seq(1, n_categories, by = 2) - 0.5,
+    xmax = seq(1, n_categories, by = 2) + 0.5,
+    ymin = -Inf,
+    ymax = Inf,
+    fill = "gray90",
+    alpha = 0.3
+  ) +
+  geom_linerange(
+    aes(color = ideo_libcon3,
+        ymin = ci_lower, ymax = ci_upper),
+    position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5), 
+             shape = 21,
+             size = 2.5,
+              color = 'white') +
+  labs(x = '', y = '% Agreement with Anti-Capitalist Position', caption = '**Agreement with OVS Capitalism Values Items**<br>Sample Mean with 95% Confidence Interval') +
+  theme(legend.title = element_blank(),
+        legend.position = 'bottom',
+        legend.justification = 'right',
+        legend.text = element_text(margin = margin(l = 0)),
+        legend.box.spacing = unit(0, 'cm'),
+        plot.caption = element_markdown(),
+        panel.grid.major.x = element_blank()) +
+  scale_y_continuous(labels = percent_format()) +
+  scale_fill_viridis_d(option = 'mako', end = 0.8) +
+  scale_color_viridis_d(option = 'mako', end = 0.8)
+```
+
+
+Considering the items as a scale, they have acceptable internal coherence (Cronbach's $\alpha=$ `r sr$ovs_alpha`, $\Omega=$ `r sr$ovs_omega`). To use concepts from item-response theory, you can see from the plot that a scale composed of these items spans a good range of difficulty^[Briefly, an item's **difficulty** indicates how 'extreme' you have to be on a trait in order to answer the item in the affirmative. I say this scale has a good range of difficulty because you have items ranging from <25% agreement to >75% agreement among the moderates.] and all its items have *prima facie* discrimination, as they reliably order the ideological groups.^[An item's **discrimination** indicates the extent to which it distinguishes between those with higher and lower values of the trait.] Even with decently cromulent scale in hand, I fail to detect any statistically significant difference between the positive and negative feedback groups.
+
+```{r}
+ovs_treatment_bsp <- readRDS('ovs_treatment_bsp.rds')
+
+n_categories <- length(unique(ovs_treatment_bsp$variable))
+
+ovs_treatment_bsp %>% 
+  mutate(variable = str_to_title(str_remove(variable, 'ovs_')),
+         ai_treatment = ifelse(ai_treatment == 'positive', '+ Feedback', '- Feedback')) %>% 
+  ggplot(aes(x = reorder(variable, mean, FUN = max), y = mean, fill = ai_treatment)) +
+  annotate(
+    "rect",
+    xmin = seq(1, n_categories, by = 2) - 0.5,
+    xmax = seq(1, n_categories, by = 2) + 0.5,
+    ymin = -Inf,
+    ymax = Inf,
+    fill = "gray90",
+    alpha = 0.3
+  ) +
+  geom_linerange(
+    aes(color = ai_treatment,
+        ymin = ci_lower, ymax = ci_upper),
+    position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5), 
+             shape = 21,
+             size = 2.5,
+              color = 'white') +
+  labs(x = '', y = '% Agreement with Anti-Capitalist Position', caption = '**Agreement with OVS Capitalism Values Items**<br>Sample Mean with 95% Confidence Interval') +
+  theme(legend.title = element_blank(),
+        legend.position = 'inside',
+        legend.position.inside = c(6/7 - 0.05, .1),
+        legend.justification = c(0, 0.5),
+        legend.direction = 'vertical',
+        # legend.text = element_text(margin = margin(l = 0)),
+        legend.box.spacing = unit(0, 'cm'),
+        plot.caption = element_markdown(),
+        panel.grid.major.x = element_blank()) +
+  scale_y_continuous(labels = percent_format()) +
+  scale_fill_viridis_d(option = 'mako', end = 0.8) +
+  scale_color_viridis_d(option = 'mako', end = 0.8)
+```
+
+You'll notice that a) none of these difference are significant and b) even when we might be nearing the *ignis fatuus* of ["marginal" significance](https://www.bps.org.uk/research-digest/psychologists-love-report-marginally-significant-results-according-new-analysis), the results are inconsistent. When asked about the government taking over a larger share of the economy (the `control` item), those who received negative feedback were more likely to assent. However, on an item that really should be tapping the same ideas ('Do free-`market` economies keep the poor down or give people a fair chance'), the pattern is reversed.
+
+### Socialist/Laissez Faire Items {#slf-results}
+
+Another tranche of items came from [Heath, Evans, and Martin (1994)](https://www.jstor.org/stable/194188). As with the previous scale, we culled out those whose language seemed a throwback to an earlier era using a sophisticated NLP technique called "mid-Millennial/elder Gen Z *savoire faire*."^[Apparently we also added at least a couple of items from Leslie McCall's research, but I can no longer find their exact source.]
+
+Unlike the previous sentence-completion items, these were presented in a grid format:^[In case the image is too small to read the text, click [here](#slf-wording) to read the questions.]
+
+![](grid_items.png){fig-align="center"}
+
+One thing I always worry about when I (or anyone else) use a grid is that respondents will click in a straight-line.^[Occasionally I myself do this when I'm at a doctor's office and I'm given a bunch of possible pre-existing conditions I don't have.] I checked and only two respondents did this.
+
+Again, the scale 'worked' in that it was internally consistent (Cronbach's $\alpha=$ `r sr$slf_alpha`, $\Omega=$ `r sr$slf_omega`), traversed a wide range of assent, and differentiated liberals and conservatives.
+
+```{r}
+slf_ideo_bsp <- readRDS('slf_ideo_bsp.rds')
+n_categories <- length(unique(slf_ideo_bsp$variable))
+
+slf_ideo_bsp %>% 
+  mutate(
+    variable = 
+           str_remove(variable, 'slf_') %>%
+           str_replace('_', ' ') %>% 
+           str_to_title(),
+    variable = ifelse(variable == 'Redistrib', '<br><br>Redistribution', variable)) %>% 
+  ggplot(aes(x = reorder(variable, mean, FUN = max), y = mean, fill = ideo_libcon3)) +
+  annotate("rect",
+           xmin = seq(1, n_categories, by = 2) - 0.5,
+           xmax = seq(1, n_categories, by = 2) + 0.5,
+           ymin = -Inf,
+           ymax = Inf,
+           fill = "gray90",
+           alpha = 0.3) +
+  geom_linerange(
+    aes(color = ideo_libcon3,
+        ymin = ci_lower, ymax = ci_upper),
+    position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5), 
+             shape = 21,
+             size = 2.5,
+              color = 'white') +
+  labs(x = '', y = '% Agreement with Socialist Position', caption = '**Pct "Agree" with "Socialist" Option**<br>Sample Mean with 95% Confidence Interval') +
+  theme(legend.title = element_blank(),
+        legend.position = 'inside',
+        legend.position.inside = c(1 - 0.895, 0.85),
+        legend.frame = element_rect(fill = 'grey10'),
+        plot.caption = element_markdown(),
+        panel.grid.major.x = element_blank(),
+        axis.text = element_markdown()) +
+  scale_y_continuous(labels = percent_format()) +
+  # coord_flip() +
+  scale_fill_viridis_d(option = 'mako', end = 0.8) +
+  scale_color_viridis_d(option = 'mako', end = 0.8)
+```
+
+Also again, no consistent differences between the two treatment groups.
+
+
+```{r}
+slf_treatment_bsp <- readRDS('slf_treatment_bsp.rds')
+
+n_categories <- length(unique(slf_treatment_bsp$variable))
+
+slf_treatment_bsp %>% 
+  mutate(variable = str_to_title(str_remove(variable, 'slf_')),
+         ai_treatment = ifelse(ai_treatment == 'positive', '+ Feedback', '- Feedback')) %>% 
+  ggplot(aes(x = reorder(variable, mean, FUN = max), y = mean, fill = ai_treatment)) +
+  annotate(
+    "rect",
+    xmin = seq(1, n_categories, by = 2) - 0.5,
+    xmax = seq(1, n_categories, by = 2) + 0.5,
+    ymin = -Inf,
+    ymax = Inf,
+    fill = "gray90",
+    alpha = 0.3
+  ) +
+  geom_linerange(
+    aes(color = ai_treatment,
+        ymin = ci_lower, ymax = ci_upper),
+    position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5), 
+             shape = 21,
+             size = 2.5,
+              color = 'white') +
+  labs(x = '', y = '', caption = '**Pct "Agree" with "Socialist" Option**<br>Sample Mean with 95% Confidence Interval') +
+  theme(legend.title = element_blank(),
+        legend.position = 'inside',
+        legend.position.inside = c(6/7 - 0.05, .1),
+        legend.justification = c(0, 0.5),
+        legend.direction = 'vertical',
+        # legend.text = element_text(margin = margin(l = 0)),
+        legend.box.spacing = unit(0, 'cm'),
+        plot.caption = element_markdown(),
+        panel.grid.major.x = element_blank()) +
+  scale_y_continuous(labels = percent_format()) +
+  scale_fill_viridis_d(option = 'mako', end = 0.8) +
+  scale_color_viridis_d(option = 'mako', end = 0.8)
+
+```
+
+
+### Anti-Hierarchical Aggression
+
+We used the 13 items from the left-wing authoritarianism (LWA) scale developed in [Costello et al. (2022)](https://psycnet.apa.org/record/2021-74485-001) that tap the anti-hierarchical aggression facet of LWA. These were:
+
+* If I could remake society, I would put people who currently have the most privilege at the very bottom.
+* When the tables are turned on the oppressors at the top of society, I will enjoy watching them suffer the violence that they have inflicted on so many others.
+* *Most <span style="color: #3DB4AD;">rich</span> Wall Street executives deserve to be thrown in prison.*
+* Constitutions and laws are just another way for the powerful to destroy our dignity and individuality.
+* The current system is beyond repair.
+* We need to replace the established order by any means necessary.
+* Certain elements in our society must be made to pay for the violence of their ancestors.
+* *The <span style="color: #3DB4AD;">rich</span> should be stripped of their belongings and status.*
+* *<span style="color: #3DB4AD;">Rich</span> people should be forced to give up virtually all of their wealth.*
+* *America would be much better off if all of the <span style="color: #3DB4AD;">rich</span> people were at the bottom of the social ladder.*
+* Political violence can be constructive when it serves the cause of social justice.
+* If a few of the worst Republican politicians were assassinated, it wouldn’t be the end of the world.
+* I would prefer a far-left leader with absolute authority over a right-wing leader with limited power.
+
+Each item had seven response options arranged vertically below it, ranging from "Strongly disagree" to "Strongly agree". If you allow a humble researcher (me) to turn those qualitative responses into a 1 - 7 scale, the distribution of responses looks as follows:
+
+```{r}
+lwa_ideo_bsp <- readRDS('lwa_ideo_bsp.rds')
+n_categories <- length(unique(lwa_ideo_bsp$variable))
+
+lwa_ideo_bsp %>% 
+  mutate(
+    about_wealth = str_detect(variable, 'lwa_r_'),
+    variable = 
+           str_remove(variable, 'lwa_r_|lwa_') %>%
+           str_replace('_', ' ') %>% 
+           str_to_title(),
+    variable = ifelse(about_wealth, 
+                 paste0('<span style="color: #3DB4ADFF;">*', variable, '*</span>'), 
+                 variable)
+    ) %>% 
+  ggplot(aes(x = reorder(variable, mean, FUN = max), y = mean, fill = ideo_libcon3)) +
+  annotate(
+    "rect",
+    xmin = seq(1, n_categories, by = 2) - 0.5,
+    xmax = seq(1, n_categories, by = 2) + 0.5,
+    ymin = -Inf,
+    ymax = Inf,
+    fill = "gray90",
+    alpha = 0.3
+  )+
+  geom_linerange(
+    aes(color = ideo_libcon3,
+        ymin = ci_lower, ymax = ci_upper),
+    position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5), 
+             shape = 21,
+             size = 2.5,
+             color = 'white') +
+  labs(x = '', y = '', caption = '**Agreement with LWA Anti-Hierarchical Aggression Items**<br>Sample Mean with 95% Confidence Interval') +
+  theme(legend.title = element_blank(),
+        legend.position = 'inside',
+        legend.position.inside = c(0.85, 0.12),
+        plot.caption = element_markdown(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text = element_markdown()) +
+  coord_flip() +
+  scale_fill_viridis_d(option = 'mako', end = 0.9) +
+  scale_color_viridis_d(option = 'mako', end = 0.9)
+```
+
+
+Like the other scales, this LWA's "AHA" has high internal coherence (Cronbach's $\alpha=$ `r sr$lwa_alpha`, $\Omega=$ `r sr$lwa_omega`). Unlike the previous two, this scale is a bit wonkier as far as 'correctly' ordering liberals, moderates, and conservatives. The keen eye will notice that it's often _moderates_ who are higher in anti-hierarchical aggression than liberals. It's also a more 'difficult' scale: as a group, moderates are _never_ at or above the scale's midpoint (4). Again, no sigificant differences between treatment and control (not pictured).
+
+One very interesting thing, though. You'll notice that some of the items along the y-axis of the plot look <span style="color: #3DB4AD;">*like this*</span>. These items correspond to the statements I italicized in the list above and are the four items that explicitly mention "the rich." They *exquisitely* differentiate among different ideologies. There are only two other items in the scale that differentiate like this, the "prefer a far-left leader" item (unsurprising that liberals would be more sympathetic to a left leader) and the "assassinate Republicans" item (and we now know there's a [taste](https://www.fox5ny.com/news/hero-murderer-luigi-mangione-case-sparks-polarizing-reactions-online) for that). I think it's really interesting that "the rich" is such a strong ideological trigger.
+
+
+
+
+## Bonus Information on the Sample (For Free) {#biotsff}
+
+As I mentioned a moment a go, this leaves me with a relatively small sample. It also skews the sample more ideologically moderate and less politically engaged/interested than the original sample.^[If you want to know more about who ended up in this arm of the study, I would encourage you to go to the [Strategic SDO](../2025-01-12-sdo-ispa/index.qmd) post where I go through how those who identify with a side in the Israel-Palestine conflict (and consequently end up in the SDO arm) are different from those who do not (and are consequently included in the study discussed here).]
+
+```{r message=FALSE, warning=FALSE}
+d_clean <- 
+  d_clean %>%
+  mutate(study_arm = ifelse(str_detect(identify, 'Direct|Lean'), 'Strategic SDO', 'AI/Econ. Ideology'),
+         ideo_folded = factor(abs(as.numeric(ideo_libcon) - 4), 
+                              labels = c('Moderate', 'Slight', 'Mainline', 'Extreme'),
+                              ordered = TRUE))
+p1 <- 
+  d_clean %>%
+  mutate(pol_interest = fct_relabel(pol_interest, \(x) str_remove(x, ' interested'))) %>% 
+  ggplot(aes(x = pol_interest, fill = study_arm)) +
+  geom_bar(position = 'stack', alpha = 0.9) +
+  labs(x = '', y = '', subtitle = 'Political Interest') +
+  scale_fill_viridis_d(option = 'mako', begin = 0.2, end = 0.8) +
+  theme(#legend.title = element_blank(),
+        legend.position = 'none',
+        plot.subtitle = element_text(hjust = 1),
+        panel.grid.major.x = element_blank())
+
+p1_fill <- 
+  d_clean %>%
+  mutate(pol_interest = fct_relabel(pol_interest, \(x) str_remove(x, ' interested'))) %>% 
+  ggplot(aes(x = pol_interest, fill = study_arm)) +
+  geom_bar(position = 'fill', alpha = 0.9) +
+  labs(x = '', y = '', subtitle = 'Political Interest') +
+  scale_fill_viridis_d(option = 'mako', begin = 0.2, end = 0.8) +
+  theme(#legend.title = element_blank(),
+        legend.position = 'none',
+        plot.subtitle = element_text(hjust = 1),
+        panel.grid.major.x = element_blank()) +
+    scale_y_continuous(labels = percent_format())
+
+p2 <- 
+  d_clean %>%
+  ggplot(aes(x = ideo_folded, fill = study_arm)) +
+  geom_bar(position = 'stack', alpha = 0.9) +
+  labs(x = '', y = '', subtitle = 'Folded Ideology') +
+  scale_fill_viridis_d(option = 'mako', begin = 0.2, end = 0.8) +
+  theme(#legend.title = element_blank(),
+        legend.position = 'none',
+        plot.subtitle = element_text(hjust = 1),
+        panel.grid.major.x = element_blank())
+
+p2_fill <- 
+  d_clean %>%
+  ggplot(aes(x = ideo_folded, fill = study_arm)) +
+  geom_bar(position = 'fill', alpha = 0.9) +
+  labs(x = '', y = '', subtitle = 'Folded Ideology') +
+  scale_fill_viridis_d(option = 'mako', begin = 0.2, end = 0.8) +
+  theme(#legend.title = element_blank(),
+        legend.position = 'none',
+        plot.subtitle = element_text(hjust = 1),
+        panel.grid.major.x = element_blank()) +
+  scale_y_continuous(labels = percent_format())
+
+
+p3 <- 
+  ggplot(d_clean, aes(birth_yr, fill = study_arm, color = study_arm)) +
+  geom_density(alpha = 0.7) +
+  scale_fill_viridis_d(option = 'mako', begin = 0.2, end = 0.8) +
+  scale_color_viridis_d(option = 'mako', begin = 0.2, end = 0.8) +
+  theme(legend.position = 'bottom',
+        axis.text.y = element_blank()) +
+  labs(y = '', x = "Birth Year", fill = 'Sample: ') +
+  scale_x_continuous(breaks = 1950 + 10 * 0:5) +
+  guides(color = 'none')
+```
+
+::: { .panel-tabset }
+### Raw Numbers
+```{r}
+(p1 + p2) / p3
+```
+
+### Proportions
+```{r}
+(p1_fill + p2_fill) / p3
+```
+::: 
+
+The idea here isn't to take away specific numbers, but to determine if you think the selection into this sample would change your interpretation of it. The upper left member of the triptych, political interest, breaks down respondents' sample by their level of self-averred political interest.^[Political interested was measured with the question "How interested are you in politics?" to which people could choose among "{Not at all, Slightly, Somewhat, Very} Interested".] Only in the "Not at all interested" group is there rough parity between the two groups. "Not at all interested" is, though, by far the smallest group in the entire sample. 
+
+In the upper right, the sample is broken down by 'folded' ideology, whereby moderates form one group, _slight_ liberals/conservatives are counted together as one group, same for four-square liberals and conservatives, and way out on the end, all people who attach "extreme" to their ideology are grouped together. Folded ideology shows a similiar pattaren to interest. The *soi-disant* moderates are roughly equally split between the two samples, as were the not-at-all interested. For anyone who self-describes as slightly liberal/conservative, liberal/conservative, extremely liberal/conservative, they are much more likely to choose one of the two sides and send up in the Strategic SDO sample.
+
+Lest you think that extreme ideologues abound in the one arm while moderates populate the other, you can imagine the following thought experiment. If this entire study had been done in person and each arm had 100 people in it, what would the ideological breakdown be in the respective arms? If the 100 people in a given arm were in a room, how many of them would be slightly liberal, extremely conservative, etc.? 
+
+```{r}
+d_clean %>%
+  rowwise() %>%
+  mutate(id_direct = sum(c_across(c(id_israel, id_palestine))),
+         id_lean = ifelse(!is.na(id_israel_lean) & !is.na(id_palestine_lean),
+                          sum(c_across(c(id_israel_lean, id_palestine_lean))),
+                          0)) %>%
+  ungroup() %>%
+  mutate(ideo_libcon = fct_relabel(ideo_libcon, \(x) {
+    x %>% str_remove('/.*') %>%
+      str_replace(' ', '\n') %>%
+      str_to_title
+  })) %>% 
+  # count(identify, ideology) %>%
+  count(study_arm, ideo_libcon) %>%
+  mutate(prop = n/sum(n), .by = study_arm) %>%
+  ggplot(aes(x = ideo_libcon, y = prop, fill = study_arm)) +
+  geom_col(position = position_dodge(), alpha = 0.8) +
+  geom_text(aes(label = round(prop * 100)),
+            position = position_dodge(width = 0.9),
+            fontface = 'bold',
+            vjust = -0.15) +
+  scale_fill_viridis_d(option = 'mako', begin = 0.2, end = 0.8) +
+  theme(
+    # legend.title = element_blank(),
+    legend.position = 'inside',
+    legend.position.inside = c(0.85, 0.85),
+    panel.grid.major.x = element_blank(),
+    legend.text = element_markdown()) +
+  labs(x = '', y = 'Pct. Ideology With Arm', fill = 'Study Arm:') +
+  scale_y_continuous(labels = percent_format())
+```
+
+The distributions _are_ different. If effects were observed, the effect in the Strategic SDO arm would be more driven by liberals whereas the effect in this study would be more driven by moderates. How does that affect our findings? First, any differences between those in the positive versus negative treatment groups would still be a causal. There would be no "correlation does not equal causation"-ing this study. One could argue that the disproportionate amount of moderates in this study might make finding an effect easier because their economic ideology (such as it is) is less crystalized. Instead of being well-learned and bound up with their identity, it is more malleable and pragmatic. Or, alternatively, perhaps moderates are less ready to connect economic information with political views, making it less likely that an economic treatment will move political outcomes. Personally, I think ratiocination about potential heterogeneous treatment effects is still premature.^[Premature at least with regard to political ideology and interest. As I will remark later, age (which proxies as 'amount of time exposed to new dispensation), wealth, and skill level should be relevant moderators.]
+## Materials Appendix {#ma}
+
+All participants saw the following block of text
+
+> AI's Upending of the Economy
+
+> The World Economic Forum estimated that Artificial Intelligence (AI) will replace 85 million jobs by 2025. In advanced economies such as the United States, about 60% of jobs will likely be impacted by AI. While some jobs will benefit from AI integration via enhanced productivity, the lion’s share will be made partially or completely redundant. This will likely lower labor demand, leading to lower wages and reduced hiring. In the most extreme cases, some of these jobs may disappear altogether.
+
+> Though we know that AI will reshape wealth and income distribution, the ultimate winners and losers of the coming AI revolution are far from obvious. Counterintuitively, those with traditionally “low-prestige” jobs involving manual labor or skills learned at community colleges could find themselves in higher demand and making more money than those holding prestigious degrees, as AI’s first targets are those with “the most highly compensated, highly creative, and highly educated work” (Mollick, 2024).
+
+After reading that, they saw a screen with 
+
+> Now, we’d like to ask you a few questions about your job and field of occupation that will allow us to estimate how you and people with your work profile will fare in the post-AI economy.
+
+> We already have your age, level of highest education, and income, so we just need to ask four questions in order to calculate the most likely effects of AI on your future employment.
+
+And the four questions, with response options, were 
+
+1. What is your current occupation? [Open-ended responses]
+2. What is your current level of flexibility regarding remote work? (Fully remote, hybrid, on-site)
+3. In what field is your highest degree? [Open-ended responses]
+4. In your current role, does your work primarily involve interacting with people or analyzing data and information?
+    - Mostly processing information and analyzing data
+    - Mostly interacting with people
+
+I'm not sure I'll do this again, but it was a learning experience.
+
+## Socialist/Laissez Faire Text {#slf-wording}
+
+Here are the items (with [color indicating those that are reverse coded]{.red-text})
+
+* [Many people who get welfare don't really deserve any help]{.red-text}
+* The government should spend more on unemployment benefits, even at the expense of other government programs
+* [Most unemployed people could find a job if they really wanted one]{.red-text}
+* Luck explains people's misfortune as much as anything else
+* Management will always try to get the better of employees if it gets the chance
+* There is one law for the rich and one for the poor.
+* Working people do not get their fair share of the nation's wealth
+* Inequality continues to exist because it benefits the rich and powerful.
+* Differences in income in the US are too large.
+* It is the responsibility of the government to reduce the differences in income.]
+
+[Return](#slf-results) to item results.
