@@ -1,0 +1,370 @@
+<style>
+.survey-container {
+    max-width: 1200px;  /* Increased to accommodate columns */
+    margin: 20px auto;
+    font-family: system-ui, -apple-system, sans-serif;
+    column-count: 2;    /* Creates two columns */
+    column-gap: 2em;    /* Space between columns */
+}
+
+.question {
+    /* Prevent questions from breaking across columns */
+    break-inside: avoid-column;
+    margin-bottom: 1em;  /* Reduced from 2em */
+    padding: 0.75em;     /* Reduced from 1em */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;    /* Ensures white background */
+}
+
+.question-text {
+    margin-bottom: 0.5em;  /* Reduced from 1em */
+    font-size: 0.95em;     /* Reduced from 1.1em */
+    line-height: 1.3;      /* Reduced from 1.4 */
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;           /* Reduced from 0.8em */
+}
+
+.radio-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.3em;           /* Reduced from 0.5em */
+    font-size: 0.9em;     /* Added to make options smaller */
+}
+
+.radio-option input[type="radio"] {
+    margin-top: 0.2em;    /* Reduced from 0.3em */
+}
+
+.radio-option label {
+    line-height: 1.3;     /* Reduced from 1.4 */
+}
+</style>
+
+<div class="survey-container">
+    <!-- Israel Founding Question -->
+    <div class="question">
+        <p class="question-text">
+            When was the State of Israel officially proclaimed?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="founding-1" name="israel-founding">
+                <label for="founding-1">1945</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="founding-2" name="israel-founding">
+                <label for="founding-2">1948</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="founding-3" name="israel-founding">
+                <label for="founding-3">1950</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="founding-4" name="israel-founding">
+                <label for="founding-4">1967</label>
+            </div>
+        </div>
+    </div>
+
+<!-- Six-Day War Question -->
+    <div class="question">
+        <p class="question-text">
+            The 1967 Six-Day War had a significant impact on the region. Which of the following territories was NOT occupied by Israel as a result of the war?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="territory-1" name="territories">
+                <label for="territory-1">Gaza Strip</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="territory-2" name="territories">
+                <label for="territory-2">West Bank</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="territory-3" name="territories">
+                <label for="territory-3">Golan Heights</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="territory-4" name="territories">
+                <label for="territory-4">Sinai Peninsula</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="territory-5" name="territories">
+                <label for="territory-5">Southern Lebanon</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intifada Question -->
+    <div class="question">
+        <p class="question-text">
+            The term "Intifada" refers to:
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="intifada-1" name="intifada">
+                <label for="intifada-1">A peace treaty</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="intifada-2" name="intifada">
+                <label for="intifada-2">A political alliance</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="intifada-3" name="intifada">
+                <label for="intifada-3">A Palestinian uprising</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="intifada-4" name="intifada">
+                <label for="intifada-4">An Israeli settlement</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hamas Question -->
+    <div class="question">
+        <p class="question-text">
+            Which organization has been considered a terrorist group by Israel and the United States and also won the Palestinian legislative elections in 2006?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="hamas-1" name="hamas">
+                <label for="hamas-1">Fatah</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="hamas-2" name="hamas">
+                <label for="hamas-2">Hezbollah</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="hamas-3" name="hamas">
+                <label for="hamas-3">Hamas</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="hamas-4" name="hamas">
+                <label for="hamas-4">Islamic Jihad</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camp David Question -->
+    <div class="question">
+        <p class="question-text">
+            The Camp David Accords were signed by Egypt and Israel in 1978. Who were the leaders of Egypt and Israel at the time?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="camp-david-1" name="camp-david">
+                <label for="camp-david-1">Anwar Sadat and Menachem Begin</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="camp-david-2" name="camp-david">
+                <label for="camp-david-2">Hosni Mubarak and Yitzhak Rabin</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="camp-david-3" name="camp-david">
+                <label for="camp-david-3">Gamal Abdel Nasser and David Ben-Gurion</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="camp-david-4" name="camp-david">
+                <label for="camp-david-4">Mohammed Morsi and Benjamin Netanyahu</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Population Question -->
+    <div class="question">
+        <p class="question-text">
+            Which of the following statements is accurate?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="population-1" name="population">
+                <label for="population-1">The largest population group in Israel are white Europeans who came to the Middle East as colonizers</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="population-2" name="population">
+                <label for="population-2">The largest population group in Israel are Middle Eastern Jews from countries like Iraq and Syria</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="population-3" name="population">
+                <label for="population-3">The largest population group in Israel are Arab Muslims whose ancestors have lived in the region for thousands of years</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bombings Question -->
+    <div class="question">
+        <p class="question-text">
+            Please say whether the following statement is True or False: During the 1990s, members of the Palestinian resistance movement committed several suicide bombings of buses and restaurants.
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="bombings-1" name="bombings">
+                <label for="bombings-1">True</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="bombings-2" name="bombings">
+                <label for="bombings-2">False</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sabotage Question -->
+    <div class="question">
+        <p class="question-text">
+            Please say whether the following statement is True or False: During the 2010s, Israel sabotaged efforts to create a Palestinian state by promoting Palestinian groups dedicated to violence while undermining those dedicated to peace.
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="sabotage-1" name="sabotage">
+                <label for="sabotage-1">True</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="sabotage-2" name="sabotage">
+                <label for="sabotage-2">False</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assassination Question -->
+    <div class="question">
+        <p class="question-text">
+            Please say whether the following statement is True or False: An Israeli prime minister was once assassinated by a Muslim extremist.
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="assassination-1" name="assassination">
+                <label for="assassination-1">True</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="assassination-2" name="assassination">
+                <label for="assassination-2">False</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rockets Question -->
+    <div class="question">
+        <p class="question-text">
+            Please say whether the following statement is True or False: Most rockets fired into Israel from Gaza are aimed at Israeli military targets.
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="rockets-1" name="rockets">
+                <label for="rockets-1">True</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="rockets-2" name="rockets">
+                <label for="rockets-2">False</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Casualties Question -->
+    <div class="question">
+        <p class="question-text">
+            According to the United Nations estimates of how many Palestinians have died since the start of the current war, how many total deaths has Palestine suffered?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="casualties-1" name="casualties">
+                <label for="casualties-1">3,500</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="casualties-2" name="casualties">
+                <label for="casualties-2">15,000</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="casualties-3" name="casualties">
+                <label for="casualties-3">35,000</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="casualties-4" name="casualties">
+                <label for="casualties-4">150,000</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blockade Question -->
+    <div class="question">
+        <p class="question-text">
+            Which option below best completes the following statement: Israels blockade of the Gaza Strip _____.
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="blockade-1" name="blockade">
+                <label for="blockade-1">is targeted so that only military items are prevented from entering</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="blockade-2" name="blockade">
+                <label for="blockade-2">prevents items that easily could be made into military items from entering</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="blockade-3" name="blockade">
+                <label for="blockade-3">in some cases prevents even basic foodstuffs from entering</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Netanyahu Strategy Question -->
+    <div class="question">
+        <p class="question-text">
+            Which is the most accurate description of current Israeli Prime Minister Benjamin Netanyahus Hamas strategy over the course of his 16 years in power?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="netanyahu-1" name="netanyahu">
+                <label for="netanyahu-1">Netanyahu has worked to strengthen peaceful Palestinian political groups to sideline Hamas.</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="netanyahu-2" name="netanyahu">
+                <label for="netanyahu-2">Netanyahu has pursued hardline offensive policies to stamp out Hamas.</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="netanyahu-3" name="netanyahu">
+                <label for="netanyahu-3">Netanyahu often thwarted Palestinian peace initiatives in order to strengthen Hamas.</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aggressor Question -->
+    <div class="question">
+        <p class="question-text">
+            Which side has most often been the aggressor in the Israeli-Palestinian conflict?
+        </p>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="aggressor-1" name="aggressor">
+                <label for="aggressor-1">The Israelis have always been the aggressors</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="aggressor-2" name="aggressor">
+                <label for="aggressor-2">The Israelis have usually been the aggressors</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="aggressor-3" name="aggressor">
+                <label for="aggressor-3">The Israelis have have been somewhat more likely to be the aggressors</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="aggressor-4" name="aggressor">
+                <label for="aggressor-4">The Israelis and the Palestinians have been equally likely to be the aggressors</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="aggressor-5" name="aggressor">
+                <label for="aggressor-5">The Palestinians have have been somewhat more likely to be the aggressors</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="aggressor-6" name="aggressor">
+                <label for="aggressor-6">The Palestinians have usually been the aggressors</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="aggressor-7" name="aggressor">
+                <label for="aggressor-7">The Palestinians have always been the aggressors</label>
+            </div>
+        </div>
+    </div>
+</div>

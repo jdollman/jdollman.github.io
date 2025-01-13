@@ -2,7 +2,7 @@
 title: "The Ezra Klein Show"
 description: "What can we learn through text?"
 author: Justin Dollman
-date: 01-24-2023
+date: 01-24-2024
 categories: [R, tidytext, text analysis, Ezra Klein]
 image: zissou_swirls2.png
 draft: false

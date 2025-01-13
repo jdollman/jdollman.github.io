@@ -20,9 +20,7 @@ image: cbum-constitution.webp
 
 # NOTICE!
 
-This piece is currently up as a placeholder so that links in other pieces don't produce errors. The post will be finalized and posted the week of January 6th, 2025.
-
-# Introduction
+This piece is currently up as a placeholder so that links in other pieces don't produce errors. The post will be finalized and posted after I get a couple of subsidiary-yet-somehow-prerequisite measurement posts up. Ideal world: February. Real world: probably March.
 
 ```{r include=FALSE}
 library(tidytext)
@@ -46,26 +44,31 @@ theme_set(
 update_geom_defaults("text",  list(family = "IBM Plex Sans"))
 update_geom_defaults("label", list(family = "IBM Plex Sans"))
 
+gp21 <- function(...) {
+  geom_point(shape = 21, ...)
+}
+
+eb <- element_blank()
+
+syc <- scale_y_continuous
+sxc <- scale_x_continuous
+
 rf_model_out <- readRDS('rf_model_out.rds')
 d_clean <- readRDS('d_clean.rds')
 ```
 
-- The theory tested in the experiment
-  - Strategic SDO
-  - Discussion of sample selection will be in the descriptive results!
-- The descriptive results
-  - Who entered the study is 'who cares about Israel and Gaza'
-  - A new form of bias/favouritism: The Favored Facts Method
-  - (Liberal) Norms of war (Really the core dependent variable, according to our theory)
-  - The path not tread: (Liberal) Speech norms (classic Stoffer stuff)
 
-# Appendix or "Descriptive Insights"
+# Appendix (📉🫩🥱)<br>aka "Descriptive Insights" (📈🫨🎰)
 
 ## Sample Selection
 
-Unlike most studies, the method by which our sample entered provides information on the matter itself. As mentioned in the introduction, our design was to show partisans of the two sides either favorable or unfavorable information about the prospects of the side they identified with in post 10/7 conflict. Obviously, not everyone _is_ a partisan of one of the two sides. These people can't substantively participate in this experiment, so we wanted to detect them and have them participate in a different experiment (one where they could potentially contribute useful information). The very detection of these people provides the first interesting analysis.
+Unlike most studies, the self-selection of those who ended up in the Israel-Palestine study arm sheds light on the issue itself. As mentioned in the introduction, our design was to show partisans of the two sides either favorable or unfavorable information about the prospects of the side they identified with. Obviously, not everyone _is_ a partisan of one of the two sides. These people can't substantively participate in this experiment, so we wanted to detect them and have them participate in a different experiment (one where they could potentially contribute useful information). The detection of these people provides the first interesting analysis. 
 
-After asking a series of demographic questions, we asked the following question:
+As a reminder, we started with 712 participants demographically representative of the US adult population.[^representativeness-fn] 65 members of this original sample were excluded from all analyses as they sped through the survey faster than one could have read and understood the materials, much less given them any consideration. The $712 - 65 = 647$ remaining participants make up the starting point for all the comments that follow.
+
+[^representativeness-fn]: This a service CloudResearch offers. Also, it's possible that it was actually representative of the _electorate_, a non-identical but perhaps even more relevant population.
+
+After asking demographic questions, we asked the following question:
 
 ```{=html}
 <div class="survey-container">
@@ -95,11 +98,6 @@ After asking a series of demographic questions, we asked the following question:
 lean_denom <- nrow(d_clean) - (sum(d_clean$id_israel) + sum(d_clean$id_palestine))
 ```
 
-
-We started with 712 participants, 65 of whom were excluded from all analyses as they sped through the survey faster than one could have read and understood the materials.  under our consideration saw the first 
-
-
-
 Of the 647 non-speeders, `r sum(d_clean$id_israel)` (`r round(sum(d_clean$id_israel)/nrow(d_clean) * 100)`%) identified with the Israeli side, `r sum(d_clean$id_palestine)` (`r round(sum(d_clean$id_palestine)/nrow(d_clean) * 100)`%) identified with the Palestinian side, and the remaining `r lean_denom` (`r round(lean_denom/nrow(d_clean) * 100)`%) chose the third option. Those who chose the last option then saw:
 
 ```{=html}
@@ -126,9 +124,9 @@ Of the 647 non-speeders, `r sum(d_clean$id_israel)` (`r round(sum(d_clean$id_isr
 </div>
 ```
 
-Of these, `r sum(d_clean$id_israel_lean, na.rm = TRUE)` (`r round(sum(d_clean$id_israel_lean, na.rm = TRUE)/lean_denom * 100)`%) indicated that they lean toward the Israeli side, while `r sum(d_clean$id_palestine_lean, na.rm = TRUE)` (`r round(sum(d_clean$id_palestine_lean, na.rm = TRUE)/lean_denom * 100)`%) leaned toward the Palestinian side. That leaves `r lean_denom - (sum(d_clean$id_israel_lean, na.rm = TRUE) + sum(d_clean$id_palestine_lean, na.rm = TRUE))` (`r round((lean_denom - (sum(d_clean$id_israel_lean, na.rm = TRUE) + sum(d_clean$id_palestine_lean, na.rm = TRUE)))/lean_denom * 100)`%) again choosing neither side.
+Of these, `r sum(d_clean$id_israel_lean, na.rm = TRUE)` (`r round(sum(d_clean$id_israel_lean, na.rm = TRUE)/lean_denom * 100)`%) indicated that they lean toward the Israeli side, while `r sum(d_clean$id_palestine_lean, na.rm = TRUE)` (`r round(sum(d_clean$id_palestine_lean, na.rm = TRUE)/lean_denom * 100)`%) leaned toward the Palestinian side, leaving `r lean_denom - (sum(d_clean$id_israel_lean, na.rm = TRUE) + sum(d_clean$id_palestine_lean, na.rm = TRUE))` (`r round((lean_denom - (sum(d_clean$id_israel_lean, na.rm = TRUE) + sum(d_clean$id_palestine_lean, na.rm = TRUE)))/lean_denom * 100)`%) again choosing neither side.
 
-All in all, the flow of participants looks as follows:
+All in all, the flow of participants as a minimalist pipe diagram looks as follows:
 
 ```{r}
 sankey_long = readRDS('sankey_long.rds')
@@ -149,13 +147,15 @@ ggplot(sankey_long, aes(x = x,
   guides(color = 'none') 
 ```
 
-Some may see this and think, so what? Some people identify with one side or the other and some identify with neither. It's life! But this _should_ be strange. First, leaving aside the particulars of the conflict, Americans are (in)famous for not caring about foreign affairs. The fact that `Neither` was the least frequent choice (by far) would rattle some _cocos_. Second, it would be very surprising to a time-traveller from just a few years ago that the plurality of a representative-ish sample identified with _Palestine_. Lastly and related to the previous points, the Gaza conflict has proven to be a subject that evokes passions.^[Upon reading a draft of this, a colleague remarked that, however stongly one feels about the two sides of the conflict over Gaza, the most odious group is, past any doubt, the survey speedsters. This colleague is a ne'er-do-well.] Among those who lean towards one of the two sides, there are likely those who were driven to change vote because of it, people protested, others counterprotested, etc. The causes and effects of this identification is worth studying.^[Let's hope even the associations are worth studying haha lol].
+Some philistine may see this and think, 'So what? Some people identify with one side or the other and some identify with neither. It's life!' But for those alive at the time, I think we remember the Gaza conflict as a subject that evoked passions, to say the least. The issue led many compatriots to change their vote, to note vote, to go out in protest, to counterprotest, etc. Among those could be considered 'terminally online', it would seem strange to _not_ be a partisan of one of the sides. But if we leave aside the particulars of the conflict, Americans are (in)famous for not caring about foreign affairs. Maybe that's your prior, instead.^[Savvy as you are, you consumer of stylized public opinion factoids!]
+
+In the end, I think both priors would have been surpirsed by the proportion of identifiers (and leaners) indicated by this sample. As mentioned, 53% chose a side when first asked the question, a number which rose by about half when the threshold was lowered to merely _leaning_ toward one of the sides.
+
+But there's another thing that would be much more surprising to a time-traveller from the recent past, regardless of their priors about American's strength of feeling about foreign affairs: the plurality of this representative-ish sample identified with _Palestine_. Though I doubt this superiority in numbers would pass any reasonable test of statistical significance, even not being able to reject a null of equal identification would have been shocking as of just a [few](https://ropercenter.cornell.edu/blog/american-public-and-israel) [years](https://forward.com/opinion/397048/almost-everything-you-knew-about-the-polls-and-israel-is-wrong/)  [ago](https://www.pewresearch.org/global/2006/07/19/the-us-publics-pro-israel-history/).
 
 ### Background Variables
 
-To understand who identifies with which side (or no side at all), I ran a random forest model predicting respondents' ideological categorization into one of five categories (no identification, plus 'direct' and 'lean' identification with the two sides).^[For those unfamiliar with random forests, there is an explanation forthcoming!]
-
-Which demographic variables were important in determining whether people identified with Israel or Palestine?
+To understand who identifies with which side, or at least which demographic variables are important in predicting identification, I ran a random forest model.^[For those unfamiliar with random forests, there is an explanation forthcoming! For now just look at the colorful dots and think "machine learning is cool. The guy who made this must be really cool."] Specifically, I predicted respondents' "identification" category (no identification, plus 'direct' and 'lean' identification with the two sides) using (mostly) demographic variables.^[I'm including political interest and ideology, which aren't demographic. In fact, they're almost certainly endogenous! I'll address that in the final version of the post (and I'll also include characterological variables, Big Five and authoritarianism.)]
 
 ```{r}
 ggplot(rf_model_out, aes(Value, reorder_within(variable, Value, Metric), # `reorder_within` from `tidytext`
@@ -180,11 +180,13 @@ ggplot(rf_model_out, aes(Value, reorder_within(variable, Value, Metric), # `reor
   scale_color_viridis_c(option = 'A', begin = 0.1, end = 0.9)
 ```
 
+[Commentary forthcoming.]
+
 ```{r}
 ideo_acc_coef <- round(rf_model_out[with(rf_model_out, variable == 'Pol. Ideology' & Metric == 'Accuracy'),]$Value)
 ```
 
-In the plot below we can see a result of political ideology's importance is such an important variable in determining which side (if any) a person identifies with in the conflict. The plurality of all types of liberals identifies with Palestine, the plurality of self-described moderates identifies with neither sid, and the plurality of conservatives identify with Israel.
+In the plot below we can see why political ideology is so important in determining (associationally) which side (if any) a person identifies with in the conflict. The majority of all types of liberals identifies with Palestine, the plurality of self-described moderates identifies with neither sid, and the majority of conservatives identifies with Israel.
 
 ```{r}
 d_clean %>%
@@ -233,11 +235,15 @@ d_clean %>%
         panel.grid.major.x = element_blank())
 ```
 
-You can think of this plot as telling you, "If you meet a random person from this generation, what is the probability that they fall into one of these buckets?" And you see extremely strong generational effects. Whereas the plurality of Baby Boomers and Gen Xers identify with Israel, Israel identification is the *least* chosen option among both millennials and gen z. In fact, in both of those groups, identification with the Palestinian side of the conflict is about *twice* as frequent as identification with Israel.
+You can think of this plot as telling you, "If you meet a random person from {generation}, what is the probability that identify with/lean toward {Israel, Palestine, neither side}?" And you see extremely strong generational effects. Whereas the majority of Baby Boomers and plurality of Gen Xers identify with Israel, Israel identification is the *least* chosen option among both Millennials and Gen z. In fact, in both of those groups, identification with the Palestinian side of the conflict is about *twice* as frequent as identification with Israel.[^not-new-news]
+
+[^not-new-news]: This is not new news. The Brookings Institute noted [it](https://www.brookings.edu/articles/the-generation-gap-in-opinions-toward-israel/) at the outset of the conflict, referencing a [Pew survey](https://www.pewresearch.org/global/2022/07/11/american-views-of-israel/) from 2022.
 
 ### Political Interest
 
-Instead of asking which side people identify with, we can look at how quickly they identify as a function of their self-reported political interest.^[Political interested was measured with the question "How interested are you in politics?" to which people could choose among "{Not at all, Slightly, Somewhat, Very} Interested".<br>I should mention that it's very important to refer to political interest measured this way "_self-reported_ political interest" because political interest is like news consumption and voting in that all three conform to House MD's maxim, "Everyone lies."] As one would expect, the likelihood of identifying with one of the sides more than doubled going from those who said that they're not at all interested in politics to those who report being very interested in politics.
+Instead of asking which side people identify with, we can look at how readily they identify with a side as a function of their self-reported political interest.[^pol-interest] As one would expect, the likelihood of identifying with one of the sides more than doubled going from those who said that they're not at all interested in politics to those who report being very interested in politics.
+
+[^pol-interest]: Political interested was measured with the question "How interested are you in politics?" to which people could choose from the options, not at all interested, slightly interested, somewhat interested, very interested. I should mention that it's very important to refer to political interest measured this way "_self-reported_ political interest" because political interest is like news consumption and voting in that all three conform to House MD's maxim, "Everyone lies."
 
 ```{r}
 d_clean %>%
