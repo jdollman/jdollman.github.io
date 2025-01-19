@@ -11,9 +11,11 @@ format:
     fig-align: "center"
     css: styles.css
     embed-resources: true
+    meta:
+      robots: "noindex, nofollow"
 reference-location: margin
 image: debunkbotte.webp
-draft: true
+draft: false
 ---
 
 ```{r message=FALSE}
