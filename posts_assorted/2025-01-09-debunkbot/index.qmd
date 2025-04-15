@@ -1,6 +1,6 @@
 ---
 title: "Debunkbot Analysis"
-description: "Replicating Costell, Rand, Pennycook (2024)"
+description: "Replicating Costello, Rand, Pennycook (2024)"
 author: "Justin Dollman"
 date: 01-09-2025
 format:
