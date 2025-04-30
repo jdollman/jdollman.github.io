@@ -1,0 +1,92 @@
+---
+title: "AISF Final Project"
+description: "AI Talk as a Fraction of Podcast Discourse"
+author: "Justin Dollman"
+date: 04-29-2025
+format:
+  html:
+    grid:
+    margin-width: 350px
+    echo: false
+    fig-align: "center"
+    css: styles.css
+    embed-resources: true
+reference-location: margin
+#image: debunkbotte.webp
+draft: false
+---
+
+As much as I would have liked to have a proper submission for AISF's Governance course final project, I bit off more than I could chew given my constraints.^[I bit off: learning how to navagate Google Cloud and Amazon Web Services, building with Docker, developing command line wizardry, reviewing Python's `spaCy`, transcribing audio to text *en masse*, finding out how much money converting audio-to-text *en masse* costs, publishing an [`R` package](https://jdollman.github.io/callm/), many more things I'm too harried to recall, but mostly, spending hours and hours obtaining and cleaning data.] What follows is more of a promissory note than an actual submission (though the project _will_ be completed). I will not be offended if you, my esteemed reader, do not read it in full.
+
+Essentially, I now have four datasets, each one a podcast's entire history. The podcasts for which I thought it interesting to collect data for an AI Governance course were 80,000 Hours, All In, The Ezra Klein Show, and Hard Fork. In their respective sections I give unique reasons why a given podcast is interesting from an AI perspective, but one characteristic common to all four is that they are more sensitive to developments in AI than other similarly 3/4^th^-brow podcasts. Though they are sensitive to developments in AI, not one of the four is dedicated to artificial intelligence, which makes it possible to track the extent to which artificial intelligence is becoming more societally important by measuring the relative proportion of time each podcast allocates to AI.
+
+What you will see below is just that: a time series for each podcast representing the percentage of episodes on, words spoken about, or time spent discussing AI over a given length of time (e.g., a quarter).^[For 80k Hours and All In, I determined when they were talking about AI using episode-level metadata (80,000 Hours' own keyword scheme and All In's episode time stamps, in each case). For Hard Fork and the Ezra Klein Show, the information was derived from the text of the episode itself. In the former case this involved segmenting the utterance-level transcript into sections and then classifying each section as about AI or not. For the Ezra Klein Show it was an episode-level judgment based on a random (and large) sample of text from the episode.]
+
+## 80k Hours (2017-*present*)
+
+Most readers will already know about the [80,000 Hours podcast](https://80000hours.org/podcast/). If the reader is a current 80k listener, they will know that Rob Wiblin & Co. are very consciously shifting their focus toward AI.
+
+This can be seen by the increasing episode share dedicated to AI:
+
+
+![](aisf_images/80k.png)
+
+## All In (2020-*present*)
+
+The original idea for this transcript project was to _only_ analyze [All In](https://en.wikipedia.org/wiki/All-In_(podcast)), due to its unique niche in the podcast ecology as a right-leaning podcast (and now fully Trumpist podcast). One of the four regular hosts, David Sacks, is currently Donald Trump's "AI and Crypto Czar" ([here](https://www.presidency.ucsb.edu/documents/statement-president-elect-donald-j-trump-announcing-the-appointment-david-o-sacks-white)).
+
+For now, however, this plot will have to suffice:
+
+![](aisf_images/allin.png)
+
+## The Ezra Klein Show (2021-*present*)
+
+Ezra Klein is a powerful man. He [single-handedly](https://www.newyorker.com/news/annals-of-communications/how-ezra-klein-helped-set-the-stage-for-kamala-harriss-nomination) got Biden to [drop out](https://www.nytimes.com/2024/02/16/opinion/ezra-klein-biden-audio-essay.html) of the [2024](https://www.nytimes.com/2024/06/28/opinion/ezra-klein-podcast-presidential-debate.html) [Presidential race](https://www.semafor.com/article/08/18/2024/the-new-york-times-ezra-klein-problem) and more recently "*Abundance*-pilled" the Democratic party. Significantly, during *Abundance*'s book tour, he made appearances on two podcasts Kamala Harris was criticized for not appearing on (Lex Fridman and All In). Is he going to run for president in 2028? Who can say?^[Ok, I'm joking at this point.]
+
+Klein takes A(G)I very seriously. Very early in the podcast's life, and before the release of ChatGPT, he had on [Sam Altman](https://www.nytimes.com/2021/06/11/opinion/ezra-klein-podcast-sam-altman.html). More recently, Ezra has started transformative AI seriously; Ezra had on [Dario Amodei](https://www.nytimes.com/2024/04/12/opinion/ezra-klein-podcast-dario-amodei.html) when the latter published his "[Machines of Loving Grace](https://www.darioamodei.com/essay/machines-of-loving-grace)" and most recently as of writing, Ezra had on [Ben Buchanan](https://www.nytimes.com/2025/03/04/opinion/ezra-klein-podcast-ben-buchanan.html), Biden's special adviser for artificial intelligence.
+
+That said, I was surprised to find how few of his episodes were about AI. It was so few, in fact, that instead of plotting percentages I decided to plot the raw counts:
+
+![](aisf_images/eks.png){width='110%'}
+
+
+## Hard Fork (2022-*present*)
+
+[Hard Fork](https://www.nytimes.com/column/hard-fork) is the New York Times' tech podcast hosted by Kevin Roose and Casey Newton. If not already well-known in the AI world by 2023, Roose became famous early that year for his strangled-in-the-crib tryst with one Miss [Sydney Gates](https://www.nytimes.com/2023/02/16/technology/bing-chatbot-transcript.html). Roose has gone on to write articles taking [A(G)I](https://www.nytimes.com/2025/03/14/technology/why-im-feeling-the-agi.html) [very](https://www.nytimes.com/2025/04/03/technology/ai-futures-project-ai-2027.html) [seriously](https://www.nytimes.com/2025/04/24/technology/ai-welfare-anthropic-claude.html). 
+
+Of similar import, Casey Newton is (in)famous for having a boyfriend who works at Anthropic.^[The latter apparently going by the moniker "Manthropic"]
+
+![](aisf_images/hard_fork.png)
+
+
+## Into the Future
+
+As hinted at in the beginning of this document, obtaining the entire transcript backlog for all four has been a long "journey." But now that I have collected, cleaned, and labeled each podcast's sections as about AI or not, the next steps will be relatively straightforward. Above, I only looked at how much attention these podcasts dedicate to AI, which one can think of as gauging whether or not these podcasts are "Feeling the A(G)I".
+
+The next step involve asking
+
+* When they talk about AI, what _specifically_ do they talk about? What different _aspects_ of it do they talk about?
+* What proportion of AI-talk is about AI safety?
+* Do they discuss the intersection of government and AI? If so, do they advocate for or militate against specific policies?
+
+And when I disaggregate into the facets of AI discussion, I'll be able to measure speakers' affect/stance toward that facet (e.g., speakers' optimism about our AI future, speakers' views on specific regulations like California's [SB 1047](https://en.wikipedia.org/wiki/Safe_and_Secure_Innovation_for_Frontier_Artificial_Intelligence_Models_Act)).  My tentative categories include the following: 
+
+* **`Topic: AI Safety`** (`BOOL`)
+    * Identifies discussion focused on potential catastrophic risks from advanced AI (e.g., loss of control, existential threats) or specific measures aimed at preventing such outcomes (e.g., alignment, control methods).
+
+* **`Topic: Economic implications of AI`** (`BOOL`)
+    * Flags segments discussing AI's impact on broader economic aspects like jobs, productivity, wages, market structures, or economic inequality.
+
+* **`Topic: Shop talk`** (`BOOL`)
+    * Detects technical conversations about the inner workings of AI, including specific algorithms, models, hardware, training data, or performance metrics.
+
+* **`Belief: AI Progress is fast`** (`BOOL`)
+    * Checks if the speaker expresses that AI development is currently happening very quickly or accelerating.
+
+* **`Affect: General valence`** (`STR` $\in$ \{"Positive", "Negative", "Neutral"\})
+    * Captures the overall emotional tone or attitude expressed by the speaker(s) towards AI – are they generally optimistic, concerned, or objective/neutral in the snippet?
+
+* **`Belief: Transformative AI`** (`BOOL`)
+    * Looks for discussion around concepts like Artificial General Intelligence (AGI), superintelligence, or the idea that AI represents a fundamental shift capable of radically transforming society beyond typical technological impacts.
+
+Since this project is only just beginning, I will forgo a conclusion. In lieu of wrapping up, I'd invite anyone interested in seeing any particular analysis of any of these podcasts to drop a line, make a recommendation, and you can be the first to find out what the result is!

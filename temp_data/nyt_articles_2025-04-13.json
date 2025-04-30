@@ -1,0 +1,1122 @@
+[
+  {
+    "id": "nyt://article/239d9fd8-7f5e-5120-9e19-a40d1d2d241f",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Musk\u2019s Latest Fraud Finding Isn\u2019t What It Seems",
+    "abstract": "His team found cases of seemingly fake people receiving unemployment benefits. But that fake data exists for a reason.",
+    "url": "https://www.nytimes.com/2025/04/12/upshot/musk-doge-fraud-claims.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:09.884144+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/cec27599-8915-564e-9b52-61413915048c",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "A Lot About Trump Doesn\u2019t Add Up",
+    "abstract": "A very petty man in a very powerful job.",
+    "url": "https://www.nytimes.com/2025/04/12/opinion/trump-presidency-multitasking.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:11.269558+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/61c9c5b0-b170-5552-800e-b621d0b20f1a",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "In South Carolina, a Once Thriving Textile Hub Is Baffled by Trump\u2019s Tariffs",
+    "abstract": "The Upstate region of South Carolina was saved by foreign companies after the fall of its textile industry. Now, tariffs pose another round of uncertainty.",
+    "url": "https://www.nytimes.com/2025/04/12/us/south-carolina-manufacturing-tariffs.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:12.583081+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/9d25dee4-5796-5bbe-bb4d-d5e50021cd4d",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Trump Showed His Pain Point in His Standoff With China",
+    "abstract": "Xi Jinping, who rules with absolute authority, has shown he is willing to let the Chinese people endure hardship. President Trump revealed he has limits.",
+    "url": "https://www.nytimes.com/2025/04/11/business/us-china-tariffs-trump-xi.html",
+    "published_date": "2025-04-11",
+    "classification_timestamp_utc": "2025-04-13T09:00:13.934795+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ae07a4f3-b4b1-59b5-9009-1ca050af4c67",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Before a Fatal Helicopter Crash, 2 Midair Breakdowns and Unpaid Bills",
+    "abstract": "The charter firm whose helicopter plunged into the Hudson River, killing the pilot and a family of five, had been struggling financially, records show.",
+    "url": "https://www.nytimes.com/2025/04/12/nyregion/nyc-helicopter-family-crash.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:15.284280+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/b588cdd6-587a-523a-806f-a1823878b893",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Trump Is on a Path to Failure",
+    "abstract": "The fact that Trump survived bad trajectories before doesn\u2019t mean that this one is destined to reverse.",
+    "url": "https://www.nytimes.com/2025/04/12/opinion/trump-tariffs-catastrophe.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:16.590095+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ebc6e733-5d1d-5276-9dca-38b7e36c3855",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Bessent Takes Tricky Center Stage as Trade Wars Roil U.S. Economy",
+    "abstract": "The Treasury secretary received counsel and criticism from some of his predecessors over President Trump\u2019s policies.",
+    "url": "https://www.nytimes.com/2025/04/12/us/politics/bessent-trump-treasury-tariffs.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:17.932345+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/5edb885b-c828-52b2-8aea-93df67777e04",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Flashback: Your Weekly History Quiz, April 12, 2025",
+    "abstract": "Can you sort 8 historical events?",
+    "url": "https://www.nytimes.com/interactive/2025/04/11/upshot/flashback.html",
+    "published_date": "2025-04-11",
+    "classification_timestamp_utc": "2025-04-13T09:00:19.249829+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/3ef63f7c-f9a7-5a1e-b008-1ee1eaf02ac0",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Trump\u2019s Tariff Pause Is Less Than Meets the Eye",
+    "abstract": "The president extols tariffs as a miracle cure, but using them indiscriminately will only make the economic pain worse.",
+    "url": "https://www.nytimes.com/2025/04/12/opinion/trump-tariffs-free-trade-economy.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:20.594623+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/aed4628b-1039-5983-b0b6-a1dc12cc01f7",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Whitmer Shows How Democrats Are Playing With Fire in Cozying Up to Trump",
+    "abstract": "The Michigan governor\u2019s awkward Oval Office appearance reflected how several Democratic state leaders are cultivating cordial but politically risky relationships with the president.",
+    "url": "https://www.nytimes.com/2025/04/12/us/politics/gretchen-whitmer-trump-democrats.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:21.923678+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/4c116ee7-fa98-58ca-8a25-6fae9de4b6e4",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "Michelle Obama Addresses Divorce Rumors and Public Absences",
+    "abstract": "The former first lady said on a podcast that people \u201ccouldn\u2019t even fathom that I was making a choice for myself, that they had to assume that my husband and I are divorcing.\u201d",
+    "url": "https://www.nytimes.com/2025/04/10/us/michelle-obama-divorce-rumors.html",
+    "published_date": "2025-04-10",
+    "classification_timestamp_utc": "2025-04-13T09:00:23.304625+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/6e14b76a-5a4e-5ff4-926e-513652628872",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "A Tragic End to a Helicopter Pilot\u2019s New Adventure",
+    "abstract": "Seankese Johnson, 36, was killed along with five passengers when the sightseeing helicopter he was flying suddenly crashed into the Hudson River near Jersey City.",
+    "url": "https://www.nytimes.com/2025/04/11/nyregion/seankese-johnson-nyc-helicopter-crash.html",
+    "published_date": "2025-04-11",
+    "classification_timestamp_utc": "2025-04-13T09:00:24.692458+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/c4b26886-5c87-58c8-9f90-98d45386d563",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "She\u2019s Young, Trump-Friendly, and Has a White House Press Pass",
+    "abstract": "Natalie Winters, a prot\u00e9g\u00e9e of Stephen Bannon, belongs to a newly high-profile contingent of West Wing reporters.",
+    "url": "https://www.nytimes.com/2025/04/11/style/natalie-winters-trump-bannon.html",
+    "published_date": "2025-04-11",
+    "classification_timestamp_utc": "2025-04-13T09:00:26.090112+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/4ecd0ab1-951a-57c7-8f3b-3865b4a002c8",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "In a Snow Paradise, They Live in This Parking Lot",
+    "abstract": "People experiencing homelessness can sleep in their cars in this wealthy ski town in Colorado, but only if they have a job.",
+    "url": "https://www.nytimes.com/2025/04/11/realestate/colorado-homeless-parking-lot-affordable-housing.html",
+    "published_date": "2025-04-11",
+    "classification_timestamp_utc": "2025-04-13T09:00:27.399976+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/a765c77b-836c-5881-82b3-82dc49d61f61",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "He Was Held Captive in His Room for Decades. Then He Set It on Fire.",
+    "abstract": "Firefighters found a 32-year-old man who weighed 68 pounds. The police say his stepmother locked him away when he was 12.",
+    "url": "https://www.nytimes.com/2025/04/08/nyregion/ct-waterbury-captive.html",
+    "published_date": "2025-04-08",
+    "classification_timestamp_utc": "2025-04-13T09:00:28.696263+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/6f3f096f-aa9b-57f8-b29e-27cb6cd1916e",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "The New York Times News Quiz, April 11, 2025",
+    "abstract": "Did you follow the news this week? Take our quiz to see how well you stack up with other Times readers.",
+    "url": "https://www.nytimes.com/interactive/2025/04/11/briefing/trump-tariffs-stocks-dominican-republic.html",
+    "published_date": "2025-04-11",
+    "classification_timestamp_utc": "2025-04-13T09:00:29.986779+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/b284484d-318d-5df0-a6c5-b052872049ff",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "F.B.I. Suspends Employee on Patel\u2019s So-Called Enemies List",
+    "abstract": "The employee was a longtime counterintelligence analyst who had worked on the F.B.I.\u2019s investigation examining Russian meddling in the 2016 presidential election.",
+    "url": "https://www.nytimes.com/2025/04/11/us/politics/fbi-suspends-employee-patel-enemies.html",
+    "published_date": "2025-04-11",
+    "classification_timestamp_utc": "2025-04-13T09:00:31.391237+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/4b31d087-d5ac-55bf-8e49-7ac1fabc3905",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "When The Dogist Gets Married, the \u2018Dog of Honor\u2019 Wears a Custom Dress",
+    "abstract": "Elias Friedman, a well-known photographer, and Samantha Cutler met as teens. Both love dogs, but it would be years before they loved each other.",
+    "url": "https://www.nytimes.com/2025/04/11/style/the-dogist-elias-friedman-samantha-cutler-wedding.html",
+    "published_date": "2025-04-11",
+    "classification_timestamp_utc": "2025-04-13T09:00:32.720178+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/0bbc1a6c-1b19-59dc-a5e9-6bd02780569e",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "How the G.O.P. Fell in Love With Putin\u2019s Russia",
+    "abstract": "What explains the Trump administration\u2019s radical reversal toward Moscow?",
+    "url": "https://www.nytimes.com/2025/04/12/magazine/trump-russia-putin.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:34.053016+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/26a1778c-ded0-5ce1-a072-559fb6581c09",
+    "endpoint_source": "most_popular_viewed_1",
+    "title": "As Tariffs Hit, Americans Are Racing to Buy Car Seats, iPhones and Christmas Gifts",
+    "abstract": "Many Americans have purchased foreign-made products out of fears that companies could start to raise prices soon.",
+    "url": "https://www.nytimes.com/2025/04/12/us/politics/tariffs-china-iphones-panic-shopping.html",
+    "published_date": "2025-04-12",
+    "classification_timestamp_utc": "2025-04-13T09:00:35.369440+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/5cc0e1cd-5ca1-5524-b527-8f84452c762d",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Supreme Court Sides With Wrongly Deported Migrant",
+    "abstract": "A trial judge had ordered the Trump administration to take steps to return the migrant, Kilmar Armando Abrego Garcia, from a notorious prison in El Salvador.",
+    "url": "https://www.nytimes.com/2025/04/10/us/politics/supreme-court-trump-deported-migrant.html",
+    "published_date": "2025-04-10",
+    "classification_timestamp_utc": "2025-04-13T09:00:37.088488+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/13baf81b-0702-544a-91f0-77cca10ca7dd",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Wall Street Bursts With Anger Over Tariff \u2018Stupidity\u2019",
+    "abstract": "Billionaire investors are in an unfamiliar position, watching and cringing as tariffs roll on and the stock market reels.",
+    "url": "https://www.nytimes.com/2025/04/08/business/trump-tariff-wall-street-reaction.html",
+    "published_date": "2025-04-08",
+    "classification_timestamp_utc": "2025-04-13T09:00:38.468378+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/d1bb9665-31b2-58b5-8ddc-adaa60c746cd",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Producing Something This Stupid Is the Achievement of a Lifetime",
+    "abstract": "Maybe we\u2019re just not good at thinking anymore.",
+    "url": "https://www.nytimes.com/2025/04/10/opinion/education-smart-thinking-reading-tariffs.html",
+    "published_date": "2025-04-10",
+    "classification_timestamp_utc": "2025-04-13T09:00:39.768623+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/16a77916-913f-5219-a6fa-9bdbb64f2947",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Social Security Lists Thousands of Migrants as Dead to Prompt Them to \u2018Self-Deport\u2019",
+    "abstract": "By placing migrants in Social Security\u2019s \u201cdeath master file,\u201d the Trump administration is seeking to cut off their access to credit cards, bank accounts and other financial services.",
+    "url": "https://www.nytimes.com/2025/04/10/us/politics/migrants-deport-social-security-doge.html",
+    "published_date": "2025-04-10",
+    "classification_timestamp_utc": "2025-04-13T09:00:41.081922+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/7bd708df-ffe6-5085-89f0-7878b8cc4662",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "From \u2018Be Cool!\u2019 to \u2018Getting Yippy\u2019: Inside Trump\u2019s Reversal on Tariffs",
+    "abstract": "Economic turmoil, particularly a rapid rise in government bond yields, caused President Trump to reverse course on the steep levies.",
+    "url": "https://www.nytimes.com/2025/04/09/us/politics/trump-tariff-pause-be-cool.html",
+    "published_date": "2025-04-09",
+    "classification_timestamp_utc": "2025-04-13T09:00:42.458243+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/e43e537a-4428-56f4-875f-6f181810a693",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Supreme Court Clears Way for Venezuelan Deportations to Resume, for Now",
+    "abstract": "A majority of the justices concluded that the Venezuelan migrants had brought their cases in the wrong court but that they were entitled to an opportunity to challenge their removal.",
+    "url": "https://www.nytimes.com/2025/04/07/us/politics/supreme-court-trump-venezuelan-deportations.html",
+    "published_date": "2025-04-07",
+    "classification_timestamp_utc": "2025-04-13T09:00:43.850655+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/cd89e2f6-dff3-5f5f-b59c-6f22cda5deb4",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Supreme Court Temporarily Blocks Order Requiring Return of Wrongly Deported Migrant",
+    "abstract": "The chief justice, acting on his own, issued an \u201cadministrative stay,\u201d a brief pause meant to give the court time to consider the matter. The justices are expected to act in the coming days.",
+    "url": "https://www.nytimes.com/2025/04/07/us/politics/supreme-court-wrongly-deported.html",
+    "published_date": "2025-04-07",
+    "classification_timestamp_utc": "2025-04-13T09:00:45.161822+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/caabc083-ad5a-5c29-b577-c7fc88a1e58c",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Trump Family\u2019s Cash Registers Ring as Financial Meltdown Plays Out",
+    "abstract": "The party was on at a Saudi-backed LIV Golf tournament at the president\u2019s Doral resort in Florida and a fund-raiser at Mar-a-Lago, even as markets tumbled.",
+    "url": "https://www.nytimes.com/2025/04/05/us/politics/trump-family-saudi-golf.html",
+    "published_date": "2025-04-05",
+    "classification_timestamp_utc": "2025-04-13T09:00:46.493631+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/a0d65d2a-6dbc-5da5-bdd2-ecc265b77c70",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Trump Has Everything Under Control",
+    "abstract": "Will President Trump\u2019s tariffs go down as one of the 100 worst decisions in presidential history? 50? 10?",
+    "url": "https://www.nytimes.com/2025/04/07/opinion/trump-tariffs-economy-third-term.html",
+    "published_date": "2025-04-07",
+    "classification_timestamp_utc": "2025-04-13T09:00:47.866056+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/41a74e6d-f162-52da-b4ac-3fd6e51fa95d",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "You Should Think About Replacing Your iPhone \u2014 Now",
+    "abstract": "You will probably have to pay a lot more for your next iPhone. That\u2019s bad news for Apple, for our markets and for our economy.",
+    "url": "https://www.nytimes.com/2025/04/09/opinion/tariffs-china-iphone-apple.html",
+    "published_date": "2025-04-09",
+    "classification_timestamp_utc": "2025-04-13T09:00:49.312833+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/383e05b3-c923-5bdd-8ad5-181d280b4606",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "10 Small Things Neurologists Wish You\u2019d Do for Your Brain",
+    "abstract": "Easy everyday habits can help keep you sharp. And it\u2019s never too late to start them.",
+    "url": "https://www.nytimes.com/2025/04/03/well/mind/brain-health-simple-tips.html",
+    "published_date": "2025-04-03",
+    "classification_timestamp_utc": "2025-04-13T09:00:50.591120+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/33132b68-d413-5edc-8ebb-cc0bb60a2053",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Americans Are Preparing for When All Hell Breaks Loose",
+    "abstract": "Once thought of as a fringe mind-set, the prepared citizen movement is gaining traction in a world shaped by war, the pandemic and extreme weather.",
+    "url": "https://www.nytimes.com/2025/04/09/us/prepared-citizens-guns.html",
+    "published_date": "2025-04-09",
+    "classification_timestamp_utc": "2025-04-13T09:00:52.021397+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/4750fe70-09c8-5d0a-9d53-cf7034e9dc03",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Why Did So Many People Delude Themselves About Trump?",
+    "abstract": "Wall Street mistook demagoguery for wisdom.",
+    "url": "https://www.nytimes.com/2025/04/07/opinion/trump-stock-market-wall-street.html",
+    "published_date": "2025-04-07",
+    "classification_timestamp_utc": "2025-04-13T09:00:53.389583+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/6d114146-c7b5-5ccb-a7fb-459bd861d725",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "The Three States That Are Especially Stuck if Congress Cuts Medicaid",
+    "abstract": "States that were once reluctant to expand Medicaid now have their state budgets tied to the fate of the program by constitutional amendments.",
+    "url": "https://www.nytimes.com/2025/04/06/upshot/medicaid-cuts-republicans-states.html",
+    "published_date": "2025-04-06",
+    "classification_timestamp_utc": "2025-04-13T09:00:54.719234+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/a543f8f6-8ba7-51c1-a933-07995a295f03",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "We Should All Be Very, Very Afraid",
+    "abstract": "Trump is seeking to establish a truly chilling proposition: that no one can stop his administration from imprisoning anyone it wants, anywhere in the world.",
+    "url": "https://www.nytimes.com/2025/04/09/opinion/trump-deportations-gulag-prison.html",
+    "published_date": "2025-04-09",
+    "classification_timestamp_utc": "2025-04-13T09:00:56.068105+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/9cdc7b33-df3b-5aac-b765-e79fde1fcb30",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "5 Science-Backed Longevity \u2018Hacks\u2019 That Don\u2019t Cost a Fortune",
+    "abstract": "You don\u2019t need a $40,000 gym membership to live a longer, healthier life.",
+    "url": "https://www.nytimes.com/2025/04/10/well/longevity-low-cost-tips.html",
+    "published_date": "2025-04-10",
+    "classification_timestamp_utc": "2025-04-13T09:00:57.395405+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/bcdb7390-1a5d-5a79-b270-286cb413951b",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Could This Be the Funniest Book Ever Written?",
+    "abstract": "J.P. Donleavy clocks the absurdities of human conduct in his satirical advice guide, \u201cThe Unexpurgated Code.\u201d",
+    "url": "https://www.nytimes.com/2025/04/07/books/review/jp-donleavy-unexpurgated-code.html",
+    "published_date": "2025-04-07",
+    "classification_timestamp_utc": "2025-04-13T09:00:58.704384+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/c27e0e72-4d95-52f4-8b92-f7a893254bed",
+    "endpoint_source": "most_popular_viewed_7",
+    "title": "Mass Protests Across the Country Show Resistance to Trump",
+    "abstract": "Demonstrators packed the streets in cities and towns to rail against government cutbacks, financial turmoil and what they viewed as attacks on democracy.",
+    "url": "https://www.nytimes.com/2025/04/05/us/politics/anti-trump-protests-hands-off.html",
+    "published_date": "2025-04-05",
+    "classification_timestamp_utc": "2025-04-13T09:00:59.997280+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/b831afe8-eda5-53c0-ba24-697237038399",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Draft List for New Travel Ban Proposes Trump Target 43 Countries",
+    "abstract": "A draft circulating inside the administration lists three tiers of countries whose citizens may face restrictions on entering the United States.",
+    "url": "https://www.nytimes.com/2025/03/14/us/politics/trump-travel-ban.html",
+    "published_date": "2025-03-14",
+    "classification_timestamp_utc": "2025-04-13T09:01:01.817041+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/8730daa7-57ae-5322-af2c-a9756d0d5dd3",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Val Kilmer, Film Star Who Played Batman and Jim Morrison, Dies at 65",
+    "abstract": "A wide-ranging leading man who earned critical praise, he was known to be charismatic but unpredictable. At one point he dropped out of Hollywood for a decade.",
+    "url": "https://www.nytimes.com/2025/04/01/movies/val-kilmer-dead.html",
+    "published_date": "2025-04-01",
+    "classification_timestamp_utc": "2025-04-13T09:01:03.193814+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/057fa44a-cc82-5e3b-837c-cdf7919ccda8",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Hillary Clinton: How Much Dumber Will This Get?",
+    "abstract": "The Signal group chat is only the latest in a string of self-inflicted wounds by the new administration.",
+    "url": "https://www.nytimes.com/2025/03/28/opinion/trump-hegseth-signal-chat.html",
+    "published_date": "2025-03-28",
+    "classification_timestamp_utc": "2025-04-13T09:01:04.540372+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/6a0c4181-9aa1-5b2f-9192-4f97f67266a2",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Cory Booker Condemns Trump\u2019s Policies in Longest Senate Speech on Record",
+    "abstract": "The New Jersey senator spent much of his speech, which ended after more than 25 hours, assailing the Trump administration. He eclipsed Strom Thurmond\u2019s filibuster of a civil rights bill in 1957.",
+    "url": "https://www.nytimes.com/2025/04/01/us/politics/booker-senate-trump.html",
+    "published_date": "2025-04-01",
+    "classification_timestamp_utc": "2025-04-13T09:01:05.909411+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/9ac356be-575d-54ad-a5db-c63e066477b4",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "The Secret History of the War in Ukraine",
+    "abstract": "This is the untold story of America\u2019s hidden role in Ukrainian military operations against Russia\u2019s invading armies.",
+    "url": "https://www.nytimes.com/interactive/2025/03/29/world/europe/us-ukraine-military-war-wiesbaden.html",
+    "published_date": "2025-03-29",
+    "classification_timestamp_utc": "2025-04-13T09:01:07.247543+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/4cefa457-e23e-5da0-9f61-6bcac75d65db",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Wisconsin Supreme Court Election Results",
+    "abstract": "Get live results and maps from the 2025 Wisconsin spring elections.",
+    "url": "https://www.nytimes.com/interactive/2025/04/01/us/elections/results-wisconsin-supreme-court.html",
+    "published_date": "2025-04-01",
+    "classification_timestamp_utc": "2025-04-13T09:01:08.548156+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/fc5b5b0d-1f0c-5b9a-8adf-042e20f24608",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Latest Polls: Do Americans Approve of President Trump?",
+    "abstract": "Track the latest polls about Americans\u2019 approval of President Trump.",
+    "url": "https://www.nytimes.com/interactive/polls/donald-trump-approval-rating-polls.html",
+    "published_date": "2025-03-17",
+    "classification_timestamp_utc": "2025-04-13T09:01:09.876353+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/4564fa7e-ca93-5a1e-9840-00c36c5e839b",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "4 Weird Signs You\u2019re Getting Older",
+    "abstract": "We asked experts about what\u2019s normal \u2014 and what\u2019s not.",
+    "url": "https://www.nytimes.com/2025/03/14/well/aging-process-getting-older.html",
+    "published_date": "2025-03-14",
+    "classification_timestamp_utc": "2025-04-13T09:01:11.234109+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/85520748-1c4e-5b9b-9cbf-0490b5ecf752",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Brown University Professor Is Deported Despite a Judge\u2019s Order",
+    "abstract": "Dr. Rasha Alawieh, a kidney transplant specialist and Brown University professor who had a valid visa, was expelled in apparent defiance of a court order.",
+    "url": "https://www.nytimes.com/2025/03/16/us/brown-university-rasha-alawieh-professor-deported.html",
+    "published_date": "2025-03-16",
+    "classification_timestamp_utc": "2025-04-13T09:01:12.515200+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/0435cd0a-66c7-5cbb-aea9-aa51c7828363",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "The Leaked Signal Chat, Annotated",
+    "abstract": "The chat\u2019s contents, which were obtained by The Atlantic after its editor in chief was added to the Signal group, provide a revealing look at private conversations between top Trump administration officials.",
+    "url": "https://www.nytimes.com/interactive/2025/03/25/us/signal-group-chat-text-annotations.html",
+    "published_date": "2025-03-25",
+    "classification_timestamp_utc": "2025-04-13T09:01:13.907242+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/53b2c41a-06df-55e5-b0db-e339d91eb096",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Pentagon Set Up Briefing for Musk on Potential War With China",
+    "abstract": "The access would be a major expansion of Elon Musk\u2019s government role and highlight his conflicts of interest.",
+    "url": "https://www.nytimes.com/2025/03/20/us/politics/musk-pentagon-briefing-china-war-plan.html",
+    "published_date": "2025-03-20",
+    "classification_timestamp_utc": "2025-04-13T09:01:15.305826+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/793e7097-4f59-560e-b2a8-100443167bac",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "How to Protect Your Retirement Savings Now as Markets Plunge",
+    "abstract": "If you\u2019re within five years of retiring, either before or after, you\u2019re at your most vulnerable financially. Here are steps to weather the volatility.",
+    "url": "https://www.nytimes.com/2025/04/04/business/stocks-retirement-investing.html",
+    "published_date": "2025-04-04",
+    "classification_timestamp_utc": "2025-04-13T09:01:16.682070+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/b500282a-b147-5197-91a1-35409476055b",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "The Gen X Career Meltdown",
+    "abstract": "Just when they should be at their peak, experienced workers in creative fields find that their skills are all but obsolete.",
+    "url": "https://www.nytimes.com/interactive/2025/03/28/style/gen-x-creative-work.html",
+    "published_date": "2025-03-28",
+    "classification_timestamp_utc": "2025-04-13T09:01:18.049452+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/b3cd7065-20d6-5d9a-815d-d0843b08a5db",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "Wisconsin Spring Election Results",
+    "abstract": "Get live results and maps from the 2025 Wisconsin spring elections.",
+    "url": "https://www.nytimes.com/interactive/2025/04/01/us/elections/results-wisconsin.html",
+    "published_date": "2025-04-01",
+    "classification_timestamp_utc": "2025-04-13T09:01:19.392630+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/4bb7adc3-2ee8-5fef-a9b1-2a2ee9538139",
+    "endpoint_source": "most_popular_viewed_30",
+    "title": "We Were Badly Misled About the Event That Changed Our Lives",
+    "abstract": "Five years after the start of Covid, we still don\u2019t know the truth.",
+    "url": "https://www.nytimes.com/2025/03/16/opinion/covid-pandemic-lab-leak.html",
+    "published_date": "2025-03-16",
+    "classification_timestamp_utc": "2025-04-13T09:01:20.706954+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/7868fac6-3d86-550d-9260-93608ed82029",
+    "endpoint_source": "top_stories_home",
+    "title": "Trump Adds Tariff Exemptions for Smartphones, Computers and Other Electronics",
+    "abstract": "A long list of electronic products got a reprieve for now from at least some of the levies on China, which had been expected to take a toll on tech giants like Apple.",
+    "url": "https://www.nytimes.com/2025/04/12/technology/trump-electronics-tariffs.html",
+    "published_date": "2025-04-12T10:27:59-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:22.243439+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/a109bd1c-f532-585e-abf4-c0e9160f9f52",
+    "endpoint_source": "top_stories_home",
+    "title": "How Brexit, a Startling Act of Economic Self-Harm, Foreshadowed Trump\u2019s Tariffs",
+    "abstract": "Britain\u2019s decision to leave the European Union in 2016 was sold to voters as a magic bullet that would revitalize the country\u2019s economy. Its impact is still reverberating.",
+    "url": "https://www.nytimes.com/2025/04/13/world/europe/how-brexit-a-startling-act-of-economic-self-harm-foreshadowed-trumps-tariffs.html",
+    "published_date": "2025-04-13T00:01:08-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:23.613327+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/ecaaf37a-9fd7-58ff-ae31-c886717a71df",
+    "endpoint_source": "top_stories_home",
+    "title": "How Much Are Tariffs on Chinese Goods? It\u2019s Trickier Than You Think.",
+    "abstract": "The tariff rate on Chinese imports can be as high as 245% or zero, depending on the type of product that is being imported.",
+    "url": "https://www.nytimes.com/interactive/2025/04/12/business/economy/china-tariff-product-costs.html",
+    "published_date": "2025-04-12T05:03:12-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:24.934027+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/0a49cf04-730a-51dc-9237-f5865b33cce1",
+    "endpoint_source": "top_stories_home",
+    "title": "Trump and Some of His Cabinet Members Attend U.F.C. Fight in Miami",
+    "abstract": "The spectacle at the mixed martial arts event was emblematic of an emboldened president who increasingly encourages displays of force to carry out his agenda.",
+    "url": "https://www.nytimes.com/2025/04/13/us/politics/trump-ufc-fight-reyes.html",
+    "published_date": "2025-04-13T00:28:27-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:26.243828+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/90e94697-36e3-53d7-a77a-7ed96dece1fb",
+    "endpoint_source": "top_stories_home",
+    "title": "Harvard Professors Sue Trump Administration Over Threat to Cut Funding",
+    "abstract": "The administration is reviewing about $9 billion in federal funding that the university receives.",
+    "url": "https://www.nytimes.com/2025/04/12/us/politics/harvard-professors-trump-lawsuit-funding.html",
+    "published_date": "2025-04-12T15:44:01-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:27.603990+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/2b8ec154-c737-5888-b26a-b7c89db3dad2",
+    "endpoint_source": "top_stories_home",
+    "title": "The Bees Are Disappearing Again",
+    "abstract": "For beekeepers, the problem isn\u2019t just climate change and extreme weather: It\u2019s also DOGE, the trade war and the immigration crackdown.",
+    "url": "https://www.nytimes.com/2025/04/12/business/honeybees-colony-collapse.html",
+    "published_date": "2025-04-12T05:00:26-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:28.990373+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/6a34c2d7-b59b-59c4-bd08-f1bbd31c0634",
+    "endpoint_source": "top_stories_home",
+    "title": "Xi\u2019s Visit Highlights Dilemma for Southeast Asia in U.S.-China Trade War",
+    "abstract": "China\u2019s leader is on a charm offensive in the region, but some of Beijing\u2019s neighbors are wary of being caught in the crossfire of a superpower rivalry.",
+    "url": "https://www.nytimes.com/2025/04/13/world/asia/china-xi-us-trade-war-southeast-asia.html",
+    "published_date": "2025-04-13T01:39:50-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:30.252993+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/a8c3622e-39c1-594a-a073-cf7b14dc646c",
+    "endpoint_source": "top_stories_home",
+    "title": "Sudanese Paramilitaries Kill Entire Clinic Staff in Famine-Struck Camp",
+    "abstract": "Relief International said nine employees were killed when gunmen stormed the Zamzam camp in El Fasher, in the western Darfur region.",
+    "url": "https://www.nytimes.com/2025/04/12/world/africa/sudan-zamzam-clinic-staff-killed.html",
+    "published_date": "2025-04-12T15:21:44-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:31.533699+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/0dc7a2bd-2971-5a6f-b9a4-e25955048e91",
+    "endpoint_source": "top_stories_home",
+    "title": "Newsom Tries to Understand \u2018Bro Culture.\u2019 Will It Change Him in the Process?",
+    "abstract": "California\u2019s governor has diagnosed one problem for Democrats \u2014 connecting with young men \u2014 and he sees his podcast as a way to address that. Other Democrats aren\u2019t so sure.",
+    "url": "https://www.nytimes.com/2025/04/12/us/newsom-podcast-bro-culture-democrats.html",
+    "published_date": "2025-04-12T05:01:30-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:32.821652+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/9fc2fec5-d5e3-571c-980c-0d0bdf923d97",
+    "endpoint_source": "top_stories_home",
+    "title": "\u2018You Try to Build Anything, and You\u2019re Stepping Into Quicksand\u2019",
+    "abstract": "Speed is a progressive virtue.",
+    "url": "https://www.nytimes.com/2025/04/13/opinion/doge-abundance-government-bulding.html",
+    "published_date": "2025-04-13T01:00:12-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:34.163270+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/e6172a0f-857c-5951-971b-5751eb8b8d93",
+    "endpoint_source": "top_stories_home",
+    "title": "America Is Learning the Wrong Lesson from Elon Musk\u2019s Success",
+    "abstract": "Intimidation doesn\u2019t elevate performance; it undermines people.",
+    "url": "https://www.nytimes.com/2025/04/13/opinion/elon-musk-leadership-business-education.html",
+    "published_date": "2025-04-13T01:00:05-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:35.457675+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/97a435aa-8d84-5a69-a1d0-bf506b35c609",
+    "endpoint_source": "top_stories_home",
+    "title": "Judge\u2019s Ruling Expands Medical Exceptions in Idaho Abortion Ban",
+    "abstract": "In situations where a mother faces risk of death, the decision allows for abortions even when death isn\u2019t imminent.",
+    "url": "https://www.nytimes.com/2025/04/12/us/idaho-abortion-medical-ban-exceptions-ruling.html",
+    "published_date": "2025-04-12T17:38:21-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:36.771390+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/1d56f240-e457-52c8-aee7-46fbd104f6dc",
+    "endpoint_source": "top_stories_home",
+    "title": "U.S. Holds Talks With Iran Over Its Nuclear Program",
+    "abstract": "The two sides held preliminary negotiations on Saturday, and an Iranian official said they would resume next week.",
+    "url": "https://www.nytimes.com/2025/04/12/world/middleeast/iran-nuclear-talks-whats-at-stake.html",
+    "published_date": "2025-04-12T00:01:16-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:38.079892+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/b8c476bc-b4e0-5926-bfe9-29352ce48324",
+    "endpoint_source": "top_stories_home",
+    "title": "Hostages Still Held in Gaza Cast Shadow Over Passover in Israel",
+    "abstract": "The holiday is usually a celebration of the liberation of ancient Israelites from slavery in Egypt. But for many Israelis, the suffering of the captives still in Gaza is tempering the joy.",
+    "url": "https://www.nytimes.com/2025/04/12/world/middleeast/israel-gaza-passover.html",
+    "published_date": "2025-04-12T06:52:59-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:39.410984+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ecae9c27-93ea-51df-ade1-34db39601f19",
+    "endpoint_source": "top_stories_home",
+    "title": "At Least One Dead After Private Plane Crashes in Upstate New York",
+    "abstract": "The plane, a Mitsubishi MU-2B carrying two passengers, went down Saturday in the town of Copake close to the Massachusetts border, according to the authorities.",
+    "url": "https://www.nytimes.com/2025/04/12/nyregion/ny-copake-fatal-plane-crash.html",
+    "published_date": "2025-04-12T18:52:19-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:40.735800+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/33f8785a-5297-5da5-b195-b93de9fb70ee",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Trump Shouldn\u2019t Forget the Iranian People",
+    "abstract": "It\u2019s a mistake to leave out human rights when President Trump\u2019s administration sits down with Iran over its nuclear program.",
+    "url": "https://www.nytimes.com/2025/04/12/opinion/iran-human-rights-middle-east-trump.html",
+    "published_date": "2025-04-12T07:00:23-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:42.233891+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/066e5893-66be-5ada-b59e-d1154eb751a2",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Stock Ownership Is What Really Divides Americans",
+    "abstract": "It is not synonymous with the health of the country.",
+    "url": "https://www.nytimes.com/2025/04/12/opinion/stock-market-tariffs.html",
+    "published_date": "2025-04-12T07:00:20-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:43.577852+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/b92a5a30-78ef-517d-8b04-72eb0b4b49b6",
+    "endpoint_source": "top_stories_opinion",
+    "title": "I\u2019m Not a \u2018Gatsby\u2019 Scholar. I\u2019m a \u2018Gatsby\u2019 Weirdo.",
+    "abstract": "Five years ago I decided to listen to \u2018The Great Gatsby.\u2019 I haven\u2019t stopped.",
+    "url": "https://www.nytimes.com/2025/04/12/opinion/great-gatsby-on-repeat.html",
+    "published_date": "2025-04-12T07:00:13-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:44.943583+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/b05f04ca-c6b2-5a2b-97bd-77c9d7fbb114",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Trump vs. the Law Firms",
+    "abstract": "Readers discuss the firms that capitulated to the president\u2019s demands, and those that didn\u2019t.",
+    "url": "https://www.nytimes.com/2025/04/12/opinion/trump-law-firms-resistance.html",
+    "published_date": "2025-04-12T07:00:11-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:46.217723+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/295c2294-509c-50c9-ade6-1cd0f56338ed",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Animals That Feel the Slice of the Knife",
+    "abstract": "An insider offers a grim picture of life inside a cattle slaughterhouse.",
+    "url": "https://www.nytimes.com/2025/04/12/opinion/animal-slaughterhouse-meat.html",
+    "published_date": "2025-04-12T07:00:05-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:47.555304+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/c0b87d2e-6f3c-5d3f-8235-2cf50e2aac7c",
+    "endpoint_source": "top_stories_opinion",
+    "title": "What Is Actually the Point of Treating the N.I.H. Like This?",
+    "abstract": "Efficiency is not being enhanced, nor is waste being eliminated at the N.I.H. Scientists are just left to wonder: Why?",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/nih-scientists-staffing-cuts.html",
+    "published_date": "2025-04-11T13:37:03-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:48.895639+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/bc9f9fff-cd5c-5234-9904-fb66e2b7a1a9",
+    "endpoint_source": "top_stories_opinion",
+    "title": "May You Listen to \u2018Interesting Times\u2019",
+    "abstract": "My new show will look at our strange and getting-stranger world.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/interesting-times.html",
+    "published_date": "2025-04-11T12:35:08-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:50.236658+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/7cf7cb4a-bc7f-5a8e-8512-df8bac6a690a",
+    "endpoint_source": "top_stories_opinion",
+    "title": "What We Believed About America",
+    "abstract": "Readers respond to a column by Bret Stephens.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/america-ideals.html",
+    "published_date": "2025-04-11T12:11:31-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:51.601373+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ab52277d-772d-5213-9248-7e4d497ebb7d",
+    "endpoint_source": "top_stories_opinion",
+    "title": "From Stan Mack: A Nightmare for These Times",
+    "abstract": "The cartoonist offers a drawing in response to a guest essay.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/letters/stan-mack-cartoon.html",
+    "published_date": "2025-04-11T10:32:22-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:52.928169+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/1e73a19a-52c7-5e2e-b226-ac43036ec4de",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Trump\u2019s Tariffs, Market Panic and What Comes Next",
+    "abstract": "Peter R. Orszag, the C.E.O. of Lazard, discusses how markets are reacting to the uncertainty of Trump\u2019s tariffs.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/ezra-klein-podcast-peter-orszag.html",
+    "published_date": "2025-04-11T05:05:40-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:54.384437+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/8c6d55a8-4e6d-56bd-88d0-f04bc0884986",
+    "endpoint_source": "top_stories_opinion",
+    "title": "\u2018I Hope I Am Wrong, but I Am Pretty Pessimistic\u2019: Four Economists Dissect Trump\u2019s Tariffs",
+    "abstract": "The most dramatic effort to remake the post-World War II trade system was underway \u2014 until it wasn\u2019t.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/tariffs-pause-reversal-markets.html",
+    "published_date": "2025-04-11T05:02:02-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:55.775996+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/9d77c3e2-b816-5c60-8861-ea0b56cdce71",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Trump Wants to Make American Culture Great Again. This Is How He Should Do It.",
+    "abstract": "Gutting the federal arts and humanities agencies is a mistake.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/neh-doge-cuts-arts.html",
+    "published_date": "2025-04-11T05:01:22-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:57.070483+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/53bb1714-05b5-5fee-b032-99c344b8b340",
+    "endpoint_source": "top_stories_opinion",
+    "title": "The Most Magical Thing Happens at the Western Border of Ukraine",
+    "abstract": "You get out of reach.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/ukraine-war-european-union.html",
+    "published_date": "2025-04-11T05:01:07-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:58.326710+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ed0bb688-d1c7-5e6c-9288-4545eeb5a253",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Politicians Shouldn\u2019t Get to Delete Inconvenient Facts",
+    "abstract": "The Trump administration has started purging the government\u2019s digital memory. Democracies die without proper archiving and public records.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/public-records-data-history-trump.html",
+    "published_date": "2025-04-11T05:00:40-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:01:59.618509+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/29cf1937-b782-57b5-8fb7-878fff44a8d1",
+    "endpoint_source": "top_stories_opinion",
+    "title": "This Exiled Leader Ruled Ecuador for 10 Years. The Nation Still Can\u2019t Move On.",
+    "abstract": "Rafael Correa\u2019s presence is sustained not only by his supporters but also by his adversaries, who have failed to construct a compelling alternative.",
+    "url": "https://www.nytimes.com/2025/04/11/opinion/rafael-correa-daniel-noboa-ecuador.html",
+    "published_date": "2025-04-11T01:00:07-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:00.984803+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/1bd05ed8-1668-5627-b411-aa76ed93ccd1",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Why These 10 Old Movies Are Really Worth Your Time",
+    "abstract": "Some things can be seen more clearly in black and white.",
+    "url": "https://www.nytimes.com/2025/04/10/opinion/movies-technology-old-america.html",
+    "published_date": "2025-04-10T15:00:09-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:02.286544+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/0f7d7d38-a92b-58e3-806f-599172f4fbb5",
+    "endpoint_source": "top_stories_opinion",
+    "title": "Trump\u2019s Tariff Reversal: Confusion and Relief",
+    "abstract": "Readers weigh in on the effects of President Trump\u2019s moves on tariffs. Also: The use of preferred pronouns.",
+    "url": "https://www.nytimes.com/2025/04/10/opinion/trump-tariffs-reversal.html",
+    "published_date": "2025-04-10T14:08:48-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:03.565465+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/6485cc2c-b667-5539-b462-0d6a608be3c8",
+    "endpoint_source": "top_stories_opinion",
+    "title": "What Do You Tell a College Student Graduating Into This America?",
+    "abstract": "We owe the next generation some measure of solace.",
+    "url": "https://www.nytimes.com/2025/04/10/opinion/college-commencement-students-graduation.html",
+    "published_date": "2025-04-10T12:00:05-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:04.887573+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://embeddedinteractive/daba9d03-29b8-5cfc-8cbd-74b8abf54a07",
+    "endpoint_source": "top_stories_science",
+    "title": "Sign Up for the Science Times Newsletter",
+    "abstract": "Every week, we\u2019ll bring you stories that capture the wonders of the human body, nature and the cosmos.",
+    "url": "null",
+    "published_date": "2016-02-05T18:18:53-05:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:06.465425+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://interactive/30cff849-6438-55e9-9e9b-f09f8d93cc15",
+    "endpoint_source": "top_stories_science",
+    "title": "Can You Stop an Outbreak of a Contagious Disease?",
+    "abstract": "An interactive explanation of outbreaks, vaccines and herd immunity.",
+    "url": "https://www.nytimes.com/interactive/2025/04/12/upshot/measles-herd-immunity-explainer.html",
+    "published_date": "2025-04-12T17:18:00-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:07.765603+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/cb879583-1446-53e0-98b2-cf2e999c9d3b",
+    "endpoint_source": "top_stories_science",
+    "title": "Their Space Suit, Their Way",
+    "abstract": "Lauren S\u00e1nchez teamed up with Monse to redesign the Blue Origin flight suits with its all-female launch in mind.",
+    "url": "https://www.nytimes.com/2025/04/12/style/lauren-sanchez-blue-origin-spacesuit-monse.html",
+    "published_date": "2025-04-12T09:00:08-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:09.142942+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/89756aba-50a5-5ef3-87cc-1733caed73f5",
+    "endpoint_source": "top_stories_science",
+    "title": "Kennedy Accuses F.D.A. of Drug Industry Influence That Barred Alternative Remedies",
+    "abstract": "The nation\u2019s health secretary addressed agency employees, asking them to shed any corporate influence. But he did not address the mass layoffs that have gutted oversight of tobacco and vapes, food safety and drug reviews.",
+    "url": "https://www.nytimes.com/2025/04/11/health/rfk-jr-fda-drug-industry-alternative-medicine.html",
+    "published_date": "2025-04-11T16:04:17-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:10.447154+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/e099690b-c0fa-5a87-afa3-20454e676e20",
+    "endpoint_source": "top_stories_science",
+    "title": "White House Plan Calls for NOAA Research Programs to Be Dismantled",
+    "abstract": "A Trump administration budget proposal would essentially eliminate one of the world\u2019s foremost Earth sciences research operations.",
+    "url": "https://www.nytimes.com/2025/04/11/climate/noaa-research-budget-cuts.html",
+    "published_date": "2025-04-11T14:28:55-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:11.710617+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/25806e7e-1dd3-5a4c-8d61-46be3181ab25",
+    "endpoint_source": "top_stories_science",
+    "title": "Trump Administration Delays Plan to Limit Pricey Bandages",
+    "abstract": "Medicare spending on \u201cskin substitutes\u201d reached $10 billion last year. A leading seller made a large donation to President Trump\u2019s election campaign.",
+    "url": "https://www.nytimes.com/2025/04/11/health/skin-substitutes-medicare-policy-delay.html",
+    "published_date": "2025-04-11T13:19:08-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:13.073280+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/5cebf527-1499-528e-9c97-220ed11903d3",
+    "endpoint_source": "top_stories_science",
+    "title": "Trump\u2019s New Way to Kill Regulations: Because I Say So",
+    "abstract": "The president is trying new shortcuts to eliminate energy and environmental rules, but legal experts say the efforts could face high hurdles.",
+    "url": "https://www.nytimes.com/2025/04/11/climate/trump-regulations.html",
+    "published_date": "2025-04-11T13:09:55-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:14.414906+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ca90f1dd-d1fc-5e84-a2c8-52e3ce33a712",
+    "endpoint_source": "top_stories_science",
+    "title": "Pig Kidney Removed From Alabama Woman After Organ Rejection",
+    "abstract": "Towana Looney lived with the kidney longer than any other transplant patient had tolerated an organ from a genetically modified animal.",
+    "url": "https://www.nytimes.com/2025/04/11/health/pig-kidney-transplant-looney.html",
+    "published_date": "2025-04-11T12:06:45-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:15.781238+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/c0e4f551-9220-5d5c-8913-bbd6808d9554",
+    "endpoint_source": "top_stories_science",
+    "title": "Miami-Dade Mayor Vetoes Plan to Remove Fluoride From Drinking Water",
+    "abstract": "The veto by Mayor Daniella Levine Cava, a Democrat, pushed back on a growing campaign against the mineral, which has been used for decades to prevent cavities.",
+    "url": "https://www.nytimes.com/2025/04/11/us/politics/miami-dade-fluoride-ban-veto.html",
+    "published_date": "2025-04-11T11:29:39-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:17.158463+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/7f1e8d34-9e81-50e9-9a50-93da2a9fd5ef",
+    "endpoint_source": "top_stories_science",
+    "title": "New Pact Would Require Ships to Cut Emissions or Pay a Fee",
+    "abstract": "A draft global agreement sets a fee for cargo ships, which carry the vast majority of world trade, to pay for their greenhouse gas emissions.",
+    "url": "https://www.nytimes.com/2025/04/11/climate/cargo-shipping-emissions.html",
+    "published_date": "2025-04-11T11:16:58-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:18.469353+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/bd1327a3-3083-57ce-94a3-e9cca24bc73e",
+    "endpoint_source": "top_stories_science",
+    "title": "Experts Doubt Kennedy\u2019s Timetable for Finding the Cause of Autism",
+    "abstract": "The nation\u2019s health secretary announced that he planned to invite scientists to provide answers by September, but specialists consider that target date unrealistic.",
+    "url": "https://www.nytimes.com/2025/04/11/health/rfk-jr-autism-vaccines.html",
+    "published_date": "2025-04-11T11:05:25-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:19.816506+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/0f268249-b960-590b-95fc-ce7ab5f0af58",
+    "endpoint_source": "top_stories_science",
+    "title": "Medicare Bleeds Billions on Pricey Bandages, and Doctors Get a Cut",
+    "abstract": "Medicare spending on \u201cskin substitutes\u201d made of dried placenta has soared as doctors pocket lucrative discounts from sellers.",
+    "url": "https://www.nytimes.com/2025/04/10/health/skin-substitutes-medicare-costs.html",
+    "published_date": "2025-04-10T11:58:45-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:21.099618+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/3d710fe5-0ddc-5739-87c7-9536f33293d5",
+    "endpoint_source": "top_stories_science",
+    "title": "\u2018The Pitt\u2019 Captures the Real Overcrowding Crisis in E.R.s",
+    "abstract": "From the \u201cchairs\u201d to the hallway medicine, the show\u2019s depiction of an emergency medicine system that is beyond capacity rings true for medical experts.",
+    "url": "https://www.nytimes.com/2025/04/10/health/the-pitt-max-crowded-emergency-rooms.html",
+    "published_date": "2025-04-10T09:46:56-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:22.370714+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ef0ebb36-f4c9-52aa-bff7-fa054eb5ed24",
+    "endpoint_source": "top_stories_science",
+    "title": "Kennedy Offers Qualified Support for Measles Vaccination",
+    "abstract": "In an interview with CBS, the health secretary also suggested he wasn\u2019t familiar with massive cuts to state funding for public health.",
+    "url": "https://www.nytimes.com/2025/04/09/health/kennedy-offers-qualified-support-for-measles-vaccination.html",
+    "published_date": "2025-04-09T20:46:11-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:23.633287+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/deb6964c-2d18-5ca6-b793-2a936ded0e94",
+    "endpoint_source": "top_stories_science",
+    "title": "As His Chronic Disease Tour Wraps, Kennedy Hits His Stride",
+    "abstract": "The health secretary seemed stoic \u2014 maybe nervous, even \u2014 at the start of his first major trip. But on a hike with Navajo Nation leaders, he was finally in his element.",
+    "url": "https://www.nytimes.com/2025/04/09/health/rfk-jr-maha-tour-navajo.html",
+    "published_date": "2025-04-09T19:27:12-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:24.903247+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/6dcaf68d-c0b1-5d2a-bfb4-27dbdfbebe12",
+    "endpoint_source": "top_stories_science",
+    "title": "Trump Administration Cuts Funding and Staff for Flagship Climate Report",
+    "abstract": "The move raises concerns among scientists that the assessment, which is required by Congress, is now in jeopardy.",
+    "url": "https://www.nytimes.com/2025/04/09/climate/trump-national-climate-assessment.html",
+    "published_date": "2025-04-09T18:00:51-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:26.212356+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/156be500-edc1-58eb-beaf-7d758ade2473",
+    "endpoint_source": "top_stories_science",
+    "title": "One-Third of Maternal Deaths Occur Long After Delivery, Study Finds",
+    "abstract": "Pregnancy-related mortality has risen sharply, and doctors have overlooked a particularly dangerous period: from six weeks to one year after the birth.",
+    "url": "https://www.nytimes.com/2025/04/09/health/maternal-death-pandemic.html",
+    "published_date": "2025-04-09T17:31:50-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:27.598527+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ff980a92-1717-5885-93b7-f89cb8e43299",
+    "endpoint_source": "top_stories_science",
+    "title": "Launch of First Amazon Project Kuiper Internet Satellites Is Scrubbed",
+    "abstract": "The spacecraft are the online giant\u2019s entry into beaming wireless service from space, but the company has much to do before it can compete with SpaceX\u2019s Starlink.",
+    "url": "https://www.nytimes.com/2025/04/09/science/amazon-kuiper-satellite-launch.html",
+    "published_date": "2025-04-09T17:04:01-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:28.978828+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/2d18b6d7-9ceb-53c7-bd95-a3eb4a0a1e4d",
+    "endpoint_source": "top_stories_science",
+    "title": "Xavier Le Pichon, Who Modeled Movement of Earth\u2019s Crust, Dies at 87",
+    "abstract": "With a computer rendering, he helped scientists understand that the earth, with its shifting tectonic plates, is \u201can extraordinary living being\u201d that is \u201ccontinuously changing.\u201d",
+    "url": "https://www.nytimes.com/2025/04/09/science/xavier-le-pichon-dead.html",
+    "published_date": "2025-04-09T14:40:17-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:30.333157+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/df9bb18c-8fd9-5219-b525-8201ba25813b",
+    "endpoint_source": "top_stories_science",
+    "title": "Five Takeaways From Trump\u2019s Plan to Rescue Coal",
+    "abstract": "To help the struggling coal industry, President Trump used his executive authority to try to keep aging plants alive and burn more coal for electricity.",
+    "url": "https://www.nytimes.com/2025/04/09/climate/trump-executive-orders-coal.html",
+    "published_date": "2025-04-09T05:03:18-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:31.623269+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/ab95f6af-0580-5c1d-81c2-7151c38e0850",
+    "endpoint_source": "top_stories_science",
+    "title": "NOAA Staffing Cuts Threaten Years of Salmon Harvests",
+    "abstract": "In Washington, where salmon is a multibillion dollar industry, government staff terminations and budget freezes may put salmon production at risk.",
+    "url": "https://www.nytimes.com/2025/04/09/climate/noaa-doge-cuts-salmon.html",
+    "published_date": "2025-04-09T05:01:14-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:32.927320+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/c2c755f8-ab84-5f85-8ab1-70001dd41781",
+    "endpoint_source": "top_stories_science",
+    "title": "Amid Tension Around H.H.S. Cuts, Kennedy Meets With Tribal Leaders",
+    "abstract": "The health secretary\u2019s appearance at a tribal self-governance conference brought collegial discussions and a bit of friction.",
+    "url": "https://www.nytimes.com/2025/04/08/health/rfk-jr-indian-health-tribal-leaders.html",
+    "published_date": "2025-04-08T20:26:39-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:34.233842+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/f86bd98e-0e75-5fb9-997c-cbafcb933077",
+    "endpoint_source": "top_stories_science",
+    "title": "Nuclear Testing Not Advised, Trump\u2019s Nominee Says in Senate Hearing",
+    "abstract": "Brandon Williams, the nominee to lead the National Nuclear Security Administration, said he would recommend reliance on \u201cscientific information\u201d rather than a restart of explosive testing.",
+    "url": "https://www.nytimes.com/2025/04/08/science/nuclear-testing-nnsa-williams.html",
+    "published_date": "2025-04-08T18:12:42-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:35.518976+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/fd99f8d7-a874-5520-b885-7510c5ffedf6",
+    "endpoint_source": "top_stories_science",
+    "title": "\u2018Getting Heavier\u2019: Climate Change Primes Storms to Drop More Rain",
+    "abstract": "With rising temperatures, the atmosphere can hold more moisture, meaning precipitation has a tendency to fall at more extreme levels.",
+    "url": "https://www.nytimes.com/2025/04/08/climate/rain-floods-climate-change.html",
+    "published_date": "2025-04-08T14:55:32-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:36.894375+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/aabc9cef-7c3f-5514-8ea9-fd7b135c8dba",
+    "endpoint_source": "top_stories_science",
+    "title": "Trump Signs Orders Aimed at Reviving a Struggling Coal Industry",
+    "abstract": "The moves include loosening environmental rules, but it is unclear how much they can help reverse the sharp decline in coal power over the last two decades.",
+    "url": "https://www.nytimes.com/2025/04/08/climate/trump-order-coal-mining.html",
+    "published_date": "2025-04-08T14:12:15-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:38.312072+00:00",
+    "is_ai_related": false
+  },
+  {
+    "id": "nyt://article/c5d5c6bc-f884-59e4-8256-20e075ec3c5b",
+    "endpoint_source": "top_stories_science",
+    "title": "King K. Holmes, 87, Dies; Researcher Destigmatized Study of S.T.I.s",
+    "abstract": "He took a down-to-earth approach to sexually transmitted infections, a subject no one wanted to discuss, arriving at novel methods of treatment and prevention.",
+    "url": "https://www.nytimes.com/2025/04/08/science/king-k-holmes-dead.html",
+    "published_date": "2025-04-08T13:15:46-04:00",
+    "classification_timestamp_utc": "2025-04-13T09:02:39.700379+00:00",
+    "is_ai_related": false
+  }
+]
