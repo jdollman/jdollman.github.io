@@ -63,7 +63,7 @@ Of similar import, Casey Newton is (in)famous for having a boyfriend who works a
 
 As hinted at in the beginning of this document, obtaining the entire transcript backlog for all four has been a long "journey." But now that I have collected, cleaned, and labeled each podcast's sections as about AI or not, the next steps will be relatively straightforward. Above, I only looked at how much attention these podcasts dedicate to AI, which one can think of as gauging whether or not these podcasts are "Feeling the A(G)I".
 
-The next step involve asking
+The next steps involve asking
 
 * When they talk about AI, what _specifically_ do they talk about? What different _aspects_ of it do they talk about?
 * What proportion of AI-talk is about AI safety?
