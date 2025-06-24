@@ -1,0 +1,20 @@
+---
+title: "Teaching"
+description: "Assorted Uploads: In Progress"
+author: Justin Dollman
+date: 06-23-2025
+categories: [teaching, AI safety, AI]
+image: Gemini_Generated_Image_5nvd355nvd355nvd.png
+draft: false
+---
+
+## CAIS Facilitator Notes
+
+Coming Soon!
+d
+## Evals Club Presentations
+
+* [AI Control](evals-club/ctrlz-pres.html) (CTRL-Z paper)
+* [SAD Dataset/Eval](evals-club/sad-pres.html)
+
+TODO: Clean both of these up

@@ -13,7 +13,7 @@ format:
     embed-resources: true
 reference-location: margin
 #image: debunkbotte.webp
-draft: false
+draft: true
 ---
 
 As much as I would have liked to have a proper submission for AISF's Governance course final project, I bit off more than I could chew given my constraints.^[I bit off: learning how to navagate Google Cloud and Amazon Web Services, building with Docker, developing command line wizardry, reviewing Python's `spaCy`, transcribing audio to text *en masse*, finding out how much money converting audio-to-text *en masse* costs, publishing an [`R` package](https://jdollman.github.io/callm/), many more things I'm too harried to recall, but mostly, spending hours and hours obtaining and cleaning data.] What follows is more of a promissory note than an actual submission (though the project _will_ be completed). I will not be offended if you, my esteemed reader, do not read it in full.

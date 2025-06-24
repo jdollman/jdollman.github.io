@@ -2,10 +2,23 @@
 title: "About Me"
 ---
 
-Since this site's *raison d'être* is professional, I should say a word or two about me *qua* wage laborer. 
 
-According to my résumé, I'm an ABD^["All but dissertation," where "all" refers to the sum of the non-dissertation PhD requirements. This designation means that the only remaining task separating my current plebian instantiation from my "Doctor Dollman" self is a dissertation defense] PhD candidate in political science at SUNY Stony Brook. In my actual day-to-day, however, I spent most of my time "upskilling" in AI governance/policy and technical AI safety, two incredibly interesting (and hopefully impactful) areas into which I'm trying to transition. In pursuit of that transition, I recently completed the [BlueDot AI Governance](https://aisafetyfundamentals.com/governance/) course and I'm an active member of the Effective Altruism community -- I attended my first Effective Altruism Global(x) event in Mexico City in March of 2025. 
+<div style="float: right; margin-left: 20px; margin-bottom: 15px; width: 250px;">
+![](image_assets/IMG_9758.jpeg){fig-alt="Professional headshot of Justin Dollman" width="90%" style="border-radius: 8px;"}
+</div>
 
-During my time at Stony Brook I had the pleasure of taking courses with such luminaries as [Stanley Feldman](https://en.wikipedia.org/wiki/Stanley_Feldman_(political_scientist)), [Andy Delton](https://sites.google.com/site/andrewdeltonpubs/), and [Yanna Krupnikov](https://en.wikipedia.org/wiki/Yanna_Krupnikov). The dissertation I'm currently wrapping up under the guidance of [Michael Peress](http://www.michaelperess.com/) consists of three mostly independent chapters, covering immigration opinion's effect on immigration policymaking at the level of US states, cross-national comparisons of the urban-rural divide across the globe, and an intranational study of urban-rural movements and ideological shifts in the Netherlands. These topics represent my _circa_ 2019 interests preserved in amber, with the aforementioned artificial intelligence areas currently occupying my mental life.
+Since this site's *raison d'être* is professional, I should say a word or two about me *qua* wage laborer
+
+
+According to my résumé, I'm a political science PhD candidate at SUNY Stony Brook. In my actual day-to-day, however, I spend most of my time "upskilling" in technical AI safety and AI governance/policy. To that end, I ...
+
+* facilitate a couple groups of CAIS's [AI Safety, Ethics, and Society course](https://www.aisafetybook.com/virtual-course)
+* am a frequent presenter at and triumvir of BlueDot Impact's unofficial Evals Paper Reading club (see here for BlueDot Impact's [calendar](https://lu.ma/aisafetycommunityevents))
+* (somewhat) recently [completed](https://course.bluedot.org/certification?id=rec9yoVWhpX6wsDiY) the [BlueDot AI Governance](https://aisafetyfundamentals.com/governance/) course
+* am currently taking Vista's [National Security Law and AI Course](https://vistainstituteai.org/programs/national-security-law-ai)
+
+I'm also an active member of the Effective Altruism community -- I attended my first Effective Altruism Global(x) event in Mexico City in March of 2025.
+
+Looking back to the recent past, during my time at Stony Brook I had the pleasure of taking courses with such luminaries as [Stanley Feldman](https://en.wikipedia.org/wiki/Stanley_Feldman_(political_scientist)), [Andy Delton](https://sites.google.com/site/andrewdeltonpubs/), and [Yanna Krupnikov](https://en.wikipedia.org/wiki/Yanna_Krupnikov). The dissertation I'm currently wrapping up under the guidance of [Michael Peress](http://www.michaelperess.com/) consists of three mostly independent chapters, covering immigration opinion's effect on immigration policymaking at the level of US states, cross-national comparisons of the urban-rural divide across the globe, and an intranational study of urban-rural movements and ideological shifts in the Netherlands.
 
 Before landing on the Ye Longe Isle of Bagels & Hockey Fanatics, I taught English for a few years in Ecuador and Peru. And before that, I triple majored in philosophy, psychology, and German at the University of Arkansas (with a year spent at Karl-Franzens Universität in Graz, Austria).

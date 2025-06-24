@@ -1,6 +1,5 @@
 ---
 title: ""
-image: image_assets/teoti_cropped.png
 about: 
   template: jolla
   image-shape: rectangle
@@ -17,3 +16,10 @@ about:
     - text: Email
       href: mailto:justin.dollman@stonybrook.edu
 ---
+
+<iframe 
+  src="https://storage.googleapis.com/nyt-feel-the-ai/outputs/latest.html"
+  height="520px"
+  width="900px"
+  style="border: none; margin-top: 2em;">
+</iframe>
