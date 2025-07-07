@@ -8,6 +8,8 @@ website:
       - section_dissertation.qmd
       - section_assorted.qmd
       - section_about.qmd
+      - text: "🍸"
+        href: active-recall/game.html
 format:
   html:
     theme: zephyr
