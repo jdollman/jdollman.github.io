@@ -1,0 +1,57 @@
+#### **Codeable content?** (`code`)
+- **`0` = no:** (*use if: blank/R writes don’t know/R agrees or disagrees with question/general rule-one word answers are not code-able with the exceptions of equality or racism*)
+- **`1` = yes:** (*use if: R provides any idea that is understandable and suggests some potentially code-able reaction to the question-including remarks about the question wording/bias in the questions/vagueness in the questions*)
+
+#### **Blacks explicitly Mentioned** (`bexpment`)
+- **`0`** = no blacks explicitly mentioned
+- **`1`** = blacks explicitly mentioned
+
+#### **Whites explicitly mentioned** (`wexpment`)
+- **`0`** = no whites explicitly mentioned
+- **`1`** = whites explicit (*including Irish, Italians, Jews*)
+
+#### **Traits of Blacks** (`tblk`)
+*We’re looking for explicit mentions about disposition or characteristics*
+
+- **`0`** = no mention
+- **`1`** = positive (*endorsed or mentioned with no sign of disagreement: hardworking, self-reliant; suffering/struggling/facing/overcoming adversity overcoming race, and or smart*)
+- **`2`** = positive & negative (*endorsed or mentioned with no sign of disagreement*)
+- **`3`** = negative (*endorsed or mentioned with no sign of disagreement/ lazy, dependent / not taking responsibility for oneself / making excuses/ not overcoming adversity/taking advantage of “race” card/ angry/ dwelling on the past/ and or poor, low SES, uneducated*)
+- **`11`** = Society – positive (*but R disagrees*)
+- **`12`** = Society – negative (*but R disagrees*)
+- **`21`** = blacks are like other groups in disposition; “blacks and whites are”
+
+#### **Individualism / American Dream / “work your way up”/ self-determination** (`individ`)
+- **`0`** = no individualism mentioned
+- **`1`** = affirmation of individualism as a principle-mentioned as an existing rule for all/universal (*need a specific reference to working hard/helping oneself/earning one’s way/doing it on one’s own/other minorities worked their way up, blacks should too/ explicit mention of another group*)
+- **`2`** = mentioned as “not enough” (*“trying is not enough” for blacks/blacks are trying harder/blacks have to try harder/reference to the American dream being broken*)
+- **`3`** = some people (any race) try to flout individualism (*“get something for nothing”/ being lazy/not trying hard/blacks get more than they deserve/blacks are the favored race*)
+
+#### **Discrimination** (`discrim`)
+- **`0`** = no mention
+- **`1`** = against discrimination; it should not exist; for equality
+- **`2`** = against discrimination but not for special treatment; against special treatment/privilege based on race
+- **`10`** = discrimination mentioned broadly
+- **`11`** = exists / is a problem for blacks (*is a problem/blacks face stereotypes/racial pigment makes a difference/legacy of slavery*)
+- **`21`** = exists and is a problem for whites (*discrimination against whites/reverse racism/ special favors*)
+- **`31`** = discrimination not as big of a problem as before and or slavery happened but is not the source of current problems/ blaming the past is not taking responsibility for individual actions/denial of continuing discrimination against blacks/ denial of a discriminatory societal feature that has an effect on blacks
+- **`41`** = discrimination is a problem for everyone; “everyone is a little bit racist”
+- **`51`** = “this is not a race thing” (*misc, could be disposition, could be situation*)
+
+#### **Welfare** (`welf`)
+*explicit mentions of welfare (this code should not capture affirmative action)*
+
+- **`0`** = no mention
+- **`1`** = discussion of welfare/welfare programs/government programs; checks; dependency; handouts; public aid; food stamps; TANF
+
+#### **Obama explicitly mentioned** (`obama`)
+- **`0`** = no mention of Obama
+- **`1`** = mentioned Obama
+
+#### **Reactions to the questions themselves** (`rxn`)
+- **`0`** = no reaction
+- **`1`** = racist /biased/prejudice
+- **`2`** = emotionally upset/angry
+- **`3`** = dispute accuracy of statement/question statement
+- **`4`** = state that it is a stupid question
+- **`5`** = don’t understand question

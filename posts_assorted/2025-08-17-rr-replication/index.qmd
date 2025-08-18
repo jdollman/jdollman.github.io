@@ -1,0 +1,1431 @@
+---
+title: "Kam and Burge Replication"
+author: "Justin Dollman"
+description: "In progress"
+date: 'Aug 23 2025'
+format:
+  html:
+    grid:
+      margin-width: 350px
+    embed-resources: true
+execute:
+  echo: false
+reference-location: margin
+citation-location: margin
+image: kamemburge.png
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(glue)
+library(jsonlite)
+library(irr)
+library(psych)
+library(janitor)
+library(tinytable)
+library(scales)
+
+data_raw <- 
+  readxl::read_xls('Kam_Burge.xls') %>% 
+  clean_names() %>%
+  unite(col = id, iw_start, iw_end) %>% 
+  mutate(
+    id = str_remove_all(as.character(id), '[ \\-:]'),
+    id = str_remove_all(id, '201303'),
+    .before = 1
+  )
+
+quant_questions <- c('q42', 'q44', 'q46', 'q48')
+qual_questions <- c('q43', 'q45', 'q47', 'q49')
+
+normalize <- function(x, reverse = FALSE){
+  if (reverse == FALSE){
+    return((x-1)/4)
+  }
+  abs(x - 5)/4
+}
+
+quant_data <- 
+  data_raw %>% 
+  select(
+    id,
+    rr_iij = q42, 
+    rr_gen = q44,
+    rr_des = q46,
+    rr_try = q48) %>% 
+  mutate(
+    across(c(rr_des, rr_try), normalize),
+    across(c(rr_iij, rr_gen), ~normalize(.x, reverse = TRUE))) %>% 
+  rowwise() %>% 
+  mutate(rr = mean(c_across(starts_with('rr')))) %>% 
+  ungroup()
+
+
+## plotting
+yellow <- '#fff214'
+pink <- '#ff79ce'
+blue <- '#01d2fd'
+green <- '#72bf55'
+orange <- '#fe9501'
+
+five_col_vec <- c(yellow, pink, blue, green, orange)
+```
+
+In the following, the reader will find a (data) replication and LLM extension of [Kam and Burge (2018)](https://www.journals.uchicago.edu/doi/abs/10.1086/693907), a qualitative investigation into respondents' reactions to the four items of the racial resentment scale. I do not expect this to be of wide interest -- it is mainly an internal document, a "proof of concept" for a project that will involve LLMs coding unstructured text on similar topics.
+
+The contribution of the Kam and Burge (2018) paper was primarily its deployment of the "stop and reflect" intervention (Ericsson & Simon, 1980) on the RR scale. This entails stopping respondents immediately after they give their agree/disagree response to an RR item and asking, "Thinking about the question you just answered, exactly what things went through your mind? Please type your response below." `TODO`: Finish introductory spiel.
+
+As a reminder, the four-item battery contains the following items:
+
+- Irish, Italians, Jewish and many other minorities overcame prejudice and worked their way up. Blacks should do the same without any special favors.
+- Generations of slavery and discrimination have created conditions that make it difficult for blacks to work their way out of the lower class (`reversed`)
+- Over the past few years blacks have gotten less than they deserve (`reversed`)
+- It's really a matter of some people not trying hard enough; if blacks would only try harder they could be just as well off as whites.
+
+# Quantitative Analysis
+
+As mentioned in the introduction, the main contribution of KB18 was its qualitative approach to the RR scale. Because I am bad at time management, I started carrying out a small exploratory analysis on the quantitative part as well. When I come back to this, I will likely reproduce their regression results just for completeness' sake, but for now here are some plots.
+
+
+```{r warning=FALSE, echo=FALSE}
+columns_tbl <- 
+  quant_data %>% 
+  count(rr) %>% 
+  filter(!is.na(rr)) %>% 
+  mutate(prop = n / sum(n))
+
+respondents_n <- sum(columns_tbl %>% filter(!is.na(rr)) %>% pull(n))
+missing_n <- nrow(data_raw) - respondents_n
+
+ggplot(columns_tbl, aes(rr, prop)) +
+  geom_col(fill = pink, color = yellow) +
+  labs(caption = glue('N = {respondents_n}\nMean scores are unavailable for {missing_n} respondents who didn\'t respond to >1 question.'),
+       #title = 'Distribution of racial resentment among K&B respondents',
+       x = 'Racial Resentment Score',
+       y = '') +
+  # in case you're wondering why you chose -.01 for the lower bound,
+  # if you choose 0, you actually lop of respondents who got zero, bc
+  # the bin for 0 extends below 0. SMH FML WHY GGPLOT???
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent_format()) #+
+  # geom_text(aes(x = rr, y = prop), text = round(prop, 3) * 100)
+
+
+```
+
+```{r echo=FALSE}
+straight_liner_tbl <- 
+  quant_data %>%
+  filter(!is.na(rr)) %>% 
+  mutate(all_half = as.integer(if_all(c(rr_iij, rr_gen, rr_des, rr_try), ~ .x == 0.5))) %>%
+  summarise(
+    n_all_half   = sum(all_half),
+    prop_all_half = mean(all_half)
+  )
+
+straight_liner_pct <- round(straight_liner_tbl$prop_all_half, 3) * 100
+```
+
+In case you're looking at that peak at 0.5 and wondering if a plurality of respondents straightlined, only `r straight_liner_pct`% respondents "straight-lined" the middle option. But if we actually look at the most common response patterns, they were the plurality!
+
+```{r}
+data_raw %>%
+  filter(!is.na(q42), !is.na(q44), !is.na(q46), !is.na(q48)) %>%
+  # I flip these because, for some unknownable reason the authors flipped agree
+  # and disagree directions
+  mutate(across(c(q42, q46), ~abs(.x - 6))) %>% 
+  select(all_of(quant_questions)) %>%
+  unite(col = 'responses', everything(), sep = ', ') %>%
+  count(responses) %>%
+  arrange(-n) %>% 
+  mutate(
+    percent = round(n / sum(n) * 100, 1),
+    percent = paste0(percent, '%')
+    ) %>% 
+  head(5) %>%
+  select(responses, percent, n) %>% 
+  tinytable::tt()
+```
+
+Interestingly, after the straight-liners, we get opposing extremophiles, the two ideologically pure groups. The "5, 1, 1, 5" group represents a perfectly racially resentful response set, and its inverse "1, 5, 5, 1" represents the antiracist response set.
+
+Here are the univariate response profiles to the four items:
+
+```{r}
+long_df <- quant_data %>%
+  mutate(!is.na(rr)) %>% 
+  pivot_longer(starts_with("rr_"), names_to = "item", values_to = "response") %>%
+  mutate(item = str_remove(item, "rr_")) %>%
+  filter(!is.na(response)) %>%
+  mutate(response = factor(response))   # keeps default ascending: 0, 0.25, 0.5, 0.75, 1
+
+# 2) Compute counts and label positions using the *bottom→top* order
+#    ggplot stacks bottom→top as the REVERSE of the factor levels,
+#    so we cumsum in that reverse order but DO NOT relevel the factor.
+lev_top_to_bottom    <- levels(long_df$response)        # e.g., 0, 0.25, 0.5, 0.75, 1
+lev_bottom_to_top    <- rev(lev_top_to_bottom)          # e.g., 1, 0.75, 0.5, 0.25, 0
+
+plot_df <- long_df %>%
+  count(item, response, name = "n") %>%
+  group_by(item) %>%
+  mutate(total = sum(n)) %>%
+  arrange(factor(response, levels = lev_bottom_to_top), .by_group = TRUE) %>%  # bottom→top
+  mutate(
+    y_top  = cumsum(n),                          # top of each stacked slice
+    y_text = y_top - 0.02 * total,               # 2% below the slice top
+    lbl    = percent(n/total, accuracy = 1)
+  ) %>%
+  ungroup()
+
+ggplot(plot_df, aes(item, n, fill = response)) +
+  geom_col(width = 0.9) +                        # stacks using existing factor levels
+  geom_text(
+    aes(y = y_text - 15, label = lbl),
+    hjust = 1,
+    position = position_nudge(x = 0.42),         # near the right edge of a 0.9-wide bar
+    size = 3.5, color = "black", fontface = 'bold'
+  ) +
+  scale_x_discrete(limits = c("des", "try", "gen", "iij")) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_fill_manual(values = five_col_vec) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal() +
+  theme(legend.position = 'bottom',
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(face = 'bold', size = 11),
+        panel.grid = element_blank())
+```
+
+These are coded so that `0` is the least "racially resentful" option and `1` is the most "racially resentful." I don't think I would have predicted that the "Italians, Irish, and Jewish ..." item would be the one that is the "easiest" (in item response theory terms). 
+
+```{r double_checking_on_raw_data}
+get_prop <- function(x){
+  data_raw %>%
+  count({{x}}) %>% 
+  filter(!is.na({{x}})) %>% 
+  mutate(prop = n / sum(n))
+}
+
+# get_prop(q42)
+# get_prop(q44)
+# get_prop(q46)
+# checks out!
+```
+
+Lastly, if you're wondering about items' intercorrelations:
+
+```{r message=FALSE}
+library(corrplot)
+# TODO: figure out how to
+  # - flip the top labels by 90 degrees
+  # - change the colors of both the squares and the text labels
+  # - remove the bar on the bottom
+
+quant_data %>%
+  filter(!is.na(rr)) %>% 
+  select(starts_with("rr_")) %>%
+  rename_with(~ str_remove(.x, 'rr_')) %>%
+  cor() %>% 
+  corrplot(method = 'square', 
+           addCoef.col = 'black', 
+           cl.pos = "n",
+           tl.col  = "gray10",
+           #tl.pos = "tp",
+           tl.srt = 0,
+           type = 'lower', diag = FALSE)
+```
+
+`TODO`: Re-run the regressions featured in the paper, check for measurement equivalence between the white and Black respondents^[A key aspect of the paper was the (intention) over-sampling of Black respondents to have sample of 900 white and 900 Black respondents.]
+
+# Qualitative Analaysis
+
+Before getting into the coding of the data, the [minimal-trust](https://www.cold-takes.com/minimal-trust-investigations/) reader is likely curious what the actual data looks like. Here you can see the first 15 rows of the data, subset to two columns:
+
+- `Q44`: respondents' 1-5 agreement level to the question, "Generations of slavery and discrimination have created conditions that make it difficult for blacks to work their way out of the lower class" (**1** being 'Disagree strongly' and **5** being 'Agree strongly')
+- `Q45`: the free text that ensued after, "Thinking about the question you just answered, exactly what things went through your mind? Please type your response below."
+
+```{r}
+data_raw %>% 
+  select(q44:q45) %>% 
+  head(15) %>% 
+  tinytable::tt()
+```
+
+As you can see, response quality has ... high variance.^[This is actually a great use-case for LLMs intervening in surveys. Between submitting their free-text response and seeing the next item, an LLM could be asked to rate the effort/intelligibility of the free-text response and, if lacking, could re-prompt them in the same way that certain fields are mandatory when filling out surveys. That said, one- or two-word responses are so low effort that you don't even need an LLM; you just need to count the number of spaces in their response.]
+
+Perhaps because of the substantial frequency of low-quality responses, the very first feature of the text KB's RAs was:
+
+**Codeable content?** (`code`)
+
+- **`0` = no:** (*use if: blank/R writes don’t know/R agrees or disagrees with question/general rule-one word answers are not code-able with the exceptions of equality or racism*)
+- **`1` = yes:** (*use if: R provides any idea that is understandable and suggests some potentially code-able reaction to the question-including remarks about the question wording/bias in the questions/vagueness in the questions*)^[I won't go over the entire codebook here; you can check it out in the appendix!]
+
+`TODO`: Decide how much more framing/prose you want here. For now I'm just diving straight into the "results."
+
+## Human-Human IRR
+
+```{r warning=FALSE}
+codes <- c("code", "bexpment", "wexpment", "tblk", 
+           "individ", "discrim", "welf", "obama", "rxn")
+
+# ── 1. reshape to tidy ──────────────────────────────────────────────────
+long <- data_raw |>
+  # there was a random "." in `c1q3obama`
+  mutate(c1q3obama = ifelse(c1q3obama == '.' | is.na(c1q3obama), NA, as.double(c1q3obama))) %>% 
+  pivot_longer(
+    cols = matches("^c[12]q[1-4]"),
+    names_to = c("coder", "question", "dimension"),
+    names_pattern = "(c[12])q([1-4])(.+)"
+  ) |>
+  mutate(
+    coder = factor(coder, levels = c("c1","c2")),
+    question = as.integer(question)
+  )
+
+# ── 2. how much overlap? ────────────────────────────────────────────────
+overlap_tbl <- long |>
+  filter(dimension == "code" & !is.na(value)) |>
+  select(id, question, coder, code = value) |>
+  pivot_wider(names_from = coder, values_from = code) |>
+  mutate(both_coded = !is.na(c1) & !is.na(c2))           # either 0 or 1 present
+
+# ── 3. helper to compute IRR for a single dimension ─────────────────────
+irr_for_dimension <- function(dim_name) {
+  # pull long data for that dimension plus code flags
+  tmp <- long |>
+    filter(dimension %in% c(dim_name, "code")) |>
+    pivot_wider(
+      id_cols      = c(id, question),
+      names_from   = c(coder, dimension),
+      values_from  = value
+    )
+  
+  # keep rows where both coders supplied *this* dimension
+  both_have_code <- !is.na(tmp$c1_code) & !is.na(tmp$c2_code)
+  tmp <- tmp[both_have_code, ]
+  
+  if (dim_name != "code") {
+    # further require both coders judged the response as codeable (== 1)
+    tmp <- tmp[tmp$c1_code == 1 & tmp$c2_code == 1, ]
+  }
+  
+  # isolate the two rating vectors
+  r1 <- tmp[[paste0("c1_", dim_name)]]
+  r2 <- tmp[[paste0("c2_", dim_name)]]
+  n  <- length(r1)
+  
+  # choose statistic
+  stat <-
+    if (dim_name %in% c("code", "bexpment", "wexpment", "welf", "obama")) {
+      # dichotomous → unweighted Cohen’s κ
+      irr::kappa2(data.frame(r1, r2), weight = "unweighted")$value
+    } else if (dim_name %in% c("tblk","individ","discrim","rxn")) {
+      # multicategory → Krippendorff’s α (nominal distances)
+      irr::kripp.alpha(rbind(r1, r2), method = "nominal")$value
+    } else {
+      NA_real_
+    }
+  
+  tibble(dimension = dim_name,
+         n_pairs   = n,
+         irr       = stat)
+}
+
+# Compute IRR for every dimension ---------------------------------------
+irr_df <- purrr::map_dfr(codes, irr_for_dimension)
+
+n_both <- sum(overlap_tbl$both_coded)
+```
+
+Briefly, before examining how well GPT-4o labelled this data, we should see just how "gold" our "gold standard" human data is. For each of the eight substantive dimensions as well as the "is this even codeable?" dimension, we can calculate the interrater reliability of the two human raters. Due to resource constraints, the two raters did not both code the entire dataset. We will have to make do with the `r n_both` cells that both coded.
+
+How did the human raters do? 
+
+```{r}
+binary_dimensions <- c("code", "bexpment", "wexpment", "welf", "obama")
+
+irr_df %>% 
+  mutate(irr_measure = ifelse(dimension %in% binary_dimensions, 'kappa', 'alpha')) %>% 
+  ggplot(aes(fct_reorder(dimension, irr), irr, shape = irr_measure)) +
+  geom_segment(aes(xend = dimension, y = 0, yend = irr), linewidth = 1.1, color = blue) +
+  geom_point(size = 4, fill = pink, color = yellow) +
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0.01)) +
+  labs(x = NULL,
+       y = "Inter-rater reliability",
+       title = "Humans' IRR by coding dimension",
+       caption = "Only pairs jointly coded; non-`code` dimensions require code==1 from both",
+       shape = '') +
+  theme_minimal(base_size = 12) +
+  coord_flip() +
+  theme(panel.grid.major.y = element_blank(),
+        legend.position = 'inside',
+        legend.position.inside = c(.925, .2)) +
+  scale_shape_manual(values = c(21, 23))
+```
+
+## AI-AI IRR
+
+Now, let's see how our LLMs did. The "hopefully irrelevant" variation I injected into the labelling task was how many items the LLM saw at a time.^[You could call this "batch size."] Because each respondent gave four responses, I had two ways to present the text to the LLM: 
+
+- I could present the LLM with all four of a respondent's responses at the same time and ask it to code each (giving a total of $4 \times 9 = 36$ codes), or 
+- I could present the LLM with just one response at a time. 
+
+The 'respondent-level batch' approach has two benefits. First, it results in approximately 25% of the API calls, thereby saving some serious dollars. Second, the respondent might reference their previous responses. If that is the case, siloing each response creates an unresolvable anaphora, and we all hate unresolvable anaphoras. On the other hand, one benefit of siloing individual responses is that we might not trust LLMs to code each response's content independent of the surrounding content.^[For concreteness, imagine with me that a respondent mentions Obama in their second open-ended response. The model then might carry that over to the third and/or fourth codes and incorrectly say that the respondent mentioned Obama once or twice more.] We also might worry that quality will degrade if ask for too many responses at once. That is, somewhere between trusting an LLM for 9 pieces of information and 36 pieces of information, our trust runs out.
+
+Without further ado, here are the results. I've (again) plotted the humans' IRRs, this time as benchmarks for the silicon IRRs.^[Upon my second draft, I'll incorporate this into the main text, but for now a _marginalium_. The IRR for the LLMs is the reliability between one instance of GPT-4o seeing just one response at a time and another instance seeing all four responses at a time. Given a less limited time and money budget, I would have run each of those codings twice, which would have given me "pure noise" IRRs that would serve as baselines against which I could judge the IRR I actually observe. Also of note, whereas the humans' IRR is based on a relative small subset of the data, the LLMs' IRR is based on the entire dataset.]
+
+```{r}
+single_tbl <- readRDS('llm_data/single_responses_tbl.rds')
+multi_tbl <- readRDS('llm_data/multi_tbl.rds')
+
+names(single_tbl) <- paste0(names(single_tbl), c(rep('', 4), rep('_single', length(single_tbl) - 4)))
+names(multi_tbl) <- paste0(names(multi_tbl), c('', '', rep('_multi', length(multi_tbl) - 2)))
+
+joined <- full_join(single_tbl, multi_tbl, by = c("id","item"))
+```
+
+```{r reliability_tbl_T5}
+codes <- c("code",
+           "bexpment",
+           "wexpment",
+           "tblk",
+           "individ",
+           "discrim",
+           "welf",
+           "obama",
+           "rxn")
+
+# sets used to choose the IRR statistic
+binary_dims <- c("code", "bexpment", "wexpment", "welf", "obama")
+multi_dims  <- c("tblk", "individ", "discrim", "rxn")
+
+calc_metrics <- function(var) {
+  # Expect exactly two columns: <var>_single and <var>_multi
+  d <- joined %>%
+    dplyr::select(dplyr::starts_with(var)) %>%
+    # rename for irr::* APIs
+    `colnames<-`(c("r1", "r2")) %>%
+    tidyr::drop_na()               # exclude rows where either method is NA
+
+  if (nrow(d) == 0) return(NULL)
+
+  # choose IRR statistic
+  irr_val <-
+    if (var %in% binary_dims) {
+      irr::kappa2(d, weight = "unweighted")$value
+    } else if (var %in% multi_dims) {
+      irr::kripp.alpha(rbind(d$r1, d$r2), method = "nominal")$value
+    } else {
+      NA_real_
+    }
+
+  pct_agree <- mean(d$r1 == d$r2)
+
+  tibble::tibble(
+    dimension = var,
+    irr       = irr_val,
+    agreement = pct_agree,
+    n         = nrow(d),
+    n_levels  = dplyr::n_distinct(c(d$r1, d$r2))
+  )
+}
+
+reliability_tbl <- purrr::map_dfr(codes, calc_metrics) %>%
+  dplyr::arrange(dplyr::desc(n_levels), dplyr::desc(irr))
+
+```
+
+
+```{r warning=FALSE}
+df <- reliability_tbl %>% 
+  magrittr::set_colnames(c("dimension","irr","agreement","n_pairs","n_levels")) %>% 
+  mutate(substrate = "silicon") %>% 
+  bind_rows(mutate(irr_df, substrate = "carbon")) %>% 
+  # create an ordered factor once so we can reuse it for text labels
+  mutate(dim_ord = fct_reorder(dimension, irr, .fun = max))
+
+reliability_tbl %>% 
+  magrittr::set_colnames(value = c('dimension', 'irr', 'agreement', 'n_pairs', 'n_levels')) %>% 
+  mutate(substrate = 'silicon') %>% 
+  bind_rows(mutate(irr_df, substrate = 'carbon')) %>%
+  mutate(irr_measure = ifelse(dimension %in% binary_dimensions, 'kappa', 'alpha')) %>% 
+  ggplot(aes(fct_reorder(dimension, irr, max), irr, 
+             color = substrate, fill = substrate, shape = irr_measure)) +
+  geom_linerange(aes(ymin = 0, ymax = irr), position = position_dodge(width = 0.5), linewidth = 1.1) +
+    geom_label(data = distinct(df, dim_ord),
+            aes(x = dim_ord, y = 0.125, label = dim_ord),
+            inherit.aes = FALSE, size = 3.8, fontface = "plain") +
+  geom_point(size = 4, position = position_dodge(width = 0.5), color = yellow, stroke = 1) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(x = NULL,
+       y = "Inter-Rater Reliability",
+       title = "IRR by coding dimension") +
+  theme_minimal(base_size = 13) +
+  coord_flip() +
+  theme(panel.grid.major.y = element_blank(),
+        axis.text.y = element_blank(),
+        legend.position = c(0.89, 0.15),
+        legend.title = element_blank()) +
+  scale_color_manual(values = c(blue, green)) +
+  scale_fill_manual(values = c(blue, green), guide = FALSE) +
+  scale_shape_manual(values = c(21, 23), guide = FALSE)
+```
+
+As you can see, there isn't a universal winner on the dimension of IRR. To this researcher, the most curious (and troubling) aspect was the LLMs' lack of relaibility on two really simple binary dimensions: `bexpment` and `wexpment`, explicit mentions of Blacks and whites, respectively.
+
+Reminder: high IRR doesn't necessary mean high quality!
+
+Below is a little app I'm working on that allows researchers to efficiently get below the IRR's single-number summary to uncover the source of a low IRR. You can select which of the nine dimensions you want to see raw data on and how many rows (examples) you want; you can also resample disagreements to see another batch of examples. For each dimension you select, you'll also get a confusion matrix that shows that overall structure of (dis)agreement between the two coders.
+
+```{r, echo=FALSE, results='asis'}
+# ---- 1) Prep data for the browser (serialize to JSON) ----
+# Columns we need in the client
+needed <- c(
+  "id", "item", "response", "question_text",
+  paste0(c("code","bexpment","wexpment","tblk","individ","discrim","welf","obama","rxn"), "_single"),
+  paste0(c("code","bexpment","wexpment","tblk","individ","discrim","welf","obama","rxn"), "_multi")
+)
+
+stopifnot(all(needed %in% names(joined)))
+
+# Convert factors to character to avoid integer levels in JSON
+to_char <- function(x) if (is.factor(x)) as.character(x) else x
+joined_export <- dplyr::mutate(dplyr::select(joined, dplyr::all_of(needed)),
+                               dplyr::across(dplyr::everything(), to_char))
+
+# Serialize to JSON for use in the browser
+json <- jsonlite::toJSON(joined_export, dataframe = "rows", na = "null", auto_unbox = TRUE)
+
+# Emit a global JS variable with the data
+htmltools::tags$script(htmltools::HTML(sprintf("window.JOINED_DATA = %s;", json)))
+```
+
+```{=html}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-dt@2/css/dataTables.dataTables.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables.net@2/js/dataTables.min.js"></script>
+
+<style>
+  .disagree-widget { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; }
+  .disagree-controls { display:flex; gap:12px; align-items: end; flex-wrap: wrap; margin-bottom: 10px; }
+  .disagree-controls .group { display:flex; flex-direction:column; }
+  .disagree-controls select,
+  .disagree-controls input[type="number"],
+  .disagree-controls button {
+    height: 36px; line-height: 36px; padding: 0 12px; box-sizing: border-box;
+    border: 1px solid #9ca3af; border-radius: 6px;
+  }
+  .disagree-controls label { font-size: 0.95rem; }
+
+  /* Make the resample button more clickable */
+  #resampleBtn {
+    font-weight: 700;
+    border-width: 2px;
+    background: #f3f4f6; /* subtle gray */
+    transition: background 120ms ease, box-shadow 120ms ease, transform 40ms ease;
+    cursor: pointer;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  }
+  #resampleBtn:hover { background: #e5e7eb; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+  #resampleBtn:active { transform: translateY(1px); }
+
+  .disagree-meta { display:flex; gap:16px; flex-wrap: wrap; margin: 8px 0 14px; font-size: 0.9rem; color:#374151; }
+  .badge { background:#eef2ff; border:1px solid #c7d2fe; padding:2px 8px; border-radius: 9999px; color:#111827; }
+
+  #disagreeTable { font-size: 0.9em; }
+  #disagreeTable th, #disagreeTable td { padding: 6px 8px; }
+
+  .matrix { margin-top:12px; margin-bottom: 20px; text-align:center; }
+  .matrix strong { display:block; margin-bottom: 10px; } /* extra breathing room */
+  .matrix .cm-wrapper { display:inline-block; }
+  .matrix table { border-collapse: collapse; font-size: 0.9em; margin: 0 auto; }
+  .matrix th, .matrix td { border: 1px solid #e5e7eb; padding: 6px 10px; min-width: 42px; }
+</style>
+
+<div class="disagree-widget">
+  <div class="disagree-controls">
+    <div class="group">
+      <label for="dimSelect">Dimension</label>
+      <select id="dimSelect">
+        <option value="code">code</option>
+        <option value="bexpment">bexpment</option>
+        <option value="wexpment">wexpment</option>
+        <option value="tblk">tblk</option>
+        <option value="individ">individ</option>
+        <option value="discrim">discrim</option>
+        <option value="welf">welf</option>
+        <option value="obama">obama</option>
+        <option value="rxn">rxn</option>
+      </select>
+    </div>
+    <div class="group">
+      <label for="nRows">Max rows</label>
+      <input id="nRows" type="number" value="15" min="1" max="300" />
+    </div>
+    <div class="group">
+      <label>&nbsp;</label>
+      <button id="resampleBtn">Resample disagreements</button>
+    </div>
+  </div>
+
+  <div class="disagree-meta">
+    <div><span class="badge" id="candidateCount">0 candidates</span></div>
+    <div><span class="badge" id="shownCount">0 shown</span></div>
+  </div>
+
+  <!-- Confusion matrix (built from gated rows, before disagreement filter) -->
+  <div class="matrix">
+    <strong>Confusion matrix</strong>
+    <div id="matrixContainer" class="cm-wrapper"></div>
+  </div>
+
+  <table id="disagreeTable" class="display" style="width:100%"></table>
+</div>
+
+<script>
+(function(){
+  const data = window.JOINED_DATA || [];
+
+  const dimSelect = document.getElementById("dimSelect");
+  const nRows     = document.getElementById("nRows");
+  const resample  = document.getElementById("resampleBtn");
+
+  const candidateCount = document.getElementById("candidateCount");
+  const shownCount     = document.getElementById("shownCount");
+
+  let dt;
+  let currentSample = [];
+
+  function truncate(s, n=50){ if (s == null) return ""; s = String(s); return s.length > n ? s.slice(0,n) + "…" : s; }
+
+  // Apply only the "code==1" gate when needed (no disagreement filter)
+  function gateRows(dim){
+    const sCol = dim + "_single";
+    const mCol = dim + "_multi";
+    let rows = data.filter(r => r[sCol] != null && r[mCol] != null);
+    if (dim !== "code") { rows = rows.filter(r => Number(r["code_single"]) === 1 && Number(r["code_multi"]) === 1); }
+    return rows;
+  }
+
+  // Apply disagreement filter (after gating)
+  function disagreementRows(gated, dim){
+    const sCol = dim + "_single";
+    const mCol = dim + "_multi";
+    return gated.filter(r => r[sCol] !== r[mCol]);
+  }
+
+  function sampleArray(arr, k){
+    if (arr.length <= k) return arr.slice();
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a.slice(0, k);
+  }
+
+  // Build matrix from gated rows (agreements + disagreements).
+  // Shade only off-diagonal (disagreement) cells.
+  function buildMatrix(gatedRows, dim){
+    const sCol = dim + "_single", mCol = dim + "_multi";
+
+    // Distinct observed levels
+    const levels = new Set();
+    gatedRows.forEach(r => { levels.add(r[sCol]); levels.add(r[mCol]); });
+    const lv = Array.from(levels).sort((a,b) => (a+"").localeCompare(b+""));
+
+    // Count all cells
+    const counts = {};
+    lv.forEach(s => { counts[s] = {}; lv.forEach(m => counts[s][m] = 0); });
+    gatedRows.forEach(r => { counts[r[sCol]][r[mCol]] += 1; });
+
+    // Find max among off-diagonal for shading scale
+    let maxOffDiag = 0;
+    lv.forEach(s => lv.forEach(m => {
+      if (s !== m && counts[s][m] > maxOffDiag) maxOffDiag = counts[s][m];
+    }));
+
+    // Render
+    let html = '<table><thead><tr><th>single \\ multi</th>' + lv.map(x=>`<th>${x}</th>`).join("") + '</tr></thead><tbody>';
+    lv.forEach(sv => {
+      html += `<tr><th>${sv}</th>` + lv.map(mv => {
+        const c = counts[sv][mv];
+        let bg = '';
+        if (sv !== mv && c > 0) { // shade disagreements only
+          const alpha = (maxOffDiag > 0) ? (0.15 + 0.55 * (c / maxOffDiag)) : 0.15;
+          bg = `background: rgba(59,130,246, ${alpha});`;
+        }
+        return `<td style="${bg}">${c}</td>`;
+      }).join("") + '</tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById("matrixContainer").innerHTML = html;
+  }
+
+  function toDisplayRows(rows, dim){
+    const sCol = dim + "_single", mCol = dim + "_multi";
+    return rows.map(r => ({
+      question: `<span title="${(r.question_text ?? "").toString().replaceAll('"','&quot;')}">${truncate(r.question_text,50)}</span>`,
+      response: (r.response ?? ""),
+      single: r[sCol],
+      multi:  r[mCol]
+    }));
+  }
+
+  function render(){
+    const dim = dimSelect.value;
+
+    // 1) Gate first (includes agreements + disagreements as requested)
+    const gated = gateRows(dim);
+
+    // 2) Matrix from gated rows (pre-disagreement filter)
+    buildMatrix(gated, dim);
+
+    // 3) Then subset to disagreements for the table
+    const disag = disagreementRows(gated, dim);
+    candidateCount.textContent = `${disag.length} candidates`;
+
+    const k = Math.max(1, Math.min(Number(nRows.value || 1), 300));
+    currentSample = sampleArray(disag, k);
+    shownCount.textContent = `${currentSample.length} shown`;
+
+    const rows = toDisplayRows(currentSample, dim);
+    const cols = [
+      { title: "question", data: "question" },
+      { title: "response", data: "response" },
+      { title: "single",   data: "single" },
+      { title: "multi",    data: "multi"  }
+    ];
+
+    if (dt) { dt.clear().destroy(); }
+    dt = new $.fn.dataTable.Api($('#disagreeTable').DataTable({
+      data: rows,
+      columns: cols,
+      ordering: false,
+      searching: false,
+      paging: true,
+      pageLength: 10,
+      info: false,
+      dom: 't',
+      columnDefs: [{ targets: 0, render: function(data){ return data; } }]
+    }));
+  }
+
+  resample.addEventListener("click", render);
+  render();
+})();
+</script>
+
+```
+
+## Human-AI IRR
+
+Now that we've seen that it would take a little more prompt engineering to have an LLM correctly segment the text it's looking at, let's go with the single-coding and see the extent to which GPT-4o (dis)agreed with human raters. For each dimension, I'll calculate two IRRs, one between human coder one and GPT-4o, and the other between human coder two and GPT-4o.
+
+```{r warning=FALSE}
+human_long_tbl <- 
+  long %>%
+  select(id, question, coder, dimension, value) %>% 
+  mutate(item = case_when(question == 1 ~ 'q43',
+                          question == 2 ~ 'q45',
+                          question == 3 ~ 'q47',
+                          question == 4 ~ 'q49'),
+         .after = id) %>% 
+  select(-question)
+
+gpt4o_long_tbl <- 
+  joined %>% 
+  pivot_longer(cols = -(1:4), names_to = 'dimension', values_to = 'value') %>% 
+  filter(str_detect(dimension, '_single')) %>% 
+  mutate(dimension = str_remove(dimension, '_single'),
+         coder = 'gpt4o')
+```
+
+```{r}
+compute_irr_dyad <- function(coder_a, coder_b) {
+  dat <- bind_rows(
+    human_long_tbl %>% filter(coder %in% c(coder_a, coder_b)) %>% 
+      select(id, item, coder, dimension, value),
+    gpt4o_long_tbl %>% filter(coder %in% c(coder_a, coder_b)) %>% 
+      select(id, item, coder, dimension, value)
+  )
+
+  f <- function(dim_name) {
+    tmp <- dat %>%
+      filter(dimension %in% c(dim_name, "code")) %>%
+      pivot_wider(
+        id_cols    = c(id, item),
+        names_from = c(coder, dimension),
+        values_from= value
+      )
+
+    # require both coders supplied 'code' (non-NA)
+    code_a <- tmp[[paste0(coder_a, "_code")]]
+    code_b <- tmp[[paste0(coder_b, "_code")]]
+    keep   <- !is.na(code_a) & !is.na(code_b)
+    tmp    <- tmp[keep, , drop = FALSE]
+
+    # if dim != code, gate on both code==1
+    if (dim_name != "code" && nrow(tmp) > 0) {
+      tmp <- tmp[tmp[[paste0(coder_a, "_code")]] == 1 & tmp[[paste0(coder_b, "_code")]] == 1, , drop = FALSE]
+    }
+
+    r1 <- tmp[[paste0(coder_a, "_", dim_name)]]
+    r2 <- tmp[[paste0(coder_b, "_", dim_name)]]
+
+    # require both ratings present for this dimension
+    ok <- !is.na(r1) & !is.na(r2)
+    r1 <- r1[ok]; r2 <- r2[ok]
+
+    n  <- length(r1)
+    if (n == 0) {
+      return(tibble(dimension = dim_name,
+                    dyad      = paste(coder_a, coder_b, sep = "_vs_"),
+                    irr       = NA_real_,
+                    agreement = NA_real_,
+                    n         = 0L,
+                    n_levels  = 0L))
+    }
+
+    irr_val <-
+      if (dim_name %in% binary_dims) {
+        irr::kappa2(data.frame(r1, r2), weight = "unweighted")$value
+      } else if (dim_name %in% multi_dims) {
+        irr::kripp.alpha(rbind(r1, r2), method = "nominal")$value
+      } else {
+        NA_real_
+      }
+
+    tibble(
+      dimension = dim_name,
+      dyad      = paste(coder_a, coder_b, sep = "_vs_"),
+      irr       = irr_val,
+      agreement = mean(r1 == r2),
+      n         = n,
+      n_levels  = n_distinct(c(r1, r2))
+    )
+  }
+
+  map_dfr(codes, f)
+}
+
+irr_18_tbl <- bind_rows(
+  compute_irr_dyad("gpt4o", "c1"),
+  compute_irr_dyad("gpt4o", "c2")
+) %>%
+  arrange(dyad, match(dimension, codes))
+
+irr_18_tbl %>% 
+  mutate(coder = str_extract(dyad, 'c\\d')) %>% 
+  ggplot(aes(fct_reorder(dimension, irr, max), irr)) +
+  geom_linerange(aes(ymin = 0, ymax = irr, color = coder),
+                 position = position_dodge(width = 0.5),
+                 linewidth = 1.1) +
+  geom_point(size = 4,
+             aes(fill = coder),
+             position = position_dodge(width = 0.5), 
+             stroke = 1, shape = 21, color = yellow) +
+  coord_flip() +
+  labs(x = '', y = 'Human-LLM IRR') +
+  scale_color_manual(values = c(blue, green)) +
+  scale_fill_manual(values = c(blue, green)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1), breaks = .25 * 1:3) +
+  theme(axis.ticks.y = element_blank())
+
+```
+
+```{r}
+# ---- Build a wide table with c1_*, c2_*, gpt4o_* for all 9 dimensions ----
+to_key <- function(df, who) {
+  df %>%
+    filter(dimension %in% codes) %>%
+    mutate(coder = who) %>%
+    unite("key", coder, dimension, sep = "_", remove = FALSE) %>%
+    select(id, item, key, value)
+}
+
+hum_wide <- human_long_tbl %>%
+  filter(coder %in% c("c1","c2"), dimension %in% codes) %>%
+  unite("key", coder, dimension, sep = "_") %>%
+  select(id, item, key, value) %>%
+  pivot_wider(names_from = key, values_from = value)
+
+gpt_wide <- gpt4o_long_tbl %>%
+  filter(dimension %in% codes) %>%
+  mutate(coder = "gpt4o") %>%
+  unite("key", coder, dimension, sep = "_") %>%
+  select(id, item, response, question_text, key, value) %>%
+  pivot_wider(names_from = key, values_from = value)
+
+joined_dyads <- full_join(hum_wide, gpt_wide, by = c("id","item"))
+
+# Convert factors to character so JSON has labels, not level codes
+to_char <- function(x) if (is.factor(x)) as.character(x) else x
+joined_dyads_export <- joined_dyads %>% mutate(across(everything(), to_char))
+
+json_dyads <- jsonlite::toJSON(joined_dyads_export, dataframe = "rows",
+                               na = "null", auto_unbox = TRUE)
+
+htmltools::tags$script(htmltools::HTML(sprintf("window.DYAD_DATA = %s;", json_dyads)))
+
+```
+
+```{=html}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-dt@2/css/dataTables.dataTables.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables.net@2/js/dataTables.min.js"></script>
+
+<style>
+  .dyad-widget { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; }
+  .controls { display:flex; gap:12px; align-items: end; flex-wrap: wrap; margin-bottom: 10px; }
+  .controls .group { display:flex; flex-direction:column; }
+  .controls select, .controls input[type="number"], .controls button {
+    height: 36px; line-height: 36px; padding: 0 12px; box-sizing: border-box;
+    border: 1px solid #9ca3af; border-radius: 6px;
+  }
+  .controls label { font-size: 0.95rem; }
+
+  /* Emphasize the resample button */
+  #dyadResample {
+    font-weight: 700; border-width: 2px; background: #f3f4f6;
+    transition: background 120ms ease, box-shadow 120ms ease, transform 40ms ease;
+    cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  }
+  #dyadResample:hover { background: #e5e7eb; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+  #dyadResample:active { transform: translateY(1px); }
+
+  .meta { display:flex; gap:16px; flex-wrap: wrap; margin: 8px 0 14px; font-size: 0.9rem; color:#374151; }
+  .badge { background:#eef2ff; border:1px solid #c7d2fe; padding:2px 8px; border-radius: 9999px; color:#111827; }
+
+  /* table */
+  #dyadTable { font-size: 0.9em; }
+  #dyadTable th, #dyadTable td { padding: 6px 8px; }
+
+  /* confusion matrix */
+  .matrix { margin-top:12px; margin-bottom: 20px; text-align:center; }
+  .matrix strong { display:block; margin-bottom: 10px; }
+  .matrix .cm-wrapper { display:inline-block; }
+  .matrix table { border-collapse: collapse; font-size: 0.9em; margin: 0 auto; }
+  .matrix th, .matrix td { border: 1px solid #e5e7eb; padding: 6px 10px; min-width: 42px; }
+</style>
+
+<div class="dyad-widget">
+  <div class="controls">
+    <div class="group">
+      <label for="dyadSelect">Dyad</label>
+      <select id="dyadSelect">
+        <option value="gpt4o|c1">GPT-4o vs c1</option>
+        <option value="gpt4o|c2">GPT-4o vs c2</option>
+        <option value="c1|c2">c1 vs c2</option>
+      </select>
+    </div>
+    <div class="group">
+      <label for="dimSelect2">Dimension</label>
+      <select id="dimSelect2">
+        <option value="code">code</option>
+        <option value="bexpment">bexpment</option>
+        <option value="wexpment">wexpment</option>
+        <option value="tblk">tblk</option>
+        <option value="individ">individ</option>
+        <option value="discrim">discrim</option>
+        <option value="welf">welf</option>
+        <option value="obama">obama</option>
+        <option value="rxn">rxn</option>
+      </select>
+    </div>
+    <div class="group">
+      <label for="nRows2">Max rows</label>
+      <input id="nRows2" type="number" value="15" min="1" max="300" />
+    </div>
+    <div class="group">
+      <label>&nbsp;</label>
+      <button id="dyadResample">Resample disagreements</button>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div><span class="badge" id="dyadCandidate">0 candidates</span></div>
+    <div><span class="badge" id="dyadShown">0 shown</span></div>
+  </div>
+
+  <!-- Confusion matrix first (built from gated rows; disagreements shaded) -->
+  <div class="matrix">
+    <strong>Confusion matrix</strong>
+    <div id="dyadMatrix" class="cm-wrapper"></div>
+  </div>
+
+  <table id="dyadTable" class="display" style="width:100%"></table>
+</div>
+
+<script>
+(function(){
+  const data = window.DYAD_DATA || [];
+  const dimSelect = document.getElementById("dimSelect2");
+  const dyadSelect= document.getElementById("dyadSelect");
+  const nRows     = document.getElementById("nRows2");
+  const resample  = document.getElementById("dyadResample");
+  const candBadge = document.getElementById("dyadCandidate");
+  const shownBadge= document.getElementById("dyadShown");
+  let dt;
+
+  function truncate(s, n=50){ if (s == null) return ""; s = String(s); return s.length > n ? s.slice(0,n) + "…" : s; }
+
+  function parseDyad(){
+    const [a,b] = dyadSelect.value.split("|");
+    return {a,b, labelA: a, labelB: b};
+  }
+
+  // Gate rows: require both codes present; for non-'code' dims also require both code==1
+  function gateRows(dim, dy){
+    const sA = `${dy.a}_${dim}`, sB = `${dy.b}_${dim}`;
+    const codeA = `${dy.a}_code`,  codeB = `${dy.b}_code`;
+    let rows = data.filter(r => r[sA] != null && r[sB] != null);
+    if (dim !== "code") {
+      rows = rows.filter(r => Number(r[codeA]) === 1 && Number(r[codeB]) === 1);
+    }
+    return rows;
+  }
+
+  function disagreementRows(gated, dim, dy){
+    const sA = `${dy.a}_${dim}`, sB = `${dy.b}_${dim}`;
+    return gated.filter(r => r[sA] !== r[sB]);
+  }
+
+  function sampleArray(arr, k){
+    if (arr.length <= k) return arr.slice();
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a.slice(0, k);
+  }
+
+  // Build confusion matrix from ALL gated rows; shade only off-diagonals
+  function buildMatrix(gated, dim, dy){
+    const sA = `${dy.a}_${dim}`, sB = `${dy.b}_${dim}`;
+    const levels = new Set();
+    gated.forEach(r => { levels.add(r[sA]); levels.add(r[sB]); });
+    const lv = Array.from(levels).sort((x,y) => (x+"").localeCompare(y+""));
+
+    const counts = {};
+    lv.forEach(x => { counts[x] = {}; lv.forEach(y => counts[x][y] = 0); });
+    gated.forEach(r => { counts[r[sA]][r[sB]] += 1; });
+
+    let maxOff = 0;
+    lv.forEach(x => lv.forEach(y => { if (x !== y && counts[x][y] > maxOff) maxOff = counts[x][y]; }));
+
+    let html = `<table><thead><tr><th>${dy.labelA} \\ ${dy.labelB}</th>` + lv.map(v=>`<th>${v}</th>`).join("") + `</tr></thead><tbody>`;
+    lv.forEach(row => {
+      html += `<tr><th>${row}</th>` + lv.map(col => {
+        const c = counts[row][col];
+        let bg = '';
+        if (row !== col && c > 0) {
+          const alpha = (maxOff > 0) ? (0.15 + 0.55*(c/maxOff)) : 0.15;
+          bg = `background: rgba(59,130,246, ${alpha});`;
+        }
+        return `<td style="${bg}">${c}</td>`;
+      }).join("") + `</tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById("dyadMatrix").innerHTML = html;
+  }
+
+  function toDisplayRows(rows, dim, dy){
+    const sA = `${dy.a}_${dim}`, sB = `${dy.b}_${dim}`;
+    return rows.map(r => ({
+      question: `<span title="${(r.question_text ?? "").toString().replaceAll('"','&quot;')}">${truncate(r.question_text,50)}</span>`,
+      response: (r.response ?? ""),
+      a: r[sA],
+      b: r[sB]
+    }));
+  }
+
+  function render(){
+    const dy = parseDyad();
+    const dim = dimSelect.value;
+
+    const gated = gateRows(dim, dy);
+    buildMatrix(gated, dim, dy);
+
+    const disag = disagreementRows(gated, dim, dy);
+    candBadge.textContent = `${disag.length} candidates`;
+
+    const k = Math.max(1, Math.min(Number(nRows.value || 1), 300));
+    const sample = sampleArray(disag, k);
+    shownBadge.textContent = `${sample.length} shown`;
+
+    const rows = toDisplayRows(sample, dim, dy);
+    const cols = [
+      { title: "question", data: "question" },
+      { title: "response", data: "response" },
+      { title: dy.labelA,  data: "a" },
+      { title: dy.labelB,  data: "b" }
+    ];
+
+    if (dt) { dt.clear().destroy(); }
+    dt = new $.fn.dataTable.Api($('#dyadTable').DataTable({
+      data: rows,
+      columns: cols,
+      ordering: false,
+      searching: false,
+      paging: true,
+      pageLength: 10,
+      info: false,
+      dom: 't',
+      columnDefs: [{ targets: 0, render: function(d){ return d; } }]
+    }));
+  }
+
+  document.getElementById("dyadSelect").addEventListener("change", render);
+  document.getElementById("dimSelect2").addEventListener("change", render);
+  document.getElementById("dyadResample").addEventListener("click", render);
+
+  render();
+})();
+</script>
+```
+
+## Assorted TODOs
+
+- After building some nice automations into my `callm` package, I'll subset the data and carry out the following experiments
+  - see if Claude's labelling behavior is substantially different
+  - given the overzealousness with which GPT-4o perceived the presence of both codeable content and mentions of characteristics (both when coding isolated responses and when simultaneously coding all four responses), I'll want to see if some chastisement in the system prompt prevents this
+- The most interesting extensions will be
+  - Seeing how the authors' regression results change after accounting for differential usefulness of responses. That is, use (something like) a selection model to model the conditional associations^[A sloppier person would call these regression coefficients *effects*. But remember, the first rule is to be [mostly harmless](https://www.mostlyharmlesseconometrics.com/).] after taking into account that some responses didn't even have the chance to e.g. mention individualism or traits of blacks.
+  - Examining if different items evoked different values (since that was the purpose of the study, after all). That is, do items that *prima facie*'ly load onto individualism differentially precede mentions of the value of individualism?^[I'm honestly not sure how the authors got away with not doing this given its centrality to the paper's core contention!]
+
+# Appendix
+
+In the appendix you'll find a Markdown version of the Kam and Burge qualitative codebook. This is presumably what the two coders used to label responses. In the sections where I create the prompt, you'll see the code read in `open-ended-codebook.txt`. That is simply a markdown file  with the codebook.
+
+## Codebook
+
+```{r echo=FALSE, eval=FALSE}
+codebook_raw <- pdftools::pdf_text('Kam and Burge Codebook.pdf')
+
+page_4 <- str_split(codebook_raw[[4]], '\n')[[1]][27:47]
+page_5 <- str_split(codebook_raw[[5]], '\n')[[1]][1:48]
+page_6 <- str_split(codebook_raw[[6]], '\n')[[1]][1:2]
+
+all_pages <- c(page_4, page_5, page_6)
+# glue::glue_collapse(all_pages, sep = '\n')
+```
+
+#### **Codeable content?** (`code`)
+- **`0`** = no: (*use if: blank/R writes don’t know/R agrees or disagrees with question/general rule-one word answers are not code-able with the exceptions of equality or racism*)
+- **`1`** = yes: (*use if: R provides any idea that is understandable and suggests some potentially code-able reaction to the question-including remarks about the question wording/bias in the questions/vagueness in the questions*)
+
+#### **Blacks explicitly Mentioned** (`bexpment`)
+- **`0`** = no blacks explicitly mentioned
+- **`1`** = blacks explicitly mentioned
+
+#### **Whites explicitly mentioned** (`wexpment`)
+- **`0`** = no whites explicitly mentioned
+- **`1`** = whites explicit (*including Irish, Italians, Jews*)
+
+#### **Traits of Blacks** (`tblk`)
+*We’re looking for explicit mentions about disposition or characteristics*
+
+- **`0`** = no mention
+- **`1`** = positive (*endorsed or mentioned with no sign of disagreement: hardworking, self-reliant; suffering/struggling/facing/overcoming adversity overcoming race, and or smart*)
+- **`2`** = positive & negative (*endorsed or mentioned with no sign of disagreement*)
+- **`3`** = negative (*endorsed or mentioned with no sign of disagreement/ lazy, dependent / not taking responsibility for oneself / making excuses/ not overcoming adversity/taking advantage of “race” card/ angry/ dwelling on the past/ and or poor, low SES, uneducated*)
+- **`11`** = Society – positive (*but R disagrees*)
+- **`12`** = Society – negative (*but R disagrees*)
+- **`21`** = blacks are like other groups in disposition; “blacks and whites are”
+
+#### **Individualism / American Dream / “work your way up”/ self-determination** (`individ`)
+- **`0`** = no individualism mentioned
+- **`1`** = affirmation of individualism as a principle-mentioned as an existing rule for all/universal (*need a specific reference to working hard/helping oneself/earning one’s way/doing it on one’s own/other minorities worked their way up, blacks should too/ explicit mention of another group*)
+- **`2`** = mentioned as “not enough” (*“trying is not enough” for blacks/blacks are trying harder/blacks have to try harder/reference to the American dream being broken*)
+- **`3`** = some people (any race) try to flout individualism (*“get something for nothing”/ being lazy/not trying hard/blacks get more than they deserve/blacks are the favored race*)
+
+#### **Discrimination** (`discrim`)
+- **`0`** = no mention
+- **`1`** = against discrimination; it should not exist; for equality
+- **`2`** = against discrimination but not for special treatment; against special treatment/privilege based on race
+- **`10`** = discrimination mentioned broadly
+- **`11`** = exists / is a problem for blacks (*is a problem/blacks face stereotypes/racial pigment makes a difference/legacy of slavery*)
+- **`21`** = exists and is a problem for whites (*discrimination against whites/reverse racism/ special favors*)
+- **`31`** = discrimination not as big of a problem as before and or slavery happened but is not the source of current problems/ blaming the past is not taking responsibility for individual actions/denial of continuing discrimination against blacks/ denial of a discriminatory societal feature that has an effect on blacks
+- **`41`** = discrimination is a problem for everyone; “everyone is a little bit racist”
+- **`51`** = “this is not a race thing” (*misc, could be disposition, could be situation*)
+
+#### **Welfare** (`welf`)
+*explicit mentions of welfare (this code should not capture affirmative action)*
+
+- **`0`** = no mention
+- **`1`** = discussion of welfare/welfare programs/government programs; checks; dependency; handouts; public aid; food stamps; TANF
+
+#### **Obama explicitly mentioned** (`obama`)
+- **`0`** = no mention of Obama
+- **`1`** = mentioned Obama
+
+#### **Reactions to the questions themselves** (`rxn`)
+- **`0`** = no reaction
+- **`1`** = racist /biased/prejudice
+- **`2`** = emotionally upset/angry
+- **`3`** = dispute accuracy of statement/question statement
+- **`4`** = state that it is a stupid question
+- **`5`** = don’t understand question
+
+## Prepping Open-Ended Response Data, Creating the Prompt, LLM Calls
+
+Below is the code that creates the prompts I sent to the LLMs. 
+
+```{r echo=TRUE}
+# Note that these numbers (e.g., 43) correspond to respondents' open-ended text, not the agree-disagree response to that question
+q43_text <- "Irish, Italians, Jewish, and many other minorities overcame prejudice and worked their way up. Blacks should do the same without any special favors"
+q45_text <- "Generations of slavery and discrimination have created conditions that make it difficult for blacks to work their way out of the lower class"
+q47_text <- "Over the past few years, blacks have gotten less than they deserve"
+q49_text <- "It’s really a matter of some people not trying hard enough; if blacks would only try harder they could be just as well off as whites"
+```
+
+### One Q at a time
+
+```{r }
+qual_data <- 
+  data_raw %>% 
+  select(id, q43, q45, q47, q49) %>% 
+  pivot_longer(cols = -id, names_to = 'item', values_to = 'response') %>%
+  mutate(question_text = factor(item, 
+                                levels = c('q43', 'q45', 'q47', 'q49'), 
+                                labels = c(q43_text, q45_text, q47_text, q49_text))) %>% 
+  filter(!is.na(response)) %>% 
+  arrange(question_text)
+```
+
+```{r echo=TRUE, eval=FALSE}
+markdown_codebook <- 
+  readLines('open-ended-codebook.txt') %>% 
+  glue_collapse(sep = '\n')
+
+response_skeleton <- '{
+  "code": "...",
+  "bexpment": "...",
+  "wexpment": "...",
+  "tblk": "...",
+  "individ": "...",
+  "discrim": "...",
+  "welf": "...",
+  "obama": "...",
+  "rxn": "..."
+}'
+
+system_promptify <- function(item) {
+  
+  question_text <- case_when(
+    item == 'q43' ~ q43_text,
+    item == 'q45' ~ q45_text,
+    item == 'q47' ~ q47_text,
+    item == 'q49' ~ q49_text
+  )
+  
+  single_response_prompt <- glue(
+    'You are an expert coder of open-ended survey responses. Your task is to analyze and categorize a response according to the codebook provided below:
+
+<CODEBOOK>
+{markdown_codebook}
+</CODEBOOK>
+
+Return **only** a single JSON object, with no additional text or markdown fences.
+
+Required keys (in this order):
+  "code", "bexpment", "wexpment", "tblk",
+  "individ", "discrim", "welf", "obama", "rxn"
+
+For each key:
+
+- Use an integer drawn from the permitted set listed in the codebook.
+- If the response is uncodeable, use each key\'s "0 = not present / NA" value.
+
+Response skeleton:
+
+{response_skeleton}
+
+After survey-takers rated their agreement with the question, "{question_text}," they then saw "Thinking about the question you just answered, exactly what things went through your mind? Please type your response below."'
+  )
+  
+  single_response_prompt
+}
+```
+
+```{r eval=FALSE, echo=TRUE}
+single_responses <- callm::single_turns(
+  user_msgs = paste("Survey-taker's response:", qual_data$response),
+  system_msgs = system_promptify(qual_data$item),
+  org = 'openai',
+  model = 'gpt-4o-2024-11-20' # most recent snapshot available at the time
+  )
+
+saveRDS(single_responses, 'llm_data/coded_llm_responses.rds')
+```
+
+```{r}
+# something happened with the 2815 row; let's fetch and insert it!
+
+# missing_response <-
+#   callm::single_turn(
+#     user = paste("Survey-taker's response:", qual_data$response[2815]),
+#     system = system_promptify(qual_data$item[2815]),
+#     org = 'openai',
+#     model = 'gpt-4o-2024-11-20'
+#   )
+# 
+# single_responses[2815] <- missing_response
+# 
+# single_responses_tbl <- 
+#   map(single_responses, ~jsonlite::parse_json(.x) %>% as_tibble_row()) %>% 
+#   list_rbind()
+# 
+# single_responses_tbl <- 
+#   bind_cols(qual_data, single_responses_tbl) %>% 
+#   mutate(across(code:last_col(), as.integer))
+# 
+# saveRDS(single_responses_tbl, 'single_responses_tbl.rds')
+# 
+# # some descriptives
+# sum(single_responses_tbl$code)
+# 
+# single_responses_tbl %>% 
+#   mutate(across(bexpment:last_col(), ~if_else(.x == 0L, 0L, 1L))) %>% 
+#   summarise(across(bexpment:last_col(), mean), .by = code)
+# 
+# single_responses_tbl %>% 
+#   mutate(across(bexpment:last_col(), ~if_else(.x == 0L, 0L, 1L))) %>%
+#   filter(code == 1) %>% 
+#   summarise(across(bexpment:last_col(), mean), .by = item)
+
+```
+
+
+### Four Q at a time
+
+```{r eval=FALSE, echo=TRUE}
+question_lookup <- c(
+  q43 = q43_text,
+  q45 = q45_text,
+  q47 = q47_text,
+  q49 = q49_text
+)
+
+qual_multi <- data_raw %>% 
+  select(id, q43, q45, q47, q49) %>%
+  pivot_longer(-id, names_to = "item", values_to = "response",
+               values_drop_na = TRUE) %>% 
+  arrange(id, item) %>% 
+  group_by(id) %>% 
+  summarise(
+    user_msg = glue_collapse(
+      map2_chr(item, response, \(qid, txt) {
+        glue("[{qid}] {question_lookup[[qid]]}\nResponse: {trimws(txt)}")
+      }),
+      sep = "\n\n"          # blank line between blocks
+    ),
+    .groups = "drop"
+  )
+
+response_skeleton <- '{
+  "code": <int>,
+  "bexpment": <int>,
+  "wexpment": <int>,
+  "tblk": <int>,
+  "individ": <int>,
+  "discrim": <int>,
+  "welf": <int>,
+  "obama": <int>,
+  "rxn": <int>
+}'
+
+multi_system_prompt <- glue(
+'You are an expert coder of open‑ended survey responses.  
+Each API call will give you **all of one respondent\'s answers** (up to four).  
+Your task is to code **each answer individually** using the codebook below.
+
+Every answer block begins with its question ID in square brackets, e.g. `[q43]`, followed by the full wording, then a line starting `Response:` with the respondent’s text.
+
+<CODEBOOK>
+{markdown_codebook}
+</CODEBOOK>
+
+Return **one JSON object** whose top‑level keys are only the IDs that actually appear (omit keys for unanswered questions). **Note**: even if you see e.g. "Response: nothing" this means that the respondent _did_ respond, but that their response was "nothing" (this would be a `"code": 0` situation). In sum, if you see a question ID in square brackets, the survey-taker responded to that question.
+
+For every present ID supply this exact nine‑field sub‑object, kee, ping the fields in order:
+
+{response_skeleton}
+
+Do **not** wrap the JSON in markdown fences or add commentary.')
+
+multi_responses <- callm::single_turns(
+  user_msgs   = qual_multi$user_msg,
+  system_msgs = rep(multi_system_prompt, nrow(qual_multi)),
+  org         = "openai",
+  model       = "gpt-4o-2024-11-20"
+)
+
+```
+
+```{r patching_failed_API_requests, eval=FALSE}
+# When I ran this, I had errors at the following 3 indices: 424, 1188, 1440. Let's get those!
+
+multi_responses_patch <- callm::single_turns(
+  user_msgs   = qual_multi$user_msg[c(424, 1188, 1440)],
+  system_msgs = rep(multi_system_prompt, 3),
+  org         = "openai",
+  model       = "gpt-4o-2024-11-20"
+)
+
+multi_responses[[424]] <- multi_responses_patch[[1]]
+multi_responses[[1188]] <- multi_responses_patch[[2]]
+multi_responses[[1440]] <- multi_responses_patch[[3]]
+
+# commented out so you don't overwrite it
+# saveRDS(multi_responses, "llm_data/coded_llm_responses_multi.rds")
+```
+
+
+```{r creating_multi_json_tbl, eval=FALSE}
+all_items <- c("q43","q45","q47","q49")
+
+multi_json_tbl <- map2_dfr(
+  multi_responses,
+  qual_multi$id,
+  \(resp_json, id_val) {
+    parsed <- jsonlite::parse_json(resp_json)
+
+    map_dfr(all_items, \(qid) {
+      subobj <- parsed[[qid]]
+      if (is.null(subobj)) subobj <- rep(NA, 9)
+      tibble(id = id_val,
+             item = qid,
+             !!!set_names(subobj,
+                          c("code","bexpment","wexpment","tblk",
+                            "individ","discrim","welf","obama","rxn")))
+    })
+  }
+)
+
+saveRDS(multi_json_tbl, 'llm_data/multi_json_tbl.rds')
+```
+
+```{r eval=FALSE}
+# these should be the same
+nrow(multi_json_tbl %>% filter(!is.na(code)))
+nrow(single_responses_tbl) # I believe there's a missing one there unless you've fixed this!
+```
+
+```{r eval=FALSE}
+single_responses_tbl %>% 
+  mutate(across(bexpment:last_col(), ~if_else(.x == 0L, 0L, 1L))) %>%
+  filter(code == 1) %>% 
+  summarise(across(bexpment:last_col(), mean), .by = item)
+```
+
+```{r eval=FALSE}
+multi_json_tbl %>% 
+  mutate(across(bexpment:last_col(), ~if_else(.x == 0L, 0L, 1L))) %>%
+  filter(code == 1) %>% 
+  summarise(across(bexpment:last_col(), mean), .by = item)
+```
+
