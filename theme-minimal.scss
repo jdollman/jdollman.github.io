@@ -1,0 +1,198 @@
+/*-- scss:defaults --*/
+
+$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+$font-family-monospace: 'SF Mono', Menlo, Consolas, monospace;
+$font-size-base: 1rem;
+$line-height-base: 1.7;
+$body-color: #333;
+$body-bg: #fff;
+$link-color: #333;
+$link-decoration: underline;
+$headings-font-weight: 600;
+$border-color: #eee;
+$navbar-bg: transparent;
+$navbar-fg: transparent;
+
+/*-- scss:rules --*/
+
+// --- Hide Quarto navbar, footer, and sidebar chrome ---
+.navbar, #quarto-header, .nav-footer, #quarto-footer, .quarto-title-banner {
+  display: none !important;
+}
+
+// --- Back link breadcrumb at very top ---
+.back-link {
+  font-family: $font-family-monospace;
+  font-size: 14px;
+  padding: 1em 0 0.5em;
+  a {
+    color: #777;
+    text-decoration: none;
+    &:hover { color: #000; }
+  }
+}
+
+// --- Title block (non-banner) ---
+#title-block-header {
+  margin-bottom: 1.5em;
+}
+
+h1.title, .quarto-title h1 {
+  font-size: 1.5em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.2em;
+}
+
+// Subtitle / description
+.quarto-title .description, p.subtitle {
+  font-size: 0.9em;
+  color: #888;
+  margin-top: 0;
+}
+
+// --- Author/date meta — simplified ---
+.quarto-title-meta {
+  font-size: 0.82em;
+  color: #aaa;
+  margin-top: 0.5em;
+}
+
+// Hide the "AUTHOR" / "PUBLISHED" headings
+.quarto-title-meta-heading {
+  display: none;
+}
+
+// --- Section headers ---
+h2 {
+  font-size: 1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2.5em;
+  margin-bottom: 0.8em;
+  color: #555;
+}
+
+h3 {
+  font-size: 0.95em;
+  font-weight: 600;
+  margin-top: 1.8em;
+  color: #555;
+}
+
+// --- Body text ---
+p {
+  margin-bottom: 0.8em;
+}
+
+// --- Links ---
+a {
+  color: #333;
+  text-decoration-color: #ccc;
+  text-underline-offset: 2px;
+  &:hover {
+    text-decoration-color: #333;
+  }
+}
+
+// --- Inline code ---
+code {
+  font-size: 0.88em;
+  background: #f7f7f7;
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+  color: #333;
+}
+
+// --- Code blocks ---
+pre {
+  background: #fafafa;
+  border: none;
+  border-left: 3px solid #e0e0e0;
+  padding: 1em 1.2em;
+  line-height: 1.45;
+}
+pre code {
+  background: none;
+  padding: 0;
+}
+div.sourceCode {
+  background: #fafafa;
+  border: none;
+  border-left: 3px solid #e0e0e0;
+}
+
+// --- Tables ---
+table {
+  font-size: 0.88em;
+  border-collapse: collapse;
+  width: 100%;
+}
+th {
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+  border-bottom: 1px solid #ccc;
+}
+td {
+  border-bottom: 1px solid #eee;
+}
+th, td {
+  padding: 0.5em 0.8em;
+  text-align: left;
+}
+
+.tinytable {
+  font-size: 0.88em;
+}
+
+// --- Margin notes / footnotes ---
+.column-margin, .margin-note, .aside, .column-margin p {
+  font-size: 0.78em;
+  color: #999;
+}
+
+// --- Figures ---
+.quarto-figure, figure {
+  margin: 1.5em 0;
+}
+figcaption, .figure-caption {
+  font-size: 0.78em;
+  color: #aaa;
+  margin-top: 0.4em;
+}
+
+// --- Blockquotes ---
+blockquote {
+  margin: 1em 0;
+  padding: 0.8em 1.2em;
+  background: #fafafa;
+  border-left: 3px solid #e0e0e0;
+  border-radius: 4px;
+  color: #555;
+  font-style: italic;
+}
+
+// --- Horizontal rules ---
+hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 2em 0;
+}
+
+// --- Lists ---
+ul, ol {
+  margin: 0.8em 0;
+  padding-left: 1.5em;
+}
+li {
+  margin: 0.3em 0;
+}
+
+// --- Comments section (utterances) ---
+.utterances {
+  max-width: 100%;
+}

@@ -1,9 +1,0 @@
----
-title: "Assorted Posts / Portfolio"
-listing: 
-  contents: posts_assorted 
-  type: grid
-  sort: "date desc"
-  categories: false
----
-

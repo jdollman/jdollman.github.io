@@ -1,19 +1,24 @@
 project:
   type: website
   output-dir: docs
+  resources:
+    - index.html
+    - about.html
+    - posts.html
+    - nyt.html
+    - image_assets/**
+    - Dollman_CV.pdf
+
 website:
   title: "Justin Dollman"
-  navbar:
-    right:
-      - section_dissertation.qmd
-      - section_assorted.qmd
-      - section_about.qmd
-      - text: "🍸"
-        href: active-recall/game.html
+  navbar: false
+
 format:
   html:
-    theme: zephyr
-    css: styles.css
+    theme: theme-minimal.scss
+    include-before-body: _includes/back-link.html
+    grid:
+      margin-width: 350px
 
 editor: source
 
