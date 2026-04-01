@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+        color: #555;
+        max-width: 8.5in;
+        margin: 0.75in auto;
+        line-height: 1.4;
+        font-size: 11pt;
+        background-color: #fdfdfd;
+    }
+    h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0; padding: 0; font-weight: 600; color: #333;
+    }
+    h1 { font-size: 22pt; color: #2a5885; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 700; }
+    h2 {
+        display: inline-block;
+        font-size: 13pt; color: #2a5885; font-weight: 700;
+        border-bottom: 2px solid #4db6ac;
+        padding-bottom: 3px;
+        margin-top: 15px; margin-bottom: 8px;
+        text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    h2 + * { display: block; clear: both; }
+    h3 { font-size: 11.5pt; margin-bottom: 3px; color: #444; }
+    .contact-info { margin-bottom: 15px; text-align: left; font-size: 10pt; color: #666; }
+    .section { margin-bottom: 15px; }
+    ul { margin: 5px 0 10px 0; padding-left: 20px; list-style-position: outside; }
+    li { margin-bottom: 4px; }
+    ul ul { padding-left: 20px; margin-top: 3px; margin-bottom: 5px; list-style-type: square; }
+    ul ul li { margin-bottom: 3px; }
+    a {
+        color: #2a5885;
+        text-decoration: none;
+        font-weight: bold;
+        border-bottom: 1px solid transparent;
+        padding-bottom: 1px;
+        transition: border-color 0.2s ease-in-out;
+    }
+    a:hover { color: #2a5885; border-bottom: 1px solid #4db6ac; }
+    .job-title { font-weight: bold; color: #333; }
+    .company { font-weight: normal; color: #555; }
+    .date { font-style: italic; font-weight: normal; color: #777; font-size: 10pt; margin-top: 2px; margin-bottom: 4px; }
+    .project-title { font-weight: bold; }
+    .project-date { font-style: italic; color: #777; font-size: 10pt; }
+    .degree { font-weight: bold; color: #333; }
+
+    .skills-section .skill-row {
+       display: flex;
+       align-items: flex-start;
+       margin-bottom: 8px;
+    }
+    .skill-category {
+        flex: 0 0 100px;
+        font-weight: bold;
+        color: #333;
+        padding-right: 10px;
+    }
+    .skill-list, .programming-skill-container {
+        flex: 1;
+        margin-left: 0;
+        color: #555;
+    }
+    .programming-skill-container { line-height: 1.7; }
+    .skill-tag {
+        background-color: #e0f2f1;
+        color: #00695c;
+        padding: 2px 6px; border-radius: 4px; font-size: 9.5pt; margin-right: 5px; white-space: nowrap;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-weight: bold;
+        display: inline-block;
+        margin-bottom: 3px;
+    }
+    .skill-detail-tag {
+        font-size: 9pt; color: #666; margin-left: 3px; margin-right: 10px; white-space: nowrap;
+        display: inline-block;
+    }
+
+    .cert-group { margin-bottom: 12px; }
+    .cert-group-title {
+        font-weight: bold;
+        font-size: 11.2pt;
+        color: #333;
+        margin-bottom: 7px;
+    }
+    .cert-list { list-style-type: none; padding-left: 0; margin-top: 3px; }
+    .cert-list li {
+        margin-bottom: 6px;
+        line-height: 1.5;
+        padding-left: 15px;
+        position: relative;
+    }
+    .cert-main-title { font-weight: bold; }
+    .cert-date-status { font-style: italic; font-weight: bold; font-size: 10pt; }
+
+    .date-bluedot { color: #00114d; }
+    .date-huggingface { color: #ffa305; }
+    .date-datacamp { color: #00A050; }
+    .date-vista { color: #8B0000; }
+    .date-horizon { color: #4B0082; }
+
+    .cert-key { margin-top: 15px; font-size: 9.5pt; padding-left: 15px; }
+    .key-item { display: inline-block; margin-right: 15px; }
+    .key-color-box {
+        display: inline-block;
+        width: 1em; height: 1em;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+    .topline-summary-container { margin-bottom: 20px; padding: 5px 0; }
+    .topline-summary-container blockquote {
+        font-family: 'Georgia', serif; font-size: 10.5pt; font-style: italic; color: #333;
+        margin: 0 auto 10px auto; padding: 8px 15px; max-width: 90%;
+        border-left: 3px solid #4db6ac; background-color: #f9f9f9; text-align: left; border-radius: 3px;
+    }
+    .topline-summary-container blockquote p { margin:0; line-height: 1.45; }
+    .topline-summary-container .attribution {
+        font-size: 9.5pt; color: #555; font-style: italic; margin-bottom: 12px;
+        text-align: right; padding-right: 5%; max-width: 90%;
+        margin-left: auto; margin-right: auto;
+    }
+    .topline-summary-note {
+        font-size: 9pt; color: #666; line-height: 1.35; text-align: left;
+        padding: 8px 10px; margin-top: 10px; background-color: #fdfdfd;
+        max-width: 90%; margin-left: auto; margin-right: auto;
+    }
+    .turquoise-asterisk { color: #4db6ac; font-weight: bold; text-decoration: none; }
+    .topline-summary-note sup.turquoise-asterisk { font-size: 1em; }
+</style>
+</head>
+<body>
+<h1>JUSTIN P. DOLLMAN</h1>
+<div class="contact-info">Cambridge, UK | jpauldoll@gmail.com | <a href="https://jdollman.github.io">jdollman.github.io</a></div>
+
+<div class="section topline-summary-container">
+    <blockquote>
+        <p>"User is highly engaged in the field of artificial intelligence, particularly AI policy, governance, and reasoning models. Their professional goal is to transition into the AI policy/AI governance space <code>Confidence=high</code>"</p>
+    </blockquote>
+    <blockquote>
+        <p>"User has technical expertise in machine learning and deep learning, including interest in fine-tuning LLMs, reinforcement learning, and prompt engineering <code>Confidence=high</code>"</p>
+    </blockquote>
+    <p class="attribution">&mdash; ChatGPT-4o<sup><span class="turquoise-asterisk">*</span></sup></p>
+
+    <div class="topline-summary-note">
+        <sup class="turquoise-asterisk">*</sup> As the reader might know, LLMs now have "memories" for each user. This memory includes ChatGPT's <code>Model Set Context</code>, which collects knowledge that ChatGPT has gleaned from interactions with the client. For transparency, you can see my full "report" <a href="https://chatgpt.com/share/681b696d-6dc0-800d-bdeb-4d99e448e106">here</a>.
+    </div>
+</div>
+
+<div class="section">
+    <h2>Professional Experience</h2>
+    <h3><span class="job-title">Co-Director</span> | <span class="company"><a href="https://caish.org">Cambridge AI Safety Hub (CAISH)</a></span></h3>
+    <div class="date">October 2025 &ndash; Present | Cambridge, UK</div>
+    <ul>
+        <li>Co-directing operations and strategic initiatives for an AI safety field-building organization</li>
+        <li>Director of MARS (Mentorship for Alignment Researchers): executed MARS 4.0 and organized MARS V</li>
+        <li>Designed curricula for <a href="https://caish.org/fellowship">Alignment Fellowship</a> (technical and governance cohorts)</li>
+        <li>Co-organizes "How Do We Solve Alignment?" &mdash; weekly reading group of visiting researchers and Cambridge locals</li>
+        <li>Founded the <a href="https://caish.org/desk">Alignment Desk</a></li>
+    </ul>
+    <h3><span class="job-title">Lead Organizer</span> | <span class="company">AI Safety Evals Group (BlueDot Impact)</span></h3>
+    <div class="date">June 2025 &ndash; October 2025</div>
+    <ul>
+        <li>As the sole paid organizer, directed a weekly forum for discussing cutting-edge research in AI Evaluations</li>
+        <li>Secured guest speakers from leading AI safety organizations, including METR and MATS</li>
+        <li>Revived a struggling group: attendance grew to its highest-ever levels under my leadership</li>
+    </ul>
+    <h3><span class="job-title">Course Facilitator</span> | <span class="company">ENAIS &amp; AI Safety Hungary</span></h3>
+    <div class="date">July 2025 &ndash; September 2025</div>
+    <ul>
+        <li>Course: <a href="https://docs.google.com/document/d/1FbbhWto1zrlCXyGjNQ_kd4l7sgsuMz053EXfL1ODfkg/edit?tab=t.0">Deep Dive: AI Policy 201</a></li>
+        <li>Led weekly discussion groups on intermediate AI governance topics</li>
+    </ul>
+    <h3><span class="job-title">Course Facilitator</span> | <span class="company">Center for AI Safety</span></h3>
+    <div class="date">June 2025 &ndash; September 2025</div>
+    <ul>
+        <li>Course: Introduction to AI Safety, Ethics, and Society (see: <a href="https://www.aisafetybook.com/virtual-course">here</a>)</li>
+        <li>Lead weekly meetings for two cohorts and advised on participants' projects</li>
+    </ul>
+    <h3><span class="job-title">NSF Researcher</span> | <span class="company">Stony Brook University (Dept. of Technology and Society)</span></h3>
+    <div class="date">2020 &ndash; 2022</div>
+    <ul>
+        <li>Conducted bibliometric analysis and regression modeling on large datasets of NSF grant outcomes</li>
+        <li>Cleaned, merged, and analyzed data using R to identify factors associated with successful broader societal impacts</li>
+        <li>Contributed analyses and visualizations to grant reports and presentations</li>
+    </ul>
+    <h3><span class="job-title">Graduate Teaching Instructor</span> | <span class="company">SUNY Stony Brook (Dept. of Political Science)</span></h3>
+    <div class="date">2019 &ndash; 2025</div>
+    <ul>
+        <li>Instructor of record for Experiments in Political Science and Introduction to Statistics courses</li>
+        <li>Effectively communicated complex statistical and programming concepts (R, causal inference) to diverse graduate and undergraduate audiences</li>
+        <li>Developed and led workshop series: "Introduction to R for Social Sciences"</li>
+    </ul>
+    <h3><span class="job-title">Wyzant Tutor</span> | <span class="company">Remote</span></h3>
+    <div class="date">2021 &ndash; 2023</div>
+    <ul><li>Provided tutoring in statistics, linear algebra, calculus, research methods, and data visualization</li></ul>
+</div>
+
+<div class="section">
+    <h2>Education</h2>
+    <h3><span class="degree">PhD Candidate, Political Science</span> | <span class="company">Stony Brook University</span></h3>
+    <div class="date">2018 &ndash; Present (On Hold)</div>
+    <ul>
+        <li>Coursework focuses: machine learning and big data, causal inference, experimental design, American political behavior</li>
+        <li>Dissertation research: urban-rural ideological divide, immigration attitudes, and subnational policy making</li>
+        <li>Status: On hold to pursue full-time work in AI safety</li>
+    </ul>
+    <h3><span class="degree">BA, Psychology and Philosophy</span> | <span class="company">University of Arkansas</span></h3>
+    <div class="date">2009 &ndash; 2014</div>
+    <ul>
+        <li><em>Summa Cum Laude</em></li>
+        <li>Thesis: <a href="https://journals.sagepub.com/doi/full/10.1080/17470218.2015.1101146">The SNARC effect and the cognitive representation of a mental number line</a></li>
+        <li>Recipient of the J. William &amp; Elizabeth W. Fulbright Scholarship (2014&ndash;2015)
+            <ul>
+                <li>Studied at Universit&auml;t Karl-Franzens (Graz, Austria)</li>
+                <li>Specialized in philosophy of science</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Projects</h2>
+    <h3><span class="project-title"><a href="https://jdollman.github.io/nyt.html">Automated AI News Tracker &amp; Visualization</a></span> | <span class="project-date">May 2025</span></h3>
+    <ul>
+        <li>Developed automated pipeline using GCP Cloud Functions and Scheduler to track AI news coverage</li>
+        <li>Integrated with NYT Developer APIs to retrieve and analyze news data</li>
+        <li>Implemented text classification using LLM API to identify AI-related content</li>
+    </ul>
+    <h3><span class="project-title"><a href="https://jdollman.github.io/callm/">R Package: callm</a></span> | <span class="project-title">Creator &amp; Maintainer</span> | <span class="project-date">2024 &ndash; Ongoing</span></h3>
+    <ul><li>Developed an R package providing a provider-agnostic interface for LLM API calls, simplifying workflows for integrating LLMs into research</li></ul>
+    <h3><span class="project-title">Immigration Opinion and Policy Analysis</span> | <span class="project-date">2023 &ndash; 2024</span></h3>
+    <ul>
+        <li>Estimated state-level public opinion on immigration using MRP techniques on decades of Cooperative Election Study data</li>
+        <li>Modeled the impact of opinion shifts on state policy adoption using time-series cross-sectional analysis</li>
+        <li>Received the 2023 NYAAPOR/PANJAAPOR Young Public Opinion Star award for &lsquo;Immigration Opinion in the 50 States&rsquo;</li>
+    </ul>
+    <h3><span class="project-title"><a href="https://jdollman.github.io/posts_assorted/2025-01-09-ai-econ/">AI Dislocation and Economic Ideology</a></span> | <span class="project-date">Jan 2025</span></h3>
+    <ul><li>Designed and analyzed survey experiment linking economic ideology (status vs. equality concerns) to public perceptions of AI's economic impact</li></ul>
+    <h3><span class="project-title"><a href="https://jdollman.github.io/posts_assorted/2025-01-09-debunkbot/">Debunk Bot Study Reanalysis</a></span> | <span class="project-date">Jan 2025</span></h3>
+    <ul><li>Conducted quantitative reanalysis of experimental data on AI chatbot effectiveness in countering misinformation</li></ul>
+    <h3><span class="project-title">Broader Impacts and Researcher Productivity</span> | <span class="project-date">GTM2021 Conference</span></h3>
+    <ul><li>Presented analysis of factors associated with broader societal impacts of NSF-funded research</li></ul>
+</div>
+
+<div class="section">
+    <h2>Publications</h2>
+    <ul>
+        <li><strong>Technical Reviewer:</strong> <em>Deep Learning for Biology</em> (O'Reilly, 2025) &mdash; co-authored by DeepMind researcher Natasha Latysheva</li>
+        <li>Feldman, S., M&eacute;rola, V., &amp; <strong>Dollman, J.</strong> (2021). The Psychology of Authoritarianism and Support for Illiberal Policies and Parties. <em>Routledge Handbook of Illiberalism</em>.</li>
+        <li><strong>Dollman, J.</strong> &amp; Levine, W. H. (2016). The Mental Number Line Dominates Alternative, Explicit Coding of Number Magnitude. <em>Quarterly Journal of Experimental Psychology</em>, 69(3), 403&ndash;409.</li>
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Skills</h2>
+    <div class="skills-section">
+         <div class="skill-row">
+             <span class="skill-category">Programming:</span>
+             <div class="programming-skill-container">
+                 <span class="skill-tag">R</span><span class="skill-detail-tag">(Advanced)</span>
+                 <span class="skill-tag">Python</span><span class="skill-detail-tag">(Proficient)</span>
+                 <span class="skill-tag">SQL</span><span class="skill-detail-tag">(Proficient)</span>
+             </div>
+         </div>
+        <div class="skill-row">
+             <span class="skill-category">Data Science:</span>
+             <span class="skill-list">Statistical Modeling, Machine Learning, Causal Inference, Time-Series Analysis, Survey Design &amp; Analysis</span>
+        </div>
+        <div class="skill-row">
+             <span class="skill-category">Cloud/Tools:</span>
+             <span class="skill-list">Google Cloud Platform (Functions, Scheduler), AWS (Lambda, Boto3), Docker, Kubernetes, FastAPI, Qualtrics, Git/GitHub</span>
+        </div>
+        <div class="skill-row">
+             <span class="skill-category">Languages:</span>
+             <span class="skill-list">English (Native), Spanish (Fluent), German (Proficient Reading)</span>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Certifications</h2>
+    <div style="clear: both;"></div>
+    <p style="font-size: 9pt; font-style: italic; color: #856404; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 3px; padding: 4px 10px; margin-top: 8px; margin-bottom: 12px; display: inline-block;">
+        &#9888;&#65039; LinkedIn-style Cheap Credential Flaunting
+    </p>
+
+    <div class="cert-group">
+        <div class="cert-group-title">AI Governance &amp; Policy</div>
+        <ul class="cert-list">
+            <li><span class="cert-main-title">National Security Law and AI (Vista Institute)</span> - <span class="cert-date-status date-vista">Jul 2025</span></li>
+            <li><span class="cert-main-title">AI Governance Course</span> - <span class="cert-date-status date-bluedot">Apr 2025</span></li>
+            <li><span class="cert-main-title">EU AI Act Fundamentals</span> - <span class="cert-date-status date-datacamp">Apr 2025</span></li>
+        </ul>
+    </div>
+
+    <div class="cert-group">
+        <div class="cert-group-title">AI, Machine Learning &amp; LLMs</div>
+        <ul class="cert-list">
+            <li><span class="cert-main-title">Deep Reinforcement Learning</span> - <span class="cert-date-status date-huggingface">Jan 2025</span></li>
+            <li><span class="cert-main-title">Agents Fundamentals</span> - <span class="cert-date-status date-huggingface">Feb 2025</span></li>
+            <li><span class="cert-main-title">Developing Applications with LangChain</span> - <span class="cert-date-status date-datacamp">Feb 2025</span></li>
+            <li><span class="cert-main-title">Reinforcement Learning in Python</span> - <span class="cert-date-status date-datacamp">Mar 2025</span></li>
+            <li><span class="cert-main-title">Associate AI Engineer for Developers</span> - <span class="cert-date-status date-datacamp">May 2025</span></li>
+        </ul>
+    </div>
+
+    <div class="cert-group">
+        <div class="cert-group-title">Data Engineering &amp; Analysis</div>
+        <ul class="cert-list">
+            <li><span class="cert-main-title">Data Engineer in Python</span> - <span class="cert-date-status date-datacamp">May 2025</span></li>
+            <li><span class="cert-main-title">Associate Data Engineer in SQL</span> - <span class="cert-date-status date-datacamp">May 2025</span></li>
+            <li><span class="cert-main-title">SQL Fundamentals</span> - <span class="cert-date-status date-datacamp">May 2025</span></li>
+        </ul>
+    </div>
+
+    <div class="cert-group">
+        <div class="cert-group-title">Python Development</div>
+        <ul class="cert-list">
+            <li><span class="cert-main-title">Associate Python Developer</span> - <span class="cert-date-status date-datacamp">Apr 2025</span></li>
+            <li><span class="cert-main-title">Building Applications with OOP in Python</span> - <span class="cert-date-status date-datacamp">Apr 2025</span></li>
+        </ul>
+    </div>
+
+    <div class="cert-key">
+        <span class="key-item"><span class="key-color-box" style="box-shadow: inset 0 0 0 1em #8B0000;"></span> Vista Institute</span>
+        <span class="key-item"><span class="key-color-box" style="box-shadow: inset 0 0 0 1em #00114d;"></span> BlueDot Impact</span>
+        <span class="key-item"><span class="key-color-box" style="box-shadow: inset 0 0 0 1em #ffa305;"></span> Hugging Face</span>
+        <span class="key-item"><span class="key-color-box" style="box-shadow: inset 0 0 0 1em #00A050;"></span> DataCamp</span>
+    </div>
+</div>
+
+</body>
+</html>
