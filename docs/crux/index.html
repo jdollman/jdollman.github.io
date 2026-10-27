@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crux Course</title>
+<meta name="description" content="A click-through mini-course on cruxes, priors, posteriors and updating.">
+<style>
+  :root{
+    --bg:#c0c0c0; --paper:#ffffff; --ink:#000000; --muted:#555555;
+    --link:#0000ee; --vlink:#551a8b; --bar:#000080;
+    --true:#006600; --false:#990000; --panel:#ffffcc; --navy:#000080;
+    --btn:#d4d0c8;
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;}
+  a{color:var(--link)} a:visited{color:var(--vlink)}
+  #frame{width:760px;max-width:100%;margin:12px auto;background:var(--paper);border:2px solid #000;box-sizing:border-box;}
+  #head{background:var(--navy);color:#fff;padding:8px 14px;font-family:"Times New Roman",Times,serif;}
+  #head h1{margin:0;font-size:26px;letter-spacing:1px;}
+  #head .sub{font-size:11px;color:#ccccff;}
+  #navbar{background:#e8e8e8;border-top:1px solid #fff;border-bottom:1px solid #808080;padding:4px 14px;font-size:11px;}
+  #content{padding:14px 18px 18px 18px;}
+  #content h2{font-family:"Times New Roman",Times,serif;font-size:22px;margin:0 0 6px 0;color:var(--navy);}
+  #content h3{font-size:13px;margin:16px 0 6px 0;text-transform:uppercase;letter-spacing:1px;color:#333;}
+  hr{border:0;border-top:1px solid #808080;border-bottom:1px solid #fff;margin:14px 0;}
+  p{margin:8px 0;}
+  .btn{font-family:Verdana,Arial,sans-serif;font-size:12px;background:var(--btn);color:#000;
+    border:2px outset #fff;border-right-color:#404040;border-bottom-color:#404040;padding:4px 10px;cursor:pointer;margin:3px 4px 3px 0;}
+  .btn:active{border-style:inset;}
+  .btn:disabled{color:#808080;cursor:default;}
+  .btn.picked{background:#ffffcc;border-style:inset;font-weight:bold;}
+  .btn.big{font-size:14px;padding:8px 18px;}
+  .btn.sm{font-size:11px;padding:3px 7px;}
+  .choice{display:block;width:100%;text-align:left;box-sizing:border-box;margin:4px 0;}
+  .panel{background:var(--panel);border:1px solid #999;padding:8px 12px;margin:10px 0;}
+  .panel.good{background:#e6ffe6;border-color:#060;}
+  .panel.bad{background:#ffe6e6;border-color:#900;}
+  .panel.note{background:#eef;border-color:#669;}
+  .panel.white{background:#fff;}
+  .small{font-size:11px;color:var(--muted);}
+  table.layout{border-collapse:collapse;width:100%;}
+  table.layout td{vertical-align:top;padding:4px;}
+  .person{border:1px solid #808080;background:#f4f4f4;padding:6px 10px;}
+  .person .nm{font-weight:bold;font-family:"Times New Roman",serif;font-size:15px;}
+  .claim{font-size:16px;font-family:'Times New Roman',serif;text-align:center;}
+  /* belief meter */
+  .meter{margin:8px 0 2px 0;}
+  .meter .lbl{display:flex;justify-content:space-between;font-size:10px;color:#444;}
+  .meter .track{position:relative;height:26px;border:2px inset #fff;border-right-color:#fff;border-bottom-color:#fff;border-top-color:#808080;border-left-color:#808080;background:#f0f0f0;}
+  .meter .cells{position:absolute;left:0;top:0;bottom:0;right:0;display:flex;}
+  .meter .cell{flex:1;border-right:1px solid #fff;background:transparent;transition:background .5s;}
+  .meter .cell.on{background:var(--bar);}
+  .meter .cell.half{background:linear-gradient(90deg,var(--bar) 50%,transparent 50%);}
+  .meter .tick{position:absolute;top:-6px;bottom:-6px;width:0;border-left:3px solid #000;transition:left .8s ease;}
+  /* shift bands: a shaded stretch of the track from the prior to where the belief would go */
+  .meter .band{position:absolute;top:0;bottom:0;transition:left .8s ease,width .8s ease;opacity:.75;}
+  .meter .band.w{background:repeating-linear-gradient(135deg,#ff9933 0 4px,#ffd9b3 4px 8px);}
+  .meter .band.t{bottom:50%;background:repeating-linear-gradient(135deg,#33aa33 0 4px,#c6f0c6 4px 8px);}
+  .meter .band.f{top:50%;background:repeating-linear-gradient(135deg,#cc3333 0 4px,#f5c6c6 4px 8px);}
+  .meter .band.p{background:repeating-linear-gradient(135deg,#888 0 4px,#ddd 4px 8px);}
+  .meter .gl{position:absolute;top:100%;margin-top:2px;font-size:10px;font-weight:bold;transform:translateX(-50%);white-space:nowrap;transition:left .8s ease;}
+  .meter .gl.f{margin-top:14px;}
+  .meter .gl.t{color:var(--true)} .meter .gl.f{color:var(--false)} .meter .gl.p{color:#666} .meter .gl.w{color:#cc6600}
+  .meter .val{text-align:center;font-weight:bold;font-size:12px;margin-top:3px;}
+  .meter.ghosted .val{margin-top:30px;}
+  /* histogram */
+  .hist{display:flex;align-items:flex-end;height:120px;border-bottom:2px solid #000;border-left:2px solid #000;padding:0 4px;gap:3px;margin-top:10px;}
+  .hist .b{flex:1;background:var(--bar);transition:height .8s ease;position:relative;}
+  .histl{display:flex;gap:3px;padding:0 4px;font-size:9px;}
+  .histl span{flex:1;text-align:center;}
+  .spread{font-size:11px;margin-top:4px;}
+  .q{font-weight:bold;margin:12px 0 4px 0;}
+  .footer{font-size:10px;color:#444;text-align:center;padding:8px;border-top:1px solid #808080;background:#e8e8e8;}
+  .counter{font-family:"Courier New",monospace;background:#000;color:#0f0;padding:1px 5px;letter-spacing:2px;}
+  .nav{margin-top:18px;display:flex;justify-content:space-between;align-items:center;}
+  .tag{display:inline-block;font-size:10px;padding:0 5px;border:1px solid #666;background:#eee;margin-left:4px;vertical-align:middle;}
+  .tag.crux{background:#dfd;border-color:#060;color:#030}
+  .tag.orth{background:#eee;color:#333}
+  .tag.weak{background:#ffe;border-color:#990;color:#550}
+  @media (max-width:600px){#content{padding:10px 12px;} .nav{flex-direction:column;gap:6px;align-items:stretch;}}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#2a2a2a;}}
+  :root[data-theme="dark"]{--bg:#2a2a2a;}
+</style>
+</head>
+<body>
+<div id="frame">
+  <div id="head">
+    <h1>&#9670; The Crux Course &#9670;</h1>
+    <div class="sub">A clickable mini-lesson in disagreeing productively</div>
+  </div>
+  <div id="navbar"><span id="crumb">Home</span></div>
+  <div id="content"></div>
+  <div class="footer"><a href="#" onclick="restart();return false;">Start over</a></div>
+</div>
+
+<script>
+/* ============================================================
+   EXAMPLES
+   mode 'one': per claim, the learner says whether they think it's
+     true, and where Y would go if they turned out to be wrong.
+   mode 'two': per claim, the learner says where Y would go if the
+     claim were true, and if it were false. (Supplementary exercise.)
+   ============================================================ */
+const AUTHOR = 'Fable 5.1';
+const FULL_TOUR_ENABLED = false; // flip to true when the full tour is ready to publish
+const SUPP_ENABLED = false;      // flip to true to show the death-penalty supplementary exercise
+// five-level answers: how far the belief moves
+const DIRS = ['down2','down1','same','up1','up2'];
+const DELTA = { down2:-35, down1:-15, same:0, up1:15, up2:35 };
+const DLAB  = { down2:'down a lot', down1:'down a little', same:'stay put', up1:'up a little', up2:'up a lot' };
+
+const EXAMPLES = {
+  social: {
+    Y: "Social media has made teenagers' mental health worse.",
+    mode: 'one',
+    order: ['timing','experiments','countries','screentime'],
+    cands: {
+      timing: { short:'the timing', text:'Teen depression and anxiety rates in the US began rising around 2012, when smartphones became ubiquitous.',
+        ifFalse:'teen depression rates in the US did <b>not</b> start rising around 2012 after all', ifTrue:'teen depression rates in the US really <b>did</b> start rising around 2012',
+        evidence:'In the US, the share of 12&ndash;17-year-olds reporting a major depressive episode in the past year roughly doubled between 2011 and 2021 (NSDUH, the national drug and health survey), and the rise begins around 2012.',
+        outcome:'t', ana:{think:'t', wrong:55}, ben:{think:'t', wrong:10} },
+      experiments: { short:'the experiments', text:'When people are paid to quit social media for a few weeks, their mood measurably improves.',
+        ifFalse:'people paid to quit social media feel <b>no</b> better', ifTrue:'people paid to quit social media really <b>do</b> feel measurably better',
+        evidence:'Randomised trials that paid people to deactivate Facebook or Instagram for several weeks (Allcott and colleagues, 2020, and the 2020 US election deactivation studies) found well-being improved, but by small amounts: roughly a twentieth to a tenth of a standard deviation. Most participants were adults, not teenagers.',
+        outcome:'t', outcomeNote:'TRUE, but small', ana:{think:'t', wrong:65}, ben:{think:'f', wrong:50} },
+      countries: { short:'other countries', text:'The rise in teen mental illness happened at the same time in most rich countries, not just the US.',
+        ifFalse:'the rise is mostly an American story, <b>not</b> a rich-world one', ifTrue:'the rise really <b>did</b> happen across most rich countries at the same time',
+        evidence:'Contested. Jonathan Haidt and Zach Rausch present rising rates across the English-speaking and Nordic countries; critics such as Candice Odgers argue the international picture is inconsistent, with several countries showing flat trends and changes in how mental illness is measured muddying others.',
+        outcome:'unknown', ana:{think:'t', wrong:70}, ben:{think:'f', wrong:30} },
+      screentime: { short:'screen time', text:'Teenagers spend far more time on screens than they did in 2010.',
+        ifFalse:'teenagers\' screen time has <b>not</b> risen much since 2010', ifTrue:'teenagers\' screen time really <b>has</b> risen a lot since 2010',
+        evidence:'True; every survey finds a large rise. But both sides of this argument already accept it, which is why it moves almost nobody.',
+        outcome:'t', ana:{think:'t', wrong:85}, ben:{think:'t', wrong:20} },
+    },
+    ana: { name:'Ana', belief:85, quote:'The timing is too neat. Rates were flat for decades and turned up the year smartphones took over.' },
+    ben: { name:'Ben', belief:20, quote:'Correlation. Every generation blames the new medium: comics, TV, video games. The real causes are school pressure and the economy.' },
+    dcAnswer:'experiments',
+    dcYes:`<b>Yes.</b> The experiments are the double crux. Ana expects them to show harm and would drop a long way if they didn't; Ben expects them to show nothing and would climb to 50/50 if they did. Both pre-committed to move, in opposite directions.<br><br>
+      And it is the most <i>checkable</i> claim on the list: you can run an experiment. An hour of circular argument just became a study design.<br><br>
+      <b>Stop and think:</b> <i>other countries</i> also moves both of them a little. Why is it a worse crux for the conversation, even so?`,
+    fake: {
+      setup:`Back to Ben. On the previous page he said: &ldquo;If the deactivation experiments show people's mood improving, I'd go to 50/50.&rdquo; Ana shows him the results: well-being did improve, by a small but real amount.`,
+      replies:[
+        { text:'"Fair enough. 50/50, like I said."', ok:false, fb:'That\'s a real update. Ben keeps his promise. The experiments <b>were</b> his crux.' },
+        { text:'"Mood improved? That\'s self-reported. People tell experimenters what they want to hear."', ok:true, fb:'There it is. The evidence arrives and the crux grows a new condition it didn\'t have five minutes ago. Ask: if the experiments had found <i>no</i> improvement, would Ben have dismissed them as self-reported? No. So the objection isn\'t about the evidence; it\'s about the conclusion.' },
+        { text:'"The effect is small. I\'ll move a bit, say 35%."', ok:false, fb:'Defensible. He moves less than promised, but he moves, and his reason really is about the evidence: a tenth of a standard deviation is small. A half-kept promise is still a kept promise if you say why.' },
+        { text:'"Honestly, the experiments were never the main thing for me. It\'s that every generation panics about new media."', ok:true, fb:'The honest version of a fake crux: Ben discovers, only when the evidence arrives, that it wasn\'t his crux. Better late than never, but notice the pattern: the crux changed <i>after</i> reality showed up. Now ask him for the moral-panic crux, and watch whether that one survives contact too.' },
+      ]
+    },
+  },
+
+  death: {
+    Y: 'The death penalty is wrong.',
+    mode: 'two',
+    order: ['deter','innocent','cost','men'],
+    cands: {
+      deter: { short:'deterrence', text:'The death penalty deters murder better than life imprisonment does.',
+        evidence:'The 2012 US National Research Council review of three decades of deterrence studies concluded the research is <b>not informative</b> about whether the death penalty raises, lowers or has no effect on homicide rates. Nobody has shown it deters; nobody has shown it doesn\'t.',
+        outcome:'unknown', ana:{t:88,f:90}, ben:{t:10,f:45} },
+      innocent: { short:'innocence rate', text:'Roughly 1 in 25 people sentenced to death in the US are innocent.',
+        evidence:'A 2014 study in <i>PNAS</i> (Gross et al.) estimated that about <b>4.1%</b> of defendants sentenced to death in the US since 1973 would eventually be exonerated if they stayed on death row indefinitely. So: roughly 1 in 25.',
+        outcome:'t', ana:{t:95,f:85}, ben:{t:40,f:12} },
+      cost: { short:'cost', text:'A death sentence costs the state more than life imprisonment.',
+        evidence:'Every US state-level cost study to date (California, Kansas, Maryland, Nevada and others) has found capital cases cost <b>more</b> than life-without-parole cases, mostly because of the longer trials and mandatory appeals.',
+        outcome:'t', ana:{t:90,f:90}, ben:{t:14,f:16} },
+      men: { short:'who is executed', text:'The large majority of people executed are men.',
+        evidence:'True: in the US, under 2% of people executed since 1976 have been women.',
+        outcome:'t', ana:{t:90,f:90}, ben:{t:15,f:15} },
+    },
+    ana: { name:'Ana', belief:90, quote:'The state shouldn\'t have the power to kill its citizens. Full stop. It\'s not about whether it works.' },
+    ben: { name:'Ben', belief:15, quote:'Some crimes are so terrible that only death fits. And if it saves even a few future victims, it\'s justified.' },
+    dcAnswer:'innocent',
+    dcYes:`<b>Yes.</b> The innocence rate is the double crux. Ana's principled objection has a consequentialist edge (killing innocents), and Ben's "only the worst deserve it" position is hostage to the system actually getting the worst. Both pre-committed to move. And it's <i>checkable</i>: it's been estimated.<br><br>
+      <b>Stop and think:</b> Ben's swing on deterrence (35 points) is bigger than his swing on innocence (28). Why is innocence still the better crux for <i>the conversation</i>?`,
+  },
+};
+
+const TASTE = [
+  { text:'Oxford has more pubs per square mile.', why:'Does "more pubs" change which city is <i>better</i>? Only if that\'s what "better" meant to you.' },
+  { text:'Cambridge\'s river is prettier than Oxford\'s.', why:'If you already prefer Cambridge, you probably already believe this. It\'s a symptom of your view, not a cause.' },
+  { text:'Oxford is 50% larger by population.', why:'True, and almost nobody moves.' },
+  { text:'More Nobel laureates studied at Cambridge.', why:'The Oxford partisan says "that\'s not what better means." Which is the whole point.' },
+];
+
+const PROPS = [
+  { text:'"AI systems will have genuine understanding, not just pattern-matching."', best:'not', fb:'Not a crux in any useful sense: it is <i>less</i> observable than W itself. Two people could watch AI do 90% of all office work and still disagree about whether it "understands". It relocates the argument into philosophy.' },
+  { text:'"By 2029, an AI system will autonomously complete a week-long software project that a mid-level engineer would be paid for."', best:'good', fb:'Good: a date, a concrete task, a yardstick (would someone pay for it). Reality can settle it, soon, and both sides can agree in advance what counts.' },
+  { text:'"Compute costs will keep falling."', best:'weak', fb:'Weak: it probably matters, and it\'s measurable, but it\'s underspecified. Falling how fast? Until when? Both sides can accept "costs will fall" and keep disagreeing about W. Sharpen it with a number and a date and it becomes good.' },
+  { text:'"Most people will feel AI has changed their job by 2035."', best:'weak', fb:'Weak-to-poor: it resolves at the same time as W, so it can\'t settle anything early; and "feel changed" is squishy. A crux should settle <i>before</i> the thing it\'s a crux for.' },
+  { text:'"The share of US GDP spent on AI data centres will exceed 3% by 2028."', best:'good', fb:'Good: concrete, dated, cheap to check (someone publishes this number), and it resolves years before 2035. Whether it\'s shared depends on whether the sceptic agrees it would move them; ask.' },
+];
+
+const ORDER = {
+  short:  ['home','prior','crux','props','end'],
+  medium: ['home','prior','crux','update','taste','dcrux','tax','fake','props','end'],
+  supp:   ['home','prior','crux','update','dcrux','end'],
+};
+const TOUR_NAME = { short:'short tour', medium:'full tour', supp:'supplementary exercise' };
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const S = {};
+function resetState(){
+  Object.assign(S, { mode:null, ex:'social', page:0, prior:null, ans:{}, revealed:{}, dc:null, dcAnswer:null, taste:{}, tax:null, taxShift:false, fake:null, props:{} });
+}
+resetState();
+function EX(){ return EXAMPLES[S.ex]; }
+function CANDS(){ return EX().order; }
+function CAND(k){ return EX().cands[k]; }
+function isOne(){ return EX().mode==='one'; }
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function el(h){ const d=document.createElement('div'); d.innerHTML=h.trim(); return d.firstChild; }
+function clamp(x,a,b){ return Math.max(a,Math.min(b,x)); }
+function shift(prior, dir){ return clamp(prior+(DELTA[dir]||0), 3, 97); }
+function lab(d){ return DLAB[d]||'(unanswered)'; }
+
+// bands: [{from,to,kind,label}] — a shaded stretch of the track from `from` to `to`
+function bandHTML(b){
+  const lo=Math.min(b.from,b.to), w=Math.abs(b.to-b.from);
+  return `<div class="band ${b.kind}" style="left:${lo}%;width:${w}%"></div><div class="gl ${b.kind}" style="left:${b.to}%">${b.label}</div>`;
+}
+function meterHTML(id, value, bands){
+  const cells=[];
+  for(let i=0;i<20;i++){ const lo=i*5, hi=lo+5; cells.push(`<div class="cell${value>=hi?' on':(value>lo?' half':'')}"></div>`); }
+  const g=(bands||[]).map(bandHTML).join('');
+  return `<div class="meter ${bands&&bands.length?'ghosted':''}" id="${id}">
+    <div class="lbl"><span>&larr; definitely false</span><span>50/50</span><span>definitely true &rarr;</span></div>
+    <div class="track"><div class="cells">${cells.join('')}</div>${g}<div class="tick" style="left:${value}%"></div></div>
+    <div class="val" id="${id}-val">${value}%</div></div>`;
+}
+function setMeter(id, value, bands){
+  const m=document.getElementById(id); if(!m) return;
+  m.querySelectorAll('.cell').forEach((c,i)=>{ const lo=i*5,hi=lo+5; c.className='cell'+(value>=hi?' on':(value>lo?' half':'')); });
+  m.querySelector('.tick').style.left=value+'%';
+  m.querySelector('#'+id+'-val').textContent=value+'%';
+  if(bands){
+    m.querySelectorAll('.band,.gl').forEach(x=>x.remove());
+    const track=m.querySelector('.track');
+    bands.forEach(b=>track.insertAdjacentHTML('beforeend',bandHTML(b)));
+    m.classList.toggle('ghosted', bands.length>0);
+  }
+}
+
+/* ---- per-claim bookkeeping (both modes) ---- */
+function answered(k){ const a=S.ans[k]||{}; return isOne()? !!(a.think&&a.wrong) : !!(a.t&&a.f); }
+function bandsFor(k){
+  const a=S.ans[k]||{}, p=S.prior, g=[];
+  if(isOne()){ if(a.wrong&&a.wrong!=='same') g.push({from:p,to:shift(p,a.wrong),kind:'w',label:"if I'm wrong"}); }
+  else {
+    if(a.t&&a.t!=='same') g.push({from:p,to:shift(p,a.t),kind:'t',label:'if true'});
+    if(a.f&&a.f!=='same') g.push({from:p,to:shift(p,a.f),kind:'f',label:'if false'});
+  }
+  return g;
+}
+function spreadOf(k){
+  if(!answered(k)) return 0;
+  const a=S.ans[k], p=S.prior;
+  return isOne()? Math.abs(shift(p,a.wrong)-p) : Math.abs(shift(p,a.t)-shift(p,a.f));
+}
+function postOf(k, from){
+  const a=S.ans[k]||{}, c=CAND(k);
+  if(c.outcome==='unknown') return from;
+  if(isOne()) return (c.outcome===a.think)? from : shift(from, a.wrong||'same');
+  return shift(from, c.outcome==='t'?(a.t||'same'):(a.f||'same'));
+}
+function currentBelief(){ let v=S.prior, best=-1; CANDS().forEach(k=>{ const r=S.revealed[k]; if(r&&r.seq>best){best=r.seq; v=r.after;} }); return v; }
+
+/* ============================================================
+   PAGES
+   ============================================================ */
+const PAGES = {
+
+  home: { crumb:'Home', render(c){
+    c.innerHTML = `
+      <h2>What is a crux?</h2>
+      <p>A <b>crux</b> for your belief in some claim <i>Y</i> is another claim <i>C</i> such that, if you changed your mind about <i>C</i>, you would change your mind about <i>Y</i>.</p>
+      <p>Definitions are cheap. This site makes you <i>use</i> the idea. Everything is multiple choice.</p>
+      <h3>Pick a length</h3>
+      <table class="layout"><tr>
+        <td style="width:50%"><button class="btn big" onclick="start('short')">Short tour</button><br><span class="small">3 pages, about 6 minutes.<br>Prior &rarr; crux &rarr; what makes a crux good.</span></td>
+        <td style="width:50%"><button class="btn big" ${FULL_TOUR_ENABLED?'':'disabled'} onclick="start('medium')">Full tour</button><br><span class="small">${FULL_TOUR_ENABLED?'8 pages, about 20 minutes.':'Forthcoming.'} Everything in the short tour, plus:</span>
+          <ul class="small" style="margin:4px 0 0 0;padding-left:18px">
+            <li><b>Reality arrives</b>: the research on each claim is revealed and you update, prior to posterior.</li>
+            <li><b>No crux at all</b>: Oxford vs Cambridge, and why some disagreements have no crux.</li>
+            <li><b>Double crux</b>: two people, one claim that would move them both.</li>
+            <li><b>Beliefs about a number</b>: the top tax rate as a pile of probability that slides.</li>
+            <li><b>The fake crux</b>: how to tell a crux from a rationalisation.</li>
+          </ul></td>
+      </tr></table>
+      ${SUPP_ENABLED?`<hr><p class="small"><a href="#" onclick="start('supp');return false;">Supplementary exercise</a>: the same drill on a moral claim (the death penalty), asking about both outcomes of each crux. 5 pages.</p>`:''}`;
+  }},
+
+  prior: { crumb:'Your prior', render(c){
+    const v=S.prior;
+    c.innerHTML = `
+      <h2>Where do you stand?</h2>
+      <p>Here is a claim people disagree about:</p>
+      <div class="panel claim"><b>Y:</b> &ldquo;${EX().Y}&rdquo;</div>
+      <p>How likely do you think it is that <i>Y</i> is true? Click the nearest.</p>
+      <div id="pbtns">
+        ${[['Very unlikely',10],['Unlikely',30],['Toss-up',50],['Likely',70],['Very likely',90]]
+          .map(([l,n])=>`<button class="btn ${v===n?'picked':''}" onclick="setPrior(${n})">${l}<br><span class="small">${n}%</span></button>`).join('')}
+      </div>
+      ${meterHTML('m1', v==null?0:v)}
+      <div id="p1explain">${v==null?'<p class="small">Click a button to see your belief on the meter.</p>':priorExplain(v)}</div>`;
+  }},
+
+  crux: { crumb:'What would move you?', render(c){
+    c.innerHTML = `
+      <h2>What would move you?</h2>
+      <p>Your prior on <i>Y</i> (&ldquo;${EX().Y}&rdquo;) is <b>${S.prior}%</b>. ${isOne()
+        ? `For each claim below, say what you currently think, then imagine you learned <b>for certain</b> that you were wrong. What would happen to your belief in <i>Y</i>?`
+        : `For each claim below, imagine you learned <b>for certain</b> that it was true, and then that it was false. What would happen to your belief in <i>Y</i>?`}</p>
+      <p class="small">Answer about yourself, not about what a reasonable person should say. There are no wrong answers here, only informative ones.</p>
+      ${isOne()?`<div class="panel note"><b>Why only &ldquo;if you were wrong&rdquo;?</b> You can only change your mind from where you stand. If you already think a claim is true, learning that it <i>is</i> true tells you almost nothing: you had priced it in. The only news that can move you is news that you were wrong. So that is the only direction worth asking about.</div>`:''}
+      <div id="cands">${CANDS().map(k=>candHTML(k)).join('')}</div>
+      <div id="cruxsummary">${cruxSummary()}</div>`;
+  }},
+
+  update: { crumb:'Reality arrives', render(c){
+    const ranked = CANDS().filter(answered).map(k=>({k, sp:spreadOf(k)})).sort((a,b)=>b.sp-a.sp);
+    const top=ranked[0]; const orth=ranked.find(r=>r.sp===0);
+    c.innerHTML = `
+      <h2>Reality arrives</h2>
+      <p>A crux is a <i>promise</i>: &ldquo;if <i>C</i> turns out this way, I move.&rdquo; Each claim below comes with what the research actually says. Click <b>reveal</b> and watch the meter move from your <b>prior</b> to your <b>posterior</b>, by as much as you promised. That move is an <b>update</b>.</p>
+      ${meterHTML('m3', currentBelief())}
+      <div id="reveals">${CANDS().map(k=>revealHTML(k)).join('')}</div>
+      <div class="panel"><b>Did you feel the urge to say &ldquo;but that study...&rdquo;?</b> Notice it. A crux you re-explain away when it arrives was never a crux.<br><br>
+        <b>Orthogonal</b>: a claim whose truth or falsity leaves your belief where it was. Prior = posterior. ${orth?`For you, <i>${CAND(orth.k).short}</i> was orthogonal.`:'Nothing was orthogonal for you, which is unusual.'}
+        ${top&&top.sp>0?`<br>Your biggest crux was <i>${CAND(top.k).short}</i>.`:''}
+      </div>`;
+  }},
+
+  taste: { crumb:'No crux at all', render(c){
+    const t=S.taste;
+    c.innerHTML = `
+      <h2>Oxford or Cambridge?</h2>
+      <p>New claim: <b>Z:</b> &ldquo;Oxford is a better city than Cambridge.&rdquo; Pick your side, then try to find a crux.</p>
+      <div>${[['Oxford, obviously',75],['Cambridge, obviously',25],['Can\'t say',50]].map(([l,n])=>`<button class="btn ${t.prior===n?'picked':''}" onclick="S.taste.prior=${n};rerender()">${l}</button>`).join('')}</div>
+      ${t.prior!=null?meterHTML('mt', t.prior):''}
+      ${t.prior!=null?`<div id="tcands">${TASTE.map((x,i)=>tasteHTML(x,i)).join('')}</div>`:''}
+      ${tasteSummary()}`;
+  }},
+
+  dcrux: { crumb:'Double crux', render(c){
+    const e=EX();
+    c.innerHTML = `
+      <h2>Two people, one crux</h2>
+      <p>Meet <b>${e.ana.name}</b> and <b>${e.ben.name}</b>. They have argued about <i>Y</i> for an hour and are no closer.</p>
+      <table class="layout"><tr>
+        <td style="width:50%"><div class="person"><div class="nm">${e.ana.name} &mdash; believes Y</div>${meterHTML('ma', e.ana.belief)}<p class="small">&ldquo;${e.ana.quote}&rdquo;</p></div></td>
+        <td style="width:50%"><div class="person"><div class="nm">${e.ben.name} &mdash; believes not-Y</div>${meterHTML('mb', e.ben.belief)}<p class="small">&ldquo;${e.ben.quote}&rdquo;</p></div></td>
+      </tr></table>
+      <p>${isOne()
+        ? `For each claim, the shaded stretch shows how far each of them <i>said</i> they would move if they turned out to be wrong about it. Click a claim.`
+        : `For each claim, the shaded stretches show how far each of them <i>said</i> they would move if the claim were true (<span style="color:var(--true)">green</span>) or false (<span style="color:var(--false)">red</span>). Click a claim.`}</p>
+      <div id="dcbtns">${CANDS().map(k=>`<button class="btn choice ${S.dc===k?'picked':''}" onclick="pickDC('${k}')">${CAND(k).text}</button>`).join('')}</div>
+      <div id="dcexplain">${S.dc?dcExplain(S.dc):'<p class="small">Click a claim.</p>'}</div>
+      <div class="q">Which claim is a <b>double crux</b>: one that moves <i>both</i> of them?</div>
+      <div id="dcq">${CANDS().map(k=>`<button class="btn ${S.dcAnswer===k?'picked':''}" onclick="answerDC('${k}')">${CAND(k).short}</button>`).join('')}</div>
+      <div id="dcverdict">${S.dcAnswer?dcVerdict(S.dcAnswer):''}</div>`;
+  }},
+
+  tax: { crumb:'Beliefs about a number', render(c){
+    c.innerHTML = `
+      <h2>When the belief is a number</h2>
+      <p>Not every disagreement is true-or-false. &ldquo;What should the top marginal income tax rate be?&rdquo; is a disagreement about <i>where on a line</i> the right answer sits. Your belief isn't a single percentage; it's a <b>pile of probability</b> spread along the line.</p>
+      <p>Where do you lean? (The UK's current top rate is 45%.)</p>
+      <div>${[30,40,50,60,70,80].map(n=>`<button class="btn ${S.tax===n?'picked':''}" onclick="S.tax=${n};S.taxShift=false;rerender()">${n}%</button>`).join('')}</div>
+      ${S.tax!=null?taxHTML():''}`;
+  }},
+
+  fake: { crumb:'The fake crux', render(c){
+    const f=EX().fake;
+    c.innerHTML = `
+      <h2>The fake crux</h2>
+      <p>${f.setup}</p>
+      <p>Which of these replies from Ben would tell you it was <b>never really his crux</b>?</p>
+      <div>${f.replies.map((r,i)=>`<button class="btn choice ${S.fake===i?'picked':''}" onclick="S.fake=${i};rerender()">${r.text}</button>`).join('')}</div>
+      ${S.fake!=null?`<div class="panel ${f.replies[S.fake].ok?'good':'bad'}">${f.replies[S.fake].fb}</div>`:''}
+      ${S.fake!=null?`<div class="panel"><b>The lesson:</b> a crux is stated <i>before</i> the evidence arrives, and it binds you. If every piece of evidence gets reinterpreted so your belief never moves, the thing you named was a <b>rationalisation</b>, not a crux: you were reasoning backwards from the conclusion. Honest test: &ldquo;If this came out the other way, would I be citing it right now?&rdquo; Eliezer Yudkowsky's name for the same move is <a href="https://www.lesswrong.com/posts/TGux5Fhcd7GmTfNGC/is-that-your-true-rejection" target="_blank">Is that your true rejection?</a><br><br>
+      <b>Try it:</b> pick a belief of yours. Name one claim that, if it turned out the other way, would actually move you. Would someone who knows you believe that?</div>`:''}`;
+  }},
+
+  props: { crumb:'Good cruxes and bad ones', render(c){
+    c.innerHTML = `
+      <h2>What makes a crux <i>good</i>?</h2>
+      <p>Any claim that moves you is a crux. But some cruxes settle arguments and others just relocate them. The useful ones share a few properties:</p>
+      <ol>
+        <li><b>Reality can settle it.</b> The crux must be something the world can actually show you is true or false. &ldquo;AI will have real understanding&rdquo; can't be settled; &ldquo;a model will pass test X by 2028&rdquo; can.</li>
+        <li><b>Easier to check than Y itself.</b> If the crux is just as hard to settle as the original claim, you've gained nothing. A crux should be more observable, more measurable, or at least more concrete.</li>
+        <li><b>Settles sooner, or cheaper.</b> A crux that resolves in 2030 beats one that resolves in 2080. One that a weekend of reading settles beats one that needs a new field of science.</li>
+        <li><b>Shared.</b> Whoever you disagree with would be moved by it too, in the opposite direction.${S.mode==='medium'?' That is a double crux.':''} Otherwise only one side is doing the homework.</li>
+      </ol>
+      <hr>
+      <p>Now apply it. New disagreement:</p>
+      <div class="panel claim" style="font-size:15px"><b>W:</b> &ldquo;By 2035, AI systems will do the majority of economically valuable cognitive work.&rdquo;</div>
+      <p>Each of the following has been proposed as a crux for <i>W</i>. Rate it: <b>good crux</b>, <b>weak crux</b>, or <b>not really a crux at all</b>?</p>
+      <div id="props">${PROPS.map((p,i)=>propHTML(p,i)).join('')}</div>
+      ${propsDone()?`<div class="panel note"><b>Stop and think:</b> take the crux you rated best. What would it cost, in money and months, to actually resolve it? Who could?</div>`:''}`;
+  }},
+
+  end: { crumb:'The end', render(c){
+    const full = S.mode!=='short';
+    c.innerHTML = `
+      <h2>That's it.</h2>
+      <p>Here is the whole course on one card.</p>
+      <div class="panel">
+        <b>Prior</b>: what you believe now.<br>
+        <b>Crux</b>: a claim that, if it went the other way, would change what you believe. You name it <i>before</i> you look.<br>
+        <b>Orthogonal</b>: a claim that wouldn't. Most claims in most arguments are orthogonal; that's why arguments go in circles.<br>
+        ${full?`<b>Update</b>: when the crux resolves, you move, by the amount you promised. Where you land is the <b>posterior</b>.<br>`:''}
+        ${full?`<b>Double crux</b>: a claim that is a crux for both sides. Find one and you've turned an argument into a research question.<br>`:''}
+        <b>Good crux</b>: reality can settle it, it's easier to check than the original claim, it resolves soon and cheaply, and it's shared.<br>
+        ${full?`<b>Fake crux</b>: named after the fact, or re-explained away when it arrives. Reasoning backwards from the conclusion.`:''}
+      </div>
+      <hr>
+      <p class="small">Further reading: <a href="https://www.lesswrong.com/w/crux" target="_blank">Crux (LessWrong wiki)</a> &middot;
+      <a href="https://www.lesswrong.com/posts/wkDdQrBxoGLqPWh2P/finding-cruxes-help-reality-punch-you-in-the-face" target="_blank">Finding cruxes: help reality punch you in the face</a>${full?` &middot; <a href="https://www.lesswrong.com/posts/exa5kmvopeRyfJgCy/double-crux-a-strategy-for-mutual-understanding" target="_blank">Double crux (CFAR)</a>`:''}</p>
+      <p><button class="btn" onclick="restart()">&laquo; Back to start</button>
+      ${S.mode==='short'&&FULL_TOUR_ENABLED?`<button class="btn" onclick="start('medium')">Try the full tour</button>`:''}
+      ${S.mode!=='supp'&&SUPP_ENABLED?`<button class="btn" onclick="start('supp')">Supplementary exercise: the death penalty</button>`:''}</p>`;
+  }},
+};
+
+/* ============================================================
+   PAGE PIECES
+   ============================================================ */
+function priorExplain(v){
+  return `<div class="panel"><b>That number is your prior:</b> how likely you think <i>Y</i> is, before anyone shows you anything new. ${v===50?'A toss-up just means you can be moved either way.':v>50?'Each filled block is a chunk of the probability you give to <i>Y</i>.':'Most of the meter is empty: you think <i>Y</i> is probably false.'}
+  Everything that follows is about what could make it move.</div>`;
+}
+
+function dirBtns(k, side, cur){
+  return DIRS.map(d=>`<button class="btn sm ${cur===d?'picked':''}" onclick="ans('${k}','${side}','${d}')">${DLAB[d]}</button>`).join('');
+}
+function candHTML(k){
+  const a=S.ans[k]||{}, p=S.prior, c=CAND(k);
+  const sp = answered(k)? spreadOf(k) : null;
+  let tag='';
+  if(sp!=null) tag = sp===0?'<span class="tag orth">ORTHOGONAL</span>':sp<=15?'<span class="tag weak">WEAK CRUX</span>':'<span class="tag crux">CRUX</span>';
+  let body;
+  if(isOne()){
+    body = `<div style="margin:4px 0"><span class="small">I think this is:</span>
+        <button class="btn sm ${a.think==='t'?'picked':''}" onclick="ans('${k}','think','t')">probably true</button>
+        <button class="btn sm ${a.think==='f'?'picked':''}" onclick="ans('${k}','think','f')">probably false</button></div>
+      <div style="margin:4px 0"><span class="small">${a.think
+          ? `Now imagine you learned for certain that ${a.think==='t'?c.ifFalse:c.ifTrue}. Then your P(${EX().Y.replace(/\.$/,'')}) would go:`
+          : `<i>(first say what you think)</i>`}</span><br>${a.think?dirBtns(k,'wrong',a.wrong):''}</div>`;
+  } else {
+    body = `<div style="margin:4px 0"><span class="small">If this were <b style="color:var(--true)">TRUE</b>, my belief in Y would go:</span><br>${dirBtns(k,'t',a.t)}</div>
+      <div style="margin:4px 0"><span class="small">If this were <b style="color:var(--false)">FALSE</b>, my belief in Y would go:</span><br>${dirBtns(k,'f',a.f)}</div>`;
+  }
+  return `<div class="panel white" id="card-${k}">
+    <div><b>C:</b> ${c.text} ${tag}</div>
+    ${body}
+    ${meterHTML('mc-'+k, p, bandsFor(k))}
+    ${sp!=null?`<div class="spread">${sp===0?'This claim can\'t touch you. Whatever the facts, you end where you started.':'The shaded stretch is the belief you would move. The longer it is, the more this claim matters to you.'}</div>`:''}
+  </div>`;
+}
+function cruxSummary(){
+  const all=CANDS(); const done=all.filter(answered);
+  if(done.length<all.length) return `<p class="small">${all.length-done.length} claim(s) still to answer.</p>`;
+  const cruxes=all.filter(k=>spreadOf(k)>0), orth=all.filter(k=>spreadOf(k)===0);
+  let msg=`<div class="panel good"><b>Your map of the disagreement.</b><br>`;
+  msg+=cruxes.length?`Cruxes for you: ${cruxes.map(k=>`<i>${CAND(k).short}</i>`).join(', ')}. `:'Nothing moved you. Either you hold Y for reasons none of these touch, or you haven\'t found your real crux yet. ';
+  msg+=orth.length?`Orthogonal: ${orth.map(k=>`<i>${CAND(k).short}</i>`).join(', ')}. The word just means "at right angles": the claim and your belief don't share an axis, so one can't push the other.`:'';
+  if(S.ex==='social' && spreadOf('screentime')>0) msg+=`<br><br>You said <i>screen time</i> would move you. Unusual: both sides of this argument accept that screen time rose, so it rarely separates them. Worth asking what you had in mind.`;
+  if(S.ex==='death' && spreadOf('men')>0) msg+=`<br><br>You said <i>who is executed</i> would move you. That's unusual: for most people it's the textbook orthogonal claim. Worth asking yourself what you had in mind.`;
+  if(S.ex==='death' && spreadOf('deter')===0 && S.prior>=70) msg+=`<br><br>Deterrence doesn't move you, and you lean towards Y. That's the <b>principled</b> position: for you the argument isn't about outcomes at all.`;
+  msg+=`<br><br>The same claim is often a crux for one person and orthogonal for another. That is why arguments stall: each side piles up evidence on a claim the other side considers orthogonal.</div>`;
+  return msg;
+}
+
+function revealHTML(k){
+  const a=S.ans[k]||{}, r=S.revealed[k], c=CAND(k);
+  const said = isOne()
+    ? `You said: probably <b>${a.think==='t'?'true':'false'}</b>; if you learned otherwise, P(Y) would go <b>${lab(a.wrong)}</b>.`
+    : `You said: if true &rarr; <b>${lab(a.t)}</b>; if false &rarr; <b>${lab(a.f)}</b>.`;
+  let result='';
+  if(r){
+    if(c.outcome==='unknown') result=`<b>Result: unresolved.</b> No update either way, and that is itself informative: a crux that <i>can't currently be checked</i> is a weak lever, however much it matters to you. Reality hasn't spoken yet.`;
+    else {
+      const label=c.outcomeNote||(c.outcome==='t'?'TRUE':'FALSE');
+      if(isOne() && c.outcome===a.think) result=`<b>Result: ${label}.</b> Reality agreed with you. No surprise, so no move: your belief stays at <b>${r.after}%</b>. Evidence you already expected can't teach you much.`;
+      else result=`<b>Result: ${label}.</b> ${isOne()?'You were wrong, and you promised to move. ':''}Your belief in Y goes from <b>${r.before}%</b> to <b>${r.after}%</b>${r.after===r.before?' &mdash; no change; this claim was orthogonal for you':''}.`;
+    }
+  }
+  return `<div class="panel white"><b>C:</b> ${c.text}<br><span class="small">${said}</span><br>
+    ${r?`<div class="panel note" style="margin:6px 0"><b>What the research says:</b> ${c.evidence}<br><br>${result}</div>`
+       :`<button class="btn" onclick="reveal('${k}')">Reveal what the research says</button>`}</div>`;
+}
+
+function tasteHTML(x,i){
+  const a=S.taste[i];
+  return `<div class="panel white"><b>${x.text}</b><br>
+    <span class="small">If I learned this were true, my view on Z would go:</span><br>
+    ${DIRS.map(d=>`<button class="btn sm ${a===d?'picked':''}" onclick="S.taste[${i}]='${d}';rerender()">${DLAB[d]}</button>`).join('')}
+    ${a?`<div class="small"><i>${x.why}</i></div>`:''}</div>`;
+}
+function tasteSummary(){
+  const t=S.taste; if(t.prior==null) return '';
+  const done=[0,1,2,3].filter(i=>t[i]); if(done.length<4) return '';
+  const moved=done.filter(i=>t[i]!=='same').length;
+  return `<div class="panel good"><b>${moved===0?'Nothing moved you. That is the normal result here.':moved<=1?'Almost nothing moved you.':'Several things moved you, which suggests "better city" means something fairly specific to you. Ask yourself what. If you can state it, you\'ve converted a taste into a claim.'}</b><br><br>
+  &ldquo;Oxford is better&rdquo; feels like a claim about the world, but when you hunt for a crux you find there isn't one: no fact would change your mind, because you're not really making a prediction, you're expressing a preference. <b>If no claim about the world could move you, you aren't disagreeing about the world.</b><br><br>
+  This is one of the most useful things the crux-hunt does: it sorts disagreements into <i>factual</i> (there's a crux, go find it) and <i>values or taste</i> (there isn't; stop arguing as if there were, and negotiate instead).<br><br>
+  <b>Stop and think:</b> is &ldquo;${EX().Y}&rdquo; factual or taste? If factual, there's a crux to be found, and two people should be able to find it together. That's the next page.</div>`;
+}
+
+function personBands(p, belief){
+  if(isOne()) return p.wrong===belief?[]:[{from:belief,to:p.wrong,kind:'w',label:'if wrong'}];
+  const g=[]; if(p.t!==belief) g.push({from:belief,to:p.t,kind:'t',label:'if true'}); if(p.f!==belief) g.push({from:belief,to:p.f,kind:'f',label:'if false'}); return g;
+}
+function personSwing(p, belief){ return isOne()? Math.abs(p.wrong-belief) : Math.abs(p.t-p.f); }
+function dcExplain(k){
+  const c=CAND(k), e=EX();
+  setTimeout(()=>{ setMeter('ma',e.ana.belief,personBands(c.ana,e.ana.belief)); setMeter('mb',e.ben.belief,personBands(c.ben,e.ben.belief)); },0);
+  const sa=personSwing(c.ana,e.ana.belief), sb=personSwing(c.ben,e.ben.belief);
+  const thinks = isOne()? `${e.ana.name} thinks it's ${c.ana.think==='t'?'true':'false'}; ${e.ben.name} thinks it's ${c.ben.think==='t'?'true':'false'}. ` : '';
+  return `<div class="panel"><b>${c.short}:</b> ${thinks}Swing for ${e.ana.name} <b>${sa}</b> points, for ${e.ben.name} <b>${sb}</b> points.
+    ${sa<=5&&sb<=5?' Orthogonal for both. Arguing about this is a waste of the hour.':sa<=5?` Moves ${e.ben.name}, leaves ${e.ana.name} cold: a one-sided crux.`:sb<=5?` Moves ${e.ana.name}, leaves ${e.ben.name} cold: a one-sided crux.`:(sa<20||sb<20)?' Moves both, but not by much.':' Moves both. Now they have something to look up together.'}</div>`;
+}
+function dcVerdict(k){
+  const e=EX();
+  if(k===e.dcAnswer) return `<div class="panel good">${e.dcYes}</div>`;
+  const c=CAND(k), sa=personSwing(c.ana,e.ana.belief), sb=personSwing(c.ben,e.ben.belief);
+  return `<div class="panel bad"><b>Not quite.</b> <i>${c.short}</i> swings ${e.ana.name} by ${sa} and ${e.ben.name} by ${sb}. ${sa<=5?`It barely touches ${e.ana.name}`:sb<=5?`It barely touches ${e.ben.name}`:'It moves both a little, but another claim moves both a lot and is easier to check'}. Look for the claim with a long shaded stretch on <i>both</i> meters.</div>`;
+}
+
+function taxHTML(){
+  const bins=[20,30,40,50,60,70,80,90], center=S.tax;
+  const prior=bins.map(b=>{ const d=Math.abs(b-center); return d===0?40:d===10?22:d===20?8:2; });
+  const newc=clamp(center+20,20,90);
+  const post=bins.map(b=>{ const d=Math.abs(b-newc); return d===0?34:d===10?22:d===20?10:3; });
+  const h=S.taxShift?post:prior;
+  return `<p>Your prior: a pile centred on ${center}%, with some weight either side. Those side-bins are your uncertainty.</p>
+    <div class="hist">${h.map(v=>`<div class="b" style="height:${v*2.5}%"></div>`).join('')}</div>
+    <div class="histl">${bins.map(b=>`<span>${b}%</span>`).join('')}</div>
+    <p class="small">Height = how much of your belief sits in that bin. The piles always add up to the same total: belief is <i>moved</i>, never created or destroyed.</p>
+    ${!S.taxShift?`<div class="panel white"><b>A crux for a number:</b> &ldquo;The revenue-maximising top rate is above 60%.&rdquo; Suppose you believe that if this were true, the right rate is higher than you thought.<br>
+      <button class="btn" onclick="taxReveal()">Reveal the estimate</button></div>`
+     :`<div class="panel note"><b>What the research says:</b> Diamond &amp; Saez (2011), using standard estimates of how much high earners respond to tax, put the revenue-maximising top rate for the US at roughly <b>73%</b> (lower if the tax base is narrow). Estimates for the UK are more contested; HMRC's 2012 analysis implied something nearer 48%.<br><br>
+      <b>Watch the pile move.</b> It slid right by two bins and spread out a little: a posterior that's higher <i>and</i> less certain, because the evidence pulled you in a direction and also reminded you the estimates disagree. Same idea as the meter; just more shape.<br><br>
+      <b>Orthogonal, scalar version:</b> &ldquo;Top-rate taxpayers are mostly over 40&rdquo; is true and would leave the pile exactly where it is.</div>`}`;
+}
+function taxReveal(){
+  S.taxShift=true;
+  const tmp=document.createElement('div'); tmp.innerHTML=taxHTML();
+  const newBars=tmp.querySelectorAll('.hist .b'); document.querySelectorAll('.hist .b').forEach((b,i)=>{ b.style.height=newBars[i].style.height; });
+  const oldPanel=document.querySelector('.hist').parentElement.querySelector('.panel'), newPanel=tmp.querySelector('.panel');
+  if(oldPanel&&newPanel) oldPanel.replaceWith(newPanel);
+}
+
+function propHTML(p,i){
+  const a=S.props[i];
+  const names={good:'good crux',weak:'weak crux',not:'not a crux'};
+  return `<div class="panel white"><b>${p.text}</b><br>
+    ${[['good','Good crux'],['weak','Weak crux'],['not','Not a crux']].map(([v,l])=>`<button class="btn ${a===v?'picked':''}" onclick="S.props[${i}]='${v}';rerender()">${l}</button>`).join('')}
+    ${a?`<div class="panel ${a===p.best?'good':'bad'}" style="margin:6px 0 0 0"><b>${a===p.best?`${AUTHOR} agrees.`:`${AUTHOR} says: ${names[p.best]}.`}</b> ${p.fb}</div>`:''}</div>`;
+}
+function propsDone(){ return PROPS.every((p,i)=>S.props[i]); }
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+function start(mode){ resetState(); S.mode=mode; S.ex = mode==='supp'?'death':'social'; S.page=1; rerender(); }
+function restart(){ resetState(); rerender(); }
+function setPrior(v){
+  S.prior=v; S.ans={}; S.revealed={};
+  document.querySelectorAll('#pbtns .btn').forEach(b=>b.classList.toggle('picked', b.textContent.includes(v+'%')));
+  setMeter('m1', v);
+  document.getElementById('p1explain').innerHTML=priorExplain(v);
+  refreshNav();
+}
+function ans(k,side,d){
+  S.ans[k]=S.ans[k]||{}; S.ans[k][side]=d;
+  document.getElementById('card-'+k).outerHTML=candHTML(k);
+  document.getElementById('cruxsummary').innerHTML=cruxSummary();
+  refreshNav();
+}
+function reveal(k){
+  const before=currentBelief(), after=postOf(k,before);
+  S.revealed[k]={before,after,seq:Date.now()};
+  document.getElementById('reveals').innerHTML=CANDS().map(x=>revealHTML(x)).join('');
+  setMeter('m3', after, after===before?[]:[{from:before,to:after,kind:'p',label:'moved from '+before+'%'}]);
+}
+function pickDC(k){ S.dc=k; document.querySelectorAll('#dcbtns .btn').forEach(b=>b.classList.toggle('picked',b.textContent===CAND(k).text)); document.getElementById('dcexplain').innerHTML=dcExplain(k); }
+function answerDC(k){ S.dcAnswer=k; document.querySelectorAll('#dcq .btn').forEach(b=>b.classList.toggle('picked',b.textContent===CAND(k).short)); document.getElementById('dcverdict').innerHTML=dcVerdict(k); }
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+function order(){ return ORDER[S.mode||'short']; }
+function canAdvance(){
+  const key=order()[S.page];
+  if(key==='prior') return S.prior!=null;
+  if(key==='crux') return CANDS().every(answered);
+  return true;
+}
+function blockMsg(){
+  const key=order()[S.page];
+  if(key==='prior') return 'Pick how likely Y is first.';
+  if(key==='crux') return 'Answer every claim first.';
+  return '';
+}
+function navHTML(keys){
+  const last=S.page===keys.length-1, ok=canAdvance();
+  return `<div class="nav">
+      <span><button class="btn" ${S.page<=1?'disabled':''} onclick="go(-1)">&laquo; Back</button></span>
+      <span class="small">Page ${S.page} of ${keys.length-1} &middot; ${TOUR_NAME[S.mode]}</span>
+      <span>${last?'':`<button class="btn" ${ok?'':'disabled'} onclick="go(1)">Next &raquo;</button>${ok?'':`<br><span class="small">${blockMsg()}</span>`}`}</span>
+    </div>`;
+}
+function refreshNav(){ const n=document.querySelector('#content .nav'); if(n) n.outerHTML=navHTML(order()); }
+function rerender(){
+  const keys=order(), key=keys[S.page], pg=PAGES[key];
+  const c=document.getElementById('content');
+  c.innerHTML=''; pg.render(c);
+  if(key!=='home') c.appendChild(el(navHTML(keys)));
+  document.getElementById('crumb').innerHTML = keys.slice(0,S.page+1).map((k,i)=> i===S.page?`<b>${PAGES[k].crumb}</b>`:`<a href="#" onclick="jump(${i});return false;">${PAGES[k].crumb}</a>`).join(' &rsaquo; ');
+  window.scrollTo(0,0);
+}
+function go(d){ S.page=clamp(S.page+d,0,order().length-1); rerender(); }
+function jump(i){ if(i===0){ restart(); return; } S.page=i; rerender(); }
+
+rerender();
+</script>
+</body>
+</html>
