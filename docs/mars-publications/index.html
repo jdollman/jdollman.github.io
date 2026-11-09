@@ -52,6 +52,9 @@ h3{font-family:var(--serif);font-size:1.17rem;font-weight:600;line-height:1.32;m
 a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
 a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .note{font-size:.93rem;color:var(--ink-soft);margin:10px 0 0;max-width:62ch}
+.subhead{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin:44px 0 0}
+.entry.prog h3{font-size:1.05rem}
+.asof{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin:10px 0 0}
 footer{margin-top:74px;border-top:1px solid var(--line);padding-top:22px;color:var(--muted);font-size:.88rem}
 footer p{max-width:66ch}
 </style>
@@ -64,18 +67,176 @@ footer p{max-width:66ch}
     <h1>What MARS Teams Published</h1>
     <p class="standfirst">MARS pairs researchers with small teams of mentees for an intensive
     in-person week and a remote research phase. These are the outputs that reached a public
-    venue — conference and workshop papers, preprints, public write-ups, and a tool or two.</p>
+    venue — conference and workshop papers, preprints, public write-ups, and a few tools.</p>
+    <p class="asof">Updated 9 November 2026</p>
     <div class="tally">
-      <span><b>19</b>outputs</span>
-      <span><b>7</b>papers &amp; preprints</span>
-      <span><b>3</b>iterations</span>
-      <span><b>50+</b>named participants</span>
+      <span><b>29</b>outputs</span>
+      <span><b>16</b>papers &amp; preprints</span>
+      <span><b>4</b>iterations</span>
+      <span><b>70+</b>named participants</span>
     </div>
   </header>
 
   <section>
-    <div class="sechead"><h2>MARS 4</h2><span class="when">Cambridge, winter 2025–26</span><span class="count">10 outputs</span></div>
-    <p class="blurb">Twenty-two research streams ran. Their output includes a main-conference ICML paper, an ICLR workshop paper, a UAI workshop paper and an arXiv preprint.</p>
+    <div class="sechead"><h2>MARS V</h2><span class="when">Oxford, summer 2026</span><span class="count">9 outputs so far</span></div>
+    <p class="blurb">About two dozen streams met in Oxford in July and have been in their remote phase since. Four months on, their work has produced an open-source safety system, an arXiv preprint and a run of NeurIPS 2026 workshop acceptances, one of them an oral. Most other streams are still writing up; their progress is reported below.</p>
+    <div class="entries">
+      <article class="entry">
+        <div class="ehead"><h3>EuroSafeGuard: Open Constitutional Classifiers</h3><div class="chips"><span class="chip v">Open-source release</span></div></div>
+        <p class="by">Leonhard Waibl*, Yen-Shan Chen*, Samuel Simko*, Aditya Thomas, Arth Singh, Nirav Diwan, Bernhard Schölkopf, Zhijing Jin · <em>mentored by Zhijing Jin &amp; Samuel Simko</em> · <span class="date">November 2026</span></p>
+        <div class="links"><a href="https://guard.safe.eu">Project site</a> <a href="https://guard.safe.eu/paper.pdf">Paper</a> <a href="https://huggingface.co/EuroSafeAI/EuroSafeGuard">Model</a></div>
+        <p class="note">An open re-implementation of constitutional classifiers, the input and output filters that screen a model's conversations to block jailbreaks. Presented at the Swiss AI Safety Days. (*equal contribution.)</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>Predicting the Critic: Training on User Feedback Reshapes Emergent Misalignment</h3><div class="chips"><span class="chip v">NeurIPS 2026 workshops</span><span class="chip span">oral</span></div></div>
+        <p class="by">Xi Jia Zhou, Arth Singh, Ulysses Sekai Tully Carr, Elizaveta Tennant, Nick Haber · <em>mentored by Liza Tennant</em></p>
+        <p class="note">Oral at the Trustworthy AI for Good workshop; poster at DevAI. Whether a model is trained on users' critical reactions or only sees them as context turns out to matter for safety: trained on, criticism can raise misalignment.</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>Stress-Testing Context Alignment Stressors in Agents</h3><div class="chips"><span class="chip v">NeurIPS 2026 workshops</span></div></div>
+        <p class="by">Mark Lovett, Syed Ali Haider, Christopher Denq, Promita Rahee Sikder, Elizaveta Tennant · <em>mentored by Liza Tennant</em></p>
+        <p class="note">Accepted at five workshops (FAST, AI for Good, Agents in the Wild, IAB and Meta-Agents). 118,500 paired decisions across ten models hold each choice fixed and vary only how it is presented, showing how much measured model preferences depend on framing.</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>MTMA: Multi-Turn RL for Long-Horizon Moral Alignment</h3><div class="chips"><span class="chip v">NeurIPS 2026 workshops</span></div></div>
+        <p class="by">Zihe Liu, Dan Le, Elizaveta Tennant · <em>mentored by Liza Tennant</em></p>
+        <p class="note">Accepted at SocialAgent, AI for Good and BiAlign. A critic-free multi-turn reinforcement-learning method with per-turn moral rewards, for keeping agents aligned over long interactions.</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>Minimal Intervention, Structured Generalization: Reasoning–Behavior Coherence Beyond the Rewarded Context</h3><div class="chips"><span class="chip v">NeurIPS 2026 workshop</span></div></div>
+        <p class="by">Jonathan Robinson, Luca Franceschetti, Mark Lovett, Dan Le, Krish Sen, Nikhil Narayanan, Zihe Liu, Elizaveta Tennant · <em>mentored by Liza Tennant</em></p>
+        <p class="note">Accepted at Agents in the Wild. Sparse, action-gated RL on a 27B model shifts its expressed reasoning and generalises to states and decision scenarios it was never rewarded on.</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>What the Monitor Saw</h3><div class="chips"><span class="chip v">NeurIPS 2026 workshops</span></div></div>
+        <p class="by">Mitch Crabb · <em>mentored by Lindley Lentati</em></p>
+        <p class="note">Accepted at two of the three workshops the team submitted to. Studies monitors that watch AI agents for unsafe behaviour.</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>O(3)-equivariant sparse autoencoders</h3><div class="chips"><span class="chip v">SIMBIOCHEM II workshop</span></div></div>
+        <p class="by">Mannat Vikramaditya Jain · <em>mentored by Thomas Dooms &amp; Ward Gauderis</em></p>
+        <p class="note">Sparse autoencoders, an interpretability tool, built to respect 3D rotational symmetry. Accepted in September; the stream's main paper, on how such autoencoders absorb hierarchical concepts, is in preparation.</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>An Open Pipeline and Dashboard for Systemic-Risk Evidence under the EU AI Act's Code of Practice</h3><div class="chips"><span class="chip v">arXiv</span></div></div>
+        <p class="by">Jacob T. Emmerson, Phuong-Anh Nguyen-Le, Ronan Romano, Wilber Sean V. Anterola, Yann Billeter, Zhijing Jin · <em>mentored by Zhijing Jin &amp; Phuong-Anh Nguyen-Le</em> · <span class="date">September 2026</span></p>
+        <div class="links"><a href="https://arxiv.org/abs/2609.28335">arXiv:2609.28335</a></div>
+        <p class="note">The first of three papers planned by this stream, which maps the provisions of the EU AI Act's Code of Practice to the claims made in AI benchmark papers.</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>Whetstone</h3><div class="chips"><span class="chip v">Tool · GitHub</span></div></div>
+        <p class="by">Shivam Dubey · <em>mentored by Lindley Lentati</em> · <span class="date">October 2026</span></p>
+        <div class="links"><a href="https://punctualprocrastinator.github.io/whetstone/">Project page</a> <a href="https://github.com/punctualprocrastinator/whetstone">Code</a></div>
+        <p class="note">Version 1 of a tool from the agent-monitoring stream.</p>
+      </article>
+    </div>
+
+    <h3 class="subhead">Still in progress</h3>
+    <p class="blurb">Where the other streams stood in early November 2026.</p>
+    <div class="entries">
+      <article class="entry prog">
+        <div class="ehead"><h3>Persona manifolds</h3><div class="chips"><span class="chip span">writing up</span></div></div>
+        <p class="by">Trinidad Borrell, Brendon Chikavanga, Giovanni Marraffini · <em>mentored by Thomas Jiralerspong &amp; Ivan Arcuschin</em></p>
+        <p class="note">Maps the curved structure of how language models represent personas and uses it to steer a model's character along interpretable directions. The team plans three short papers, with a LessWrong post or preprint targeted for mid-November and the January 2027 ACL deadline after that.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Alignment pretraining</h3><div class="chips"><span class="chip span">experiments</span></div></div>
+        <p class="by">Xiaoxue Yang, Oszkár Urbán · <em>mentored by Thomas Jiralerspong</em></p>
+        <p class="note">Tests whether values instilled during pretraining survive later training. The team is moving to a larger model after finding that a small one lacks the world knowledge the setup needs.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Mechanistic elicitation</h3><div class="chips"><span class="chip span">writing up</span></div></div>
+        <p class="by">Marcin Podhajski, Hieu Nguyen · <em>mentored by Thomas Jiralerspong</em></p>
+        <p class="note">Asks whether a model's internals can show, before fine-tuning, whether the fine-tune will elicit a capability the model already has or teach it a new one. The paper is being written.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Steganographic reasoning</h3><div class="chips"><span class="chip span">drafts</span></div></div>
+        <p class="by">Harry Wu, Tristan von Busch, Shikhar Shiromani · <em>mentored by Julian Schulz</em></p>
+        <p class="note">Tests whether models can learn to reason in hidden form, using transfer experiments and interpretability tools on deliberately trained model organisms. Three LessWrong posts are in draft.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Character training and trait representations</h3><div class="chips"><span class="chip span">writing up</span></div></div>
+        <p class="by">Ignacio, Kanad Chakrabarti, Aansh Samyani · <em>mentored by Rhea Karty &amp; Jacob Davies</em></p>
+        <p class="note">Studies whether training a model to have a character changes how its internal trait representations shift across personas and situations. Two drafts are being merged into one paper for ICML 2027, with a LessWrong post first.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Human–AI oversight leaderboard</h3><div class="chips"><span class="chip span">release due</span></div></div>
+        <p class="by">Shu Quan, Youngsun Lim, Karissa Huang, David Africa, Jason Li, Renchi Zhang, Ladi Disu, Arnesh Batra, Denis Lim · <em>mentored by Rishub Jain &amp; Joshua Jacob</em></p>
+        <p class="note">Fellows found and vetted datasets for Sampura Research's leaderboard of how well humans and AI together can oversee AI. The first version is complete; a blog post or paper is planned for mid-November.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Refusal-direction attacks and their judges</h3><div class="chips"><span class="chip span">experiments</span></div></div>
+        <p class="by">Dean Casey, Liz Tan · <em>mentored by Battista Biggio &amp; Maura Pintor</em></p>
+        <p class="note">Studies how steering attacks get models to comply with harmful requests, and whether the AI judges that score such attacks overstate their success.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Secret loyalties</h3><div class="chips"><span class="chip span">experiments</span></div></div>
+        <p class="by">Michael Gao, Manan Wadhwa, Vidya Ganga, Hassan Suliman · <em>mentored by Aashiq Muhamed</em></p>
+        <p class="note">Trains models to secretly favour a hidden principal and tests whether auditors can detect it. The team has a working model organism and is aiming at ICML 2027.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>In-context learning and tokenization</h3><div class="chips"><span class="chip span">under review</span></div></div>
+        <p class="by">Sami Wolf, Sergei Kudriashov · <em>mentored by Dmitry Vaintrob</em></p>
+        <p class="note">A paper on how tokenization shapes in-context learning is under review at ICLR 2027.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Open-source game theory</h3><div class="chips"><span class="chip span">drafts</span></div></div>
+        <p class="by">Arseniy Kryazhev, Pranav Venkata Konda · <em>mentored by Pablo Villalobos</em></p>
+        <p class="note">Theory of cooperation between AI agents that can read each other's source code. A blog post is drafted and a longer paper is in progress.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>AI preferences and incentives</h3><div class="chips"><span class="chip span">experiments</span></div></div>
+        <p class="by">Sofiia Lobanova, Cole Niblett · <em>mentored by Peter Salib &amp; Simon Goldstein</em></p>
+        <p class="note">Asks whether models work harder when paid in tokens they can spend, and whether personas shift which tasks they prefer. A first round of experiments across ten models is complete and a larger run is under way.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Activation plateaus</h3><div class="chips"><span class="chip span">writing up</span></div></div>
+        <p class="by">Lasse Jantsch, Haoyang Li · <em>mentored by Francisco Ferreira da Silva</em></p>
+        <p class="note">Studies regions where a model's output barely changes as its internal activations are nudged, then shifts sharply. A LessWrong post is being written; the team's interactive workbench is already public.</p>
+        <div class="links"><a href="https://huggingface.co/spaces/lmjantsch/plateau-lab">plateau-lab</a> <a href="https://github.com/billy000400/plateau-lab">Code</a></div>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Verification before agreement</h3><div class="chips"><span class="chip span">writing up</span></div></div>
+        <p class="by">Tobias, Joaquin Lorenzo De Guzman · <em>mentored by Clarissa Koh</em></p>
+        <p class="note">A policy piece on AI verification measures, such as compute accounting, inspections and customs checks, that countries can start before any international agreement exists. Publication on LessWrong is planned for mid-November.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Building compute with allies</h3><div class="chips"><span class="chip span">submitted</span></div></div>
+        <p class="by">Caitlin Mah, Julien Constant · <em>mentored by Michelle Nie</em></p>
+        <p class="note">Argues that the US should build AI compute and data centres with allied countries. An op-ed has been submitted and a longer paper is in preparation.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Verifiable inference</h3><div class="chips"><span class="chip span">code public</span></div></div>
+        <p class="by">Baigang Chen, Levi Neuwirth, Ed Kapelko, Suki · <em>mentored by James Petrie</em></p>
+        <p class="note">Zero-knowledge proofs and related protocols that let someone check which AI model ran an inference without seeing the model. The code is public.</p>
+        <div class="links"><a href="https://github.com/JamesPetrie/VerInf">VerInf</a></div>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Post-quantum chip off-switch</h3><div class="chips"><span class="chip span">writing up</span></div></div>
+        <p class="by">Chenhao Shi · <em>mentored by Peter Drotos</em></p>
+        <p class="note">Adds post-quantum signature verification to a hardware design for an AI-chip off-switch. A blog post and a separate implementation paper are planned.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Faithful autoformalization</h3><div class="chips"><span class="chip span">writing up</span></div></div>
+        <p class="by">Oren Emile Hartstein, Denis Lim, Harsh Soni, Ke Zhang · <em>mentored by Shivam Raval &amp; Luiza Corpaci</em></p>
+        <p class="note">ParableBench tests whether models translate natural-language stories into formal mathematics faithfully, using stories generated from known equations. A workshop version went to the NeurIPS VeriCodeGen workshop; a fuller paper is planned.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Agentic self-introspection</h3><div class="chips"><span class="chip span">writing up</span></div></div>
+        <p class="by">Arnesh Batra, Prakhar Gupta · <em>mentored by Yigit Ekin &amp; Yossi Gandelsman</em></p>
+        <p class="note">Asks whether a model can use tools to inspect itself and detect that it is being steered, and which concept was injected. A full paper is written and the team is choosing its next venue.</p>
+      </article>
+      <article class="entry prog">
+        <div class="ehead"><h3>Benchmarks and the EU AI Act, further papers</h3><div class="chips"><span class="chip span">drafts</span></div></div>
+        <p class="by">Ronan Romano, Pratham Sreekantan, Theodore Peebles, Ilayda Dogan, Yann Billeter · <em>mentored by Zhijing Jin &amp; Phuong-Anh Nguyen-Le</em></p>
+        <p class="note">Fellows have completed a concept map of loss-of-control threats linking regulatory provisions to benchmark evidence. Two further papers will build on it.</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>MARS 4</h2><span class="when">Cambridge, winter 2025–26</span><span class="count">11 outputs</span></div>
+    <p class="blurb">Twenty-two research streams ran. Their output includes a main-conference ICML paper, an ICLR workshop paper, a UAI workshop paper and two arXiv preprints.</p>
     <div class="entries">
       <article class="entry">
         <div class="ehead"><h3>Automated Transcript Analysis for Detecting Flaws in Agentic Benchmarks</h3><div class="chips"><span class="chip v">arXiv</span></div></div>
@@ -100,6 +261,12 @@ footer p{max-width:66ch}
         <p class="by">ML Nissen Gonzalez, Melwina Albuquerque, Laurence Wroe, Jacob Meyer Cohen · <em>mentored by Logan Riggs Smith &amp; Thomas Dooms</em></p>
         <div class="links"><a href="https://arxiv.org/abs/2605.15183">arXiv:2605.15183</a> <a href="https://www.lesswrong.com/posts/Yzw6KDQc336CpHmGi/when-are-two-networks-the-same-tensor-similarity-for">LessWrong</a></div>
         <p class="note">Presented as a poster in Amsterdam. ARC got in touch about an equivalence with their covariance propagation work, and the method was presented to David Bau's lab.</p>
+      </article>
+      <article class="entry">
+        <div class="ehead"><h3>Mapping U.S. Federal AI Governance Against Sector Vulnerability</h3><div class="chips"><span class="chip v">arXiv</span></div></div>
+        <p class="by">Ho Ting (Bosco) Hung, Angelica Chowdhury, James Teague, with Simon Mylius, Spencer Michaels, Peter Slattery, Alexander Saeri and Neil Thompson · <em>in collaboration with MIT FutureTech</em> · <span class="date">September 2026</span></p>
+        <div class="links"><a href="https://arxiv.org/abs/2609.16260">arXiv:2609.16260</a></div>
+        <p class="note">Codes 684 U.S. federal AI governance documents for their coverage of 14 sectors and 24 AI risks, and compares that coverage with expert assessments of how vulnerable each sector is.</p>
       </article>
       <article class="entry">
         <div class="ehead"><h3>A Post-Mortem for My Goal Crystallisation Project</h3><div class="chips"><span class="chip v">LessWrong</span></div></div>
@@ -211,9 +378,10 @@ footer p{max-width:66ch}
   <footer>
     <p>Participants are credited as they appear on each artefact. Where a team wrote up its
     work publicly before submitting it to a venue, both are linked.</p>
-    <p>MARS V ran in Oxford in July 2026; its teams are still in their remote phase, and their
-    outputs are not yet listed here.</p>
-    <p>Last updated 1 September 2026. Work from a sprint week often lands months later, so this
+    <p>MARS V teams are still finishing their work; this page will be updated as their papers
+    and posts appear. Workshop papers are listed once accepted, even before camera-ready versions
+    are public.</p>
+    <p>Last updated 9 November 2026. Work from a sprint week often lands months later, so this
     list grows.</p>
   </footer>
 
