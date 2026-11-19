@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAISH — Waiting for you</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+  :root { --bg: #050508; }
+  html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+  body { cursor: none; }
+  canvas#gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+  /* 1920x1080 design stage, scaled to fit (letterboxed; the shader paints the full viewport) */
+  #stage {
+    position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
+    transform-origin: 0 0; pointer-events: none;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  #word { position: absolute; opacity: 0.86; }
+  #word svg { width: 100%; height: 100%; display: block; }
+  #field {
+    position: absolute; display: flex; align-items: center; box-sizing: border-box;
+    color: rgba(255, 255, 255, 0.94); font-size: 31px; letter-spacing: 0.002em; white-space: pre;
+  }
+  /* Optional: Space Mono (caish.org's body face) for the typed line, via ?font=mono */
+  /* Type presets (CONFIG.type or ?type=): the wordmark becomes live text in the chosen face */
+  #word.text { opacity: 0.92; color: #f2f1f6; white-space: nowrap; text-align: center; font-family: var(--word-font); font-size: var(--word-size); font-weight: var(--word-weight); letter-spacing: var(--word-spacing); line-height: 1; }
+  body.typed #field { font-family: var(--field-font); font-size: var(--field-size); font-weight: var(--field-weight); letter-spacing: var(--field-spacing); }
+  body.mono #field { font-family: 'Space Mono', ui-monospace, Menlo, monospace; font-size: 28px; letter-spacing: 0; }
+  body.mono #footer { font-family: 'Space Mono', ui-monospace, Menlo, monospace; font-size: 18px; letter-spacing: 0.08em; text-transform: none; }
+  #ph { position: absolute; color: rgba(235, 235, 245, 0.34); transition: opacity 220ms ease; }
+  #line { position: relative; display: inline-flex; align-items: center; border-radius: 4px;   /* centres the caret on the text, as when it was a direct child of the flex field */ transition: background-color 160ms ease; }
+  #line.sel { background: rgba(150, 140, 255, 0.34); }
+  #txt .hl { background: rgba(150, 140, 255, 0.34); border-radius: 4px; }   /* a word selected for retyping */
+  #caret.hide { animation: none; opacity: 0; width: 0; margin-left: 0; }                              /* macOS hides the insertion point while text is selected */
+  #caret {
+    display: inline-block; width: 3px; height: 38px; margin-left: 2px; border-radius: 1.5px;
+    background: linear-gradient(180deg, #f5b9ea 0%, #c686ff 48%, #8d9fff 100%);
+    box-shadow: 0 0 10px rgba(198, 134, 255, 0.85), 0 0 22px rgba(141, 159, 255, 0.45);
+    animation: blink 1.06s ease-in-out infinite;
+  }
+  #caret.solid { animation: none; opacity: 1; }
+  @keyframes blink { 0%, 42% { opacity: 1; } 55%, 90% { opacity: 0; } 100% { opacity: 1; } }
+  #footer {
+    position: absolute; left: 0; right: 0; bottom: 54px; text-align: center;
+    color: rgba(235, 235, 245, 0.32); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  #fallback { position: absolute; display: none; }
+  #fallback svg { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="stage">
+  <div id="fallback"></div>
+  <div id="word"></div>
+  <div id="field"><span id="ph"></span><span id="line"><span id="txt"></span><span id="caret"></span><span id="post"></span></span></div>
+  <div id="footer"></div>
+</div>
+<script src="logo.js"></script>
+<script src="sdf.js"></script>
+<script>
+/* ================= EDIT ME ================= */
+var CONFIG = {
+  // Lines the field types, in order, forever. Same list and notation as phrases.txt (see its header);
+  // this copy is used only when the page is opened from file://.
+  phrases: [
+    "What happened in AI this year?",
+    "Is AI safety a real career?",
+    "How do we make AI go well?",
+    "~ Why do Dario and Sam {dislike|hate} each other?",
+    "How {scared|worried} should I be about AI?",
+    "What does an AI safety {resaer|researcher} actually do?",
+    "Do I need a CS degree to work on AI safety?",
+    "~ Is AI safety cool?",
+    "Can we tell what a model is thinking?",
+    "How fast is AI getting better?",
+    "Will AI take my job?",
+    "~ How many Rs are in {strawbery|strawberry}?",
+    "Who checks whether a new model is safe?",
+    "Is AI a bubble?",
+    "Can AI make itself smarter?",
+    "~ Should I say please to ChatGPT?",
+    "Why do some experts think AI risk is overblown?",
+    "What is alignment, actually?",
+    "Can a philosophy student work on AI safety?",
+    "~ Can AI sit my Tripos for me?",
+    "Do AI models have goals of their own?",
+    "How would we know if an AI was {decieving|deceiving} us?",
+    "What do the people building AI worry about?",
+    "~ What happened in AI this [year>week]?",
+    "Where do I start with AI safety?",
+    "Can governments regulate AI?",
+    "What would a good future with AI look like?",
+    "~ How do I explain AI safety to my parents?",
+    "How do you test a model for dangerous capabilities?",
+    "Could AI help us make AI safe?",
+    "What does “existential risk” mean?",
+    "~ What's your p(doom)?",
+    "Is it too late to get into AI safety?",
+    "What happens when AI does AI research?",
+    "Can AI models lie?",
+    "~ Are we in a simulation?",
+    "What can I do about AI risk {this year|this term}?",
+    "Should we slow down AI?",
+    "Are AI benchmarks measuring anything real?",
+    "~ Does ChatGPT know I used it for my essay?",
+    "How do AI companies decide what is safe to release?",
+    "What is a frontier model?",
+    "Does AI safety need people who aren't engineers?",
+    "~ Should I be nice to my chatbot, just in case?",
+    "How do we keep humans in control of powerful AI?",
+    "What changed in AI since last October?",
+    "What would change your mind about AI risk?",
+    "~ Will the AI bubble pop before I graduate?"
+  ],
+  placeholder: "Ask anything",           // dim text shown while the field is empty
+  footer: "",                            // e.g. "Howard Theatre · Thursday 15 October"
+  fill: "white",                         // logo body: "white" (solid, rim-lit) or "glass" (dark, light only at the edges)
+  glow: 1.0,                             // overall glow strength (0.5 subtle … 1.5 bold)
+  hueSpeed: 0.022,                       // palette rotations per second around the logo
+  typeMs: [55, 135],                     // per-character typing delay range (ms)
+  holdMs: 4800,                          // how long a finished line stays
+  quickHoldMs: 2600,                     // … and a lighter line (marked "~ " in phrases.txt)
+  idleMs: 2600,                          // empty field with blinking insertion point between lines
+  showWordmark: true,
+  font: "sf",                            // legacy: "mono" = Space Mono in the field (looked worse, Justin 14 Oct)
+  type: "grotesk"                        // wordmark + field typeface: "grotesk" (Space Grotesk, sibling of caish.org's Space Mono),
+                                         // "instrument" (Instrument Serif wordmark), "geist", "baskerville" (caish.org serif), "logo" (original traced wordmark + system font)
+};
+/* =========================================== */
+// URL overrides for quick comparison, e.g. index.html?fill=glass&glow=1.3
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('fill')) CONFIG.fill = q.get('fill');
+  if (q.get('glow')) CONFIG.glow = parseFloat(q.get('glow'));
+  if (q.get('font')) CONFIG.font = q.get('font');
+  if (q.get('type')) CONFIG.type = q.get('type');
+})();
+
+// Stage layout (1920x1080 design units)
+var LAYOUT = {
+  mark:  { w: 560, cx: 960, top: 186 },
+  word:  { w: 600, top: 0 },          // top computed below the mark
+  field: { w: 780, h: 84, cy: 806 }
+};
+LAYOUT.mark.h = CAISH_LOGO.height('mark', LAYOUT.mark.w);
+LAYOUT.word.h = CAISH_LOGO.height('word', LAYOUT.word.w);
+LAYOUT.word.top = LAYOUT.mark.top + LAYOUT.mark.h + 66;
+
+var stage = document.getElementById('stage');
+var wordEl = document.getElementById('word');
+var fieldEl = document.getElementById('field');
+var phEl = document.getElementById('ph'), txtEl = document.getElementById('txt'), caretEl = document.getElementById('caret');
+document.getElementById('footer').textContent = CONFIG.footer;
+if (CONFIG.font === 'mono') document.body.classList.add('mono');
+var TYPE = {
+  grotesk:     { word: ["'Space Grotesk'", '62px', 500, '-0.01em'], field: ["'Space Grotesk'", '31px', 400, '-0.005em'] },
+  instrument:  { word: ["'Instrument Serif'", '84px', 400, '0'],     field: ["'Inter Tight'", '31px', 400, '0'] },
+  geist:       { word: ["'Geist'", '60px', 500, '-0.02em'],          field: ["'Geist'", '30px', 400, '-0.005em'] },
+  baskerville: { word: ["'Libre Baskerville'", '54px', 400, '0'],    field: ["'Geist'", '30px', 400, '-0.005em'] }
+}[CONFIG.type];
+if (TYPE) {
+  var rs = document.documentElement.style;
+  rs.setProperty('--word-font', TYPE.word[0] + ', sans-serif'); rs.setProperty('--word-size', TYPE.word[1]);
+  rs.setProperty('--word-weight', TYPE.word[2]); rs.setProperty('--word-spacing', TYPE.word[3]);
+  rs.setProperty('--field-font', TYPE.field[0] + ', sans-serif'); rs.setProperty('--field-size', TYPE.field[1]);
+  rs.setProperty('--field-weight', TYPE.field[2]); rs.setProperty('--field-spacing', TYPE.field[3]);
+  document.body.classList.add('typed');
+}
+
+if (CONFIG.showWordmark) {
+  if (TYPE) {   // live text, centred where the traced wordmark sat
+    wordEl.className = 'text'; wordEl.textContent = 'CAISH';   // the acronym, not the full name (Justin, 15 Oct)
+    Object.assign(wordEl.style, { left: '0px', width: '1920px', top: (LAYOUT.word.top - 6) + 'px' });
+  } else {
+    wordEl.innerHTML = CAISH_LOGO.svg('word', '#f2f1f6');
+    Object.assign(wordEl.style, { left: (960 - LAYOUT.word.w / 2) + 'px', top: LAYOUT.word.top + 'px', width: LAYOUT.word.w + 'px', height: LAYOUT.word.h + 'px' });
+  }
+}
+Object.assign(fieldEl.style, {
+  left: (960 - LAYOUT.field.w / 2) + 'px', top: (LAYOUT.field.cy - LAYOUT.field.h / 2) + 'px',
+  width: LAYOUT.field.w + 'px', height: LAYOUT.field.h + 'px', paddingLeft: '42px'
+});
+phEl.textContent = CONFIG.placeholder;
+
+/* ---------- fit stage to viewport ---------- */
+var fit = { k: 1, ox: 0, oy: 0 };
+function layoutStage() {
+  var W = window.innerWidth, H = window.innerHeight;
+  fit.k = Math.min(W / 1920, H / 1080);
+  fit.ox = (W - 1920 * fit.k) / 2; fit.oy = (H - 1080 * fit.k) / 2;
+  stage.style.transform = 'translate(' + fit.ox + 'px,' + fit.oy + 'px) scale(' + fit.k + ')';
+}
+layoutStage();
+
+/* ---------- typing loop ----------
+   Each line is parsed into steps (type, wait, backspace, select a word, retype it, jump to the end).
+   Notation in phrases.txt: "~ " = lighter line (shorter hold); {typo|fix} = a typo or a rethink,
+   corrected by backspacing; [old>new] = "old" is later highlighted and typed over with "new". */
+var activityTarget = 0; // 1 while typing/erasing, eased in the render loop
+var idx = 0;
+var gen = 0;            // bumped by a handoff; every pending step of the old loop then stops
+var lineEl = document.getElementById('line'), postEl = document.getElementById('post');
+var pre = '', post = '', hl = '';   // text before the insertion point, after it, and a selected word at the end of pre
+function later(fn, ms) { var g = gen; setTimeout(function () { if (g === gen) fn(); }, ms); }
+function rand(a, b) { return a + Math.random() * (b - a); }
+function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+function render() {
+  txtEl.innerHTML = esc(pre) + (hl ? '<span class="hl">' + esc(hl) + '</span>' : '');
+  postEl.textContent = post;
+  var n = (pre + hl + post).length;
+  phEl.style.transition = n ? 'none' : '';   // vanish on the first keystroke (as in macOS); fade back in only when emptied
+  phEl.style.opacity = n ? 0 : 1;
+  caretEl.classList.toggle('hide', !!hl || lineEl.classList.contains('sel'));
+}
+function setText(s) { pre = s; post = ''; hl = ''; render(); }
+function keyDelay(c) {
+  var d = rand(CONFIG.typeMs[0], CONFIG.typeMs[1]);
+  if (c === ' ') d *= 1.35;
+  if (c === ',' || c === '?' || c === '.') d *= 2.2;
+  return d;
+}
+function typeStr(s, i, done) {          // types s at the insertion point
+  if (i >= s.length) { done(); return; }
+  pre += s.charAt(i); render();
+  later(function () { typeStr(s, i + 1, done); }, keyDelay(s.charAt(i)));
+}
+function backN(n, done) {               // backspace n characters before the insertion point
+  if (n <= 0) { done(); return; }
+  pre = pre.slice(0, -1); render();
+  later(function () { backN(n - 1, done); }, rand(70, 110));
+}
+function parse(line) {
+  var quick = /^~\s*/.test(line); line = line.replace(/^~\s*/, '');
+  var steps = [], edits = [], text = '', re = /\{([^|}]*)\|([^}]*)\}|\[([^>\]]*)>([^\]]*)\]/g, m, i = 0;
+  while ((m = re.exec(line))) {
+    if (m.index > i) { steps.push(['type', line.slice(i, m.index)]); text += line.slice(i, m.index); }
+    if (m[1] !== undefined) {           // {typo|fix}
+      var x = m[1], y = m[2], cp = 0;
+      while (cp < x.length && x.charAt(cp) === y.charAt(cp)) cp++;
+      steps.push(['type', x], ['wait', cp === 0 || /\s/.test(x) ? 750 : 320], ['back', x.length - cp], ['wait', 180], ['type', y.slice(cp)]);
+      text += y;
+    } else {                            // [old>new]
+      edits.push([text.length, m[3], m[4]]);
+      steps.push(['type', m[3]]); text += m[3];
+    }
+    i = re.lastIndex;
+  }
+  if (i < line.length) { steps.push(['type', line.slice(i)]); text += line.slice(i); }
+  var shift = 0;
+  edits.forEach(function (e) {
+    steps.push(['wait', 1500], ['select', e[0] + shift, e[1].length], ['wait', 700], ['replace', e[2]], ['wait', 450], ['end']);
+    shift += e[2].length - e[1].length;
+  });
+  return { steps: steps, quick: quick };
+}
+function run(steps, k, done) {
+  if (k >= steps.length) { done(); return; }
+  var st = steps[k], next = function () { run(steps, k + 1, done); };
+  if (st[0] === 'type') { caretEl.classList.add('solid'); typeStr(st[1], 0, next); }
+  else if (st[0] === 'wait') { caretEl.classList.remove('solid'); later(next, st[1]); }
+  else if (st[0] === 'back') { caretEl.classList.add('solid'); backN(st[1], next); }
+  else if (st[0] === 'select') {        // double-click a word: it highlights, the insertion point hides
+    var full = pre + post; pre = full.slice(0, st[1]); hl = full.slice(st[1], st[1] + st[2]); post = full.slice(st[1] + st[2]);
+    render(); next();
+  }
+  else if (st[0] === 'replace') { hl = ''; render(); caretEl.classList.add('solid'); typeStr(st[1], 0, next); }
+  else if (st[0] === 'end') { pre += post; post = ''; render(); next(); }   // ⌘→
+}
+function backspace(done) {
+  if (!pre.length) { done(); return; }
+  pre = pre.slice(0, -1); render();
+  later(function () { backspace(done); }, pre.length > 12 ? 24 : 40);
+}
+function selectAllDelete(done, ms) {     // as if ⌘A ⌫
+  pre += post; post = ''; lineEl.classList.add('sel'); render();
+  later(function () { lineEl.classList.remove('sel'); setText(''); done(); }, ms || 520);
+}
+function cycle() {
+  var p = parse(CONFIG.phrases[idx % CONFIG.phrases.length]);
+  var useSelect = (idx % 2) === 1;
+  idx = (idx + 1) % (CONFIG.phrases.length * 2);
+  activityTarget = 1;
+  run(p.steps, 0, function () {
+    caretEl.classList.remove('solid'); activityTarget = 0.25;
+    later(function () {
+      caretEl.classList.add('solid'); activityTarget = 0.7;
+      var after = function () {
+        caretEl.classList.remove('solid'); activityTarget = 0;
+        later(cycle, CONFIG.idleMs);
+      };
+      if (useSelect) selectAllDelete(after); else { pre += post; post = ''; backspace(after); }
+    }, p.quick ? CONFIG.quickHoldMs : CONFIG.holdMs);
+  });
+}
+setText('');
+// Phrases come from phrases.txt (one per line; blank lines and lines starting
+// with # are ignored). Browsers refuse to read local files from file://, so
+// open the page through deck/serve; without it the built-in list above is used.
+fetch('phrases.txt', {cache: 'no-store'})
+  .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+  .then(function (txt) {
+    var lines = txt.split(/\r?\n/).map(function (l) { return l.trim(); })
+                   .filter(function (l) { return l && l.charAt(0) !== '#'; });
+    if (lines.length) CONFIG.phrases = lines;
+  })
+  .catch(function (e) { console.warn('phrases.txt not loaded (' + e.message + '); using built-in phrases'); })
+  .then(function () {
+    var q = new URLSearchParams(location.search);   // ?start=N begins at line N (0-based), for checking one line
+    if (q.get('start')) idx = +q.get('start');
+    later(cycle, q.get('start') ? 200 : 1800);
+  });
+
+/* ---------- handoff: the deck asks the field to type the next slide's title ----------
+   The parent posts {caish: "handoff", text: "What's CAISH?"}. The loop stops, whatever is
+   in the field is selected and deleted, the title is typed, and after a hold the page
+   posts {caish: "handoff-done"} back so the deck can cut to the next slide. */
+window.addEventListener('message', function (e) {
+  var m = e.data; if (typeof m === 'string') { try { m = JSON.parse(m); } catch (err) { return; } }
+  if (m && m.caish === 'resume') {   // the deck came back to the walk-in slide: restart the loop
+    gen++; lineEl.classList.remove('sel'); setText(''); caretEl.classList.remove('solid'); activityTarget = 0;
+    later(cycle, 900); return;
+  }
+  if (!m || m.caish !== 'handoff') return;
+  gen++;
+  var reply = function () { try { window.parent.postMessage({ caish: 'handoff-done' }, '*'); } catch (err) {} };
+  var title = String(m.text || '');
+  caretEl.classList.add('solid'); activityTarget = 1;
+  var go = function () {
+    caretEl.classList.add('solid');
+    typeStr(title, 0, function () { caretEl.classList.remove('solid'); activityTarget = 0.6; later(reply, m.holdMs || 900); });
+  };
+  if ((pre + hl + post).length) { pre += hl + post; hl = ''; post = ''; selectAllDelete(function () { later(go, 160); }, 360); }
+  else later(go, 120);
+});
+
+/* ---------- keys: never swallow; when embedded in reveal.js, forward navigation to the deck ---------- */
+window.addEventListener('keydown', function (e) {
+  if (window.parent === window) return;
+  var map = { ArrowRight: 'next', ArrowDown: 'next', PageDown: 'next', ' ': 'next', Enter: 'next', n: 'next',
+              ArrowLeft: 'prev', ArrowUp: 'prev', PageUp: 'prev', p: 'prev' };
+  var m = map[e.key];
+  if (m) { try { window.parent.postMessage(JSON.stringify({ method: m, args: [] }), '*'); } catch (err) {} }
+});
+
+/* ---------- WebGL ---------- */
+var canvas = document.getElementById('gl');
+var gl = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'high-performance' });
+
+function fallback(msg) {
+  console.error('[opening] ' + msg + ' — showing static logo');
+  var f = document.getElementById('fallback');
+  f.innerHTML = CAISH_LOGO.svg('mark', '#fbfbfa');
+  Object.assign(f.style, { display: 'block', left: (LAYOUT.mark.cx - LAYOUT.mark.w / 2) + 'px', top: LAYOUT.mark.top + 'px', width: LAYOUT.mark.w + 'px', height: LAYOUT.mark.h + 'px' });
+}
+
+if (!gl) fallback('WebGL2 unavailable');
+else document.addEventListener('DOMContentLoaded', start);
+
+function start() {
+  /* Distance field of the mark over a region with room for the bloom. */
+  var M = LAYOUT.mark, PAD = 300, S = 3.0; // S = SDF pixels per stage pixel (3 keeps corners sharp at 4K)
+  var region = { x: M.cx - M.w / 2 - PAD, y: M.top - PAD, w: M.w + PAD * 2, h: M.h + PAD * 2 };
+  var sw = Math.round(region.w * S), sh = Math.round(region.h * S);
+  var c2 = document.createElement('canvas'); c2.width = sw; c2.height = sh;
+  var ctx = c2.getContext('2d', { willReadFrequently: true });
+  ctx.fillStyle = '#fff';
+  CAISH_LOGO.draw(ctx, 'mark', PAD * S, PAD * S, M.w * S);
+  var sdf = computeSDF(ctx.getImageData(0, 0, sw, sh).data, sw, sh);
+  for (var i = 0; i < sdf.length; i++) sdf[i] /= S; // to stage px
+  c2.width = c2.height = 0;
+
+  var tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.R16F, sw, sh, 0, gl.RED, gl.FLOAT, sdf);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  sdf = null;
+
+  var vs = '#version 300 es\nin vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }';
+  var fs = document.getElementById('fs').textContent;
+  function sh_(type, src) {
+    var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  var prog = gl.createProgram();
+  try {
+    gl.attachShader(prog, sh_(gl.VERTEX_SHADER, vs));
+    gl.attachShader(prog, sh_(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  } catch (e) { fallback('shader error: ' + e.message); return; }
+  gl.useProgram(prog);
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  var U = {};
+  ['uRes', 'uMap', 'uRegion', 'uTime', 'uAct', 'uField', 'uFill', 'uGlow', 'uHue', 'uMarkC', 'uSdf'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+  gl.uniform1i(U.uSdf, 0);
+  gl.uniform4f(U.uRegion, region.x, region.y, region.w, region.h);
+  var F = LAYOUT.field;
+  gl.uniform4f(U.uField, 960, F.cy, F.w / 2, F.h / 2);
+  gl.uniform2f(U.uMarkC, M.cx, M.top + M.h / 2);
+  gl.uniform1f(U.uFill, CONFIG.fill === 'glass' ? 0 : 1);
+  gl.uniform1f(U.uGlow, CONFIG.glow);
+  gl.uniform1f(U.uHue, CONFIG.hueSpeed);
+
+  /* Resolution with a simple adaptive governor: drop render scale if frames run long. */
+  var quality = Math.min(window.devicePixelRatio || 1, 2), cs = quality;
+  function resize() {
+    layoutStage();
+    cs = quality;
+    canvas.width = Math.round(window.innerWidth * cs);
+    canvas.height = Math.round(window.innerHeight * cs);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var t0 = performance.now(), last = t0, act = 0, slow = 0, frames = 0;
+  function frame(now) {
+    var dt = Math.min(0.1, (now - last) / 1000); last = now;
+    act += (activityTarget - act) * (1 - Math.exp(-dt * 3.0));
+    frames++;
+    if (frames > 120) { // governor (ignores the first 2 s)
+      slow = slow * 0.97 + (dt > 0.024 ? 1 : 0) * 0.03;
+      if (slow > 0.5 && quality > 1.0) { quality = Math.max(1.0, quality * 0.8); slow = 0; resize(); }  // never below 1 device px per css px: a lower floor blurred the logo
+    }
+    var t = ((now - t0) / 1000) % 36000; // wrap every 10 h; float precision stays fine
+    gl.uniform2f(U.uRes, canvas.width, canvas.height);
+    gl.uniform4f(U.uMap, fit.ox, fit.oy, fit.k, cs);
+    gl.uniform1f(U.uTime, t);
+    gl.uniform1f(U.uAct, act);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+</script>
+<script id="fs" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+uniform vec2 uRes;
+uniform vec4 uMap;     // stage offset x,y (css px), stage scale k, canvas px per css px
+uniform vec4 uRegion;  // SDF region in stage px
+uniform vec4 uField;   // field centre x,y and half size
+uniform vec2 uMarkC;
+uniform float uTime, uAct, uFill, uGlow, uHue;
+uniform sampler2D uSdf;
+out vec4 o;
+
+const float TAU = 6.28318530718;
+
+// Apple-Intelligence-style cyclic palette (sRGB hex -> linear)
+vec3 lin(vec3 c){ return pow(c, vec3(2.2)); }
+vec3 palette(float u){
+  vec3 c[6];
+  c[0] = lin(vec3(0.420, 0.560, 1.000)); // #6B8FFF blue
+  c[1] = lin(vec3(0.737, 0.510, 0.953)); // #BC82F3 violet
+  c[2] = lin(vec3(0.961, 0.560, 0.870)); // #F58FDE pink
+  c[3] = lin(vec3(1.000, 0.404, 0.471)); // #FF6778 coral
+  c[4] = lin(vec3(1.000, 0.690, 0.380)); // #FFB061 amber
+  c[5] = lin(vec3(0.776, 0.525, 1.000)); // #C686FF lilac
+  u = fract(u) * 6.0;
+  float f = fract(u); f = f * f * (3.0 - 2.0 * f);
+  int i = int(floor(u));
+  vec3 a = c[0], b = c[1];
+  for (int k = 0; k < 6; k++) { if (k == i) { a = c[k]; b = c[(k + 1) % 6]; } }
+  return mix(a, b, f);
+}
+
+// value noise / fbm
+float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float vnoise(vec2 p){
+  vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+}
+float fbm(vec2 p){ return 0.6 * vnoise(p) + 0.3 * vnoise(p * 2.03 + 7.1) + 0.1 * vnoise(p * 4.1 + 3.3); }
+
+float sdMark(vec2 s){
+  vec2 uv = (s - uRegion.xy) / uRegion.zw;
+  vec2 cuv = clamp(uv, 0.0, 1.0);
+  float d = texture(uSdf, cuv).r;
+  // outside the region: add the distance to the region box
+  return d + length((uv - cuv) * uRegion.zw);
+}
+float sdRoundBox(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }
+
+void main(){
+  vec2 css = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uMap.w;
+  vec2 s = (css - uMap.xy) / uMap.z;          // stage px
+  float px = 1.0 / (uMap.z * uMap.w);         // stage px per device px
+  float t = uTime;
+
+  // ---- background: deep ink with a faint lift behind the logo
+  vec2 q = (s - vec2(960.0, 540.0)) / 1080.0;
+  vec3 col = lin(vec3(0.020, 0.020, 0.032)) * (1.0 - 0.6 * dot(q, q));
+
+  // ---- shared flowing colour field (a slowly rotating linear sweep warped by noise: no pinwheel singularity)
+  vec2 rel = s - uMarkC;
+  float ra = t * 0.045;
+  vec2 dir = vec2(cos(ra), sin(ra));
+  vec2 dir2 = vec2(-dir.y, dir.x);
+  float flow = fbm(s * 0.0030 + vec2(t * 0.045, -t * 0.03));
+  vec2 warp = vec2(fbm(s * 0.0021 + vec2(3.7, t * 0.03)), fbm(s * 0.0021 + vec2(t * 0.025, 9.2))) - 0.5;
+  float hueU = dot(rel + 420.0 * warp, dir) / 430.0 - t * uHue + 0.35 * flow;
+  vec3 gc = palette(hueU);
+  vec3 gc2 = palette(hueU + 0.30);
+  // intensity streams drifting across the outline
+  float stream = smoothstep(0.28, 0.72, fbm(s * 0.0042 + dir2 * t * 0.10 + vec2(t * 0.05, 0.0)));
+  float breathe = 0.86 + 0.14 * sin(t * 0.7);
+
+  // ---- mark
+  float d = sdMark(s);
+  float aa = 0.5 * px;                         // one device pixel of antialiasing: as sharp as the screen allows
+  float inside = smoothstep(aa, -aa, d);
+  float dout = max(d, 0.0);
+  float amp = uGlow * breathe * (1.0 + 0.30 * uAct);
+
+  // ambient aurora (wide, very faint: anything above ~0.01 linear reads as haze after gamma)
+  col += mix(gc, gc2, 0.5) * 0.010 * amp * exp(-dout / 220.0);
+  // bloom: tight + mid + wide
+  vec3 bloom = gc * (0.27 * exp(-dout / 30.0) * (0.45 + 0.55 * stream) + 0.035 * exp(-dout / 80.0));
+  bloom += gc2 * 0.30 * exp(-dout / 7.0) * (0.35 + 0.65 * stream);
+  col += bloom * amp;
+  // hot rim right at the edge (outside half)
+  col += mix(gc, vec3(1.0), 0.30) * 0.55 * exp(-dout / 1.0) * amp * (0.5 + 0.5 * stream);
+
+  // body
+  float din = max(-d, 0.0);
+  vec3 white = lin(vec3(0.965, 0.962, 0.975));
+  vec3 rimIn = mix(gc, gc2, 0.4);
+  vec3 bodyWhite = mix(white, rimIn * 1.6 + 0.08, 0.45 * exp(-din / 1.2) * (0.4 + 0.6 * stream));
+  // faint iridescent sheen sweeping across the body
+  bodyWhite = mix(bodyWhite, bodyWhite * (rimIn * 0.5 + 0.75), 0.18 * (0.5 + 0.5 * sin(dot(rel, dir) / 260.0 - t * 0.5)));
+  vec3 glassBg = lin(vec3(0.03, 0.03, 0.045));
+  vec3 bodyGlass = glassBg + rimIn * (1.10 * exp(-din / 4.0) + 0.30 * exp(-din / 16.0)) * amp * (0.45 + 0.55 * stream)
+                 + vec3(1.0) * 0.40 * exp(-din / 1.0);
+  vec3 body = mix(bodyGlass, bodyWhite, uFill);
+  col = mix(col, body, inside);
+
+  // ---- type field (rounded pill) with luminous edge
+  vec2 fp = s - uField.xy;
+  float fd = sdRoundBox(fp, uField.zw, uField.w);
+  float fflow = fbm(s * 0.004 + vec2(-t * 0.05, t * 0.04));
+  float fu = dot(fp, vec2(dir.y, -dir.x) * vec2(1.0, 3.0)) / 520.0 - t * uHue * 2.0 + 0.5 * fflow + 0.17;
+  vec3 fc = palette(fu), fc2 = palette(fu + 0.4);
+  float fstream = 0.5 + 0.5 * sin(fp.x / 70.0 - t * 1.3 + fflow * 4.0);
+  float famp = uGlow * (0.75 + 0.55 * uAct) * (0.9 + 0.1 * sin(t * 0.9 + 1.0));
+  float fout = max(fd, 0.0);
+  float fin = smoothstep(aa, -aa, fd);
+  // outer bloom
+  col += (fc * 0.30 * exp(-fout / 12.0) * (0.45 + 0.55 * fstream) + fc2 * 0.03 * exp(-fout / 45.0)) * famp;
+  // glass interior: dark, slightly lifted, with an inner light wash from the rim
+  vec3 glass = lin(vec3(0.045, 0.045, 0.062)) + mix(fc, fc2, 0.5) * 0.10 * exp(-max(-fd, 0.0) / 14.0) * famp;
+  col = mix(col, glass, fin * 0.92);
+  // crisp luminous stroke on the edge
+  float stroke = exp(-abs(fd) / 1.1);
+  col += mix(fc, vec3(1.0), 0.35 + 0.25 * fstream) * stroke * 0.95 * famp;
+
+  // ---- tone map (soft shoulder), gamma, dither against banding on projectors
+  col = clamp(col, 0.0, 1.0);
+  col = pow(max(col, 0.0), vec3(1.0 / 2.2));
+  col += (hash(gl_FragCoord.xy + fract(t) * 91.7) - 0.5) / 255.0;
+  o = vec4(col, 1.0);
+}
+</script>
+</body>
+</html>
