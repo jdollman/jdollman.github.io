@@ -134,7 +134,7 @@ var start = Math.max(0, DECKS.findIndex(function (d) { return '#' + d[0] === loc
 var loaded = 0;
 DECKS.forEach(function (d, i) {
   var f = document.createElement('iframe');
-  f.src = '../mockups/' + d[0] + '/index.html';
+  f.src = 'mockups/' + d[0] + '/index.html';
   f.title = d[1];
   f.addEventListener('load', function () {
     var w = f.contentWindow;
