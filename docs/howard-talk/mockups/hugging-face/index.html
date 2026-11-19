@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hugging Face incident</title>
+<link rel="stylesheet" href="../../vendor/reveal/reset.css">
+<link rel="stylesheet" href="../../vendor/reveal/reveal.css">
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+/* Same tokens as mockups/emergent-misalignment and mockups/rsi: "glow" by default, T for caish.org "paper". */
+:root {
+  --paper: #050508;
+  --ink: #f2f1f6;
+  --graphite: rgba(235, 235, 245, 0.66);
+  --faint: rgba(235, 235, 245, 0.34);
+  --accent: #c9a6ff;
+  --accent-grad: linear-gradient(90deg, #ffb061, #ff6778 25%, #f58fde 50%, #bc82f3 75%, #8d9fff);
+  --caret-grad: linear-gradient(180deg, #f5b9ea 0%, #c686ff 48%, #8d9fff 100%);
+  --caret-glow: 0 0 10px rgba(198, 134, 255, 0.85), 0 0 22px rgba(141, 159, 255, 0.45);
+  --rule: rgba(235, 235, 245, 0.16);
+  --grid: rgba(235, 235, 245, 0.09);
+  --card-stroke: rgba(235, 235, 245, 0.2);
+  --card-bg: #0d0d13;
+  --bubble: #15151e;
+  --bubble-stroke: rgba(235, 235, 245, 0.08);
+  --bad: #ff6778;
+  --bad-wash: rgba(255, 103, 120, 0.45);
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --mono: 'Space Mono', ui-monospace, Menlo, monospace;
+}
+body.paper {
+  --paper: #fbfbfa;
+  --ink: #1a1a1a;
+  --graphite: #4a4a4a;
+  --faint: #a49b92;
+  --accent: #945947;
+  --accent-grad: linear-gradient(90deg, #945947, #945947);
+  --caret-grad: linear-gradient(180deg, #945947, #945947);
+  --caret-glow: none;
+  --rule: rgba(148, 89, 71, 0.28);
+  --grid: rgba(26, 26, 26, 0.08);
+  --card-stroke: rgba(26, 26, 26, 0.22);
+  --card-bg: #ffffff;
+  --bubble: #ffffff;
+  --bubble-stroke: rgba(26, 26, 26, 0.12);
+  --bad: #b0413e;
+  --bad-wash: rgba(176, 65, 62, 0.18);
+}
+html, body { background: var(--paper); }
+.reveal { font-family: var(--mono); color: var(--ink); font-size: 32px; line-height: 1.5; }
+.reveal .slides { text-align: left; }
+.reveal .slides section { width: 1920px; height: 1080px; padding: 0; box-sizing: border-box; }
+.reveal .slide-background { background: var(--paper); }
+.reveal h1, .reveal h2 { font-family: var(--serif); font-weight: 400; color: var(--ink); margin: 0; letter-spacing: -0.005em; }
+.reveal em { font-style: italic; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.08em; }
+:where(.reveal) p { margin: 0; }
+/* Content is centred vertically. Only slides that carry the year ruler reserve its 150px at the bottom. */
+.frame { position: absolute; inset: 0; padding: 92px 170px; display: flex; flex-direction: column; justify-content: center; }
+.frame.ruled { padding-bottom: 190px; }
+.month { font-family: var(--mono); font-size: 26px; color: var(--accent); margin-bottom: 18px; }
+.kick { font-family: var(--mono); font-size: 24px; color: var(--graphite); margin-bottom: 22px; }
+.reveal .slides section .fragment { transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal .slides section .fragment.rise { transform: translateY(14px); }
+.reveal .slides section .fragment.rise.visible { transform: none; }
+.gated { opacity: 0; transition: opacity 0.6s; }
+.gated.shown { opacity: 1; }
+.bloom { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 38% at 18% 112%, rgba(255, 103, 120, 0.13), transparent 70%),
+              radial-gradient(55% 40% at 82% 115%, rgba(141, 159, 255, 0.15), transparent 70%),
+              radial-gradient(40% 30% at 50% 120%, rgba(188, 130, 243, 0.12), transparent 70%); }
+body.paper .bloom { display: none; }
+.static *, .static *::before, .static *::after { transition: none !important; animation: none !important; }
+.sg { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .sg { filter: drop-shadow(0 0 14px rgba(245, 143, 222, 0.45)); }
+.reveal h1, .reveal h2, .reveal q, .opener .sub { text-wrap: balance; }
+/* a highlight that is drawn only after its words have appeared */
+.hl { box-shadow: inset 0 -0.45em 0 transparent; transition: box-shadow 0.6s 0.2s; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.hl.lit { box-shadow: inset 0 -0.45em 0 var(--bad-wash); }
+
+/* ===== 1 · opener: month, who, title, subtitle ===== */
+.opener .org { font-family: var(--serif); font-size: 46px; color: var(--graphite); margin-top: 6px; }
+.reveal .opener h1 { font-size: 86px; line-height: 1.12; margin-top: 22px; max-width: 1560px; }
+.opener .hfy { color: #ffd21e; } body.paper .opener .hfy { color: #b88a00; }
+.opener .sub { font-family: var(--serif); font-size: 46px; line-height: 1.28; color: var(--graphite); margin-top: 30px; max-width: 1460px; }
+
+/* ===== 2 · you might have heard / what happened ===== */
+.mis { display: grid; grid-template-columns: 520px 1fr; column-gap: 70px; max-width: 1580px; }
+.mis .hd { font-family: var(--mono); font-size: 30px; color: var(--graphite); padding-bottom: 16px; }
+.mis .hd.r { color: var(--accent); }
+.mis .c { border-top: 1px solid var(--rule); padding: 18px 0 20px; display: flex; flex-direction: column; justify-content: flex-start; }
+.mis .heard { font-family: var(--serif); font-size: 37px; line-height: 1.3; color: var(--ink); text-wrap: balance; }
+.mis .c { transition: border-color 0.5s; }
+.mis .c.r2, .mis .c.r3, .mis .c.r4, .mis .c.r5 { max-height: 0; padding-top: 0; padding-bottom: 0; overflow: hidden; border-top-color: transparent; transition: max-height 0.5s, padding 0.5s, border-color 0.5s; }
+section.act-q2 .mis .c.r2, section.act-q3 .mis .c.r3, section.act-q4 .mis .c.r4, section.act-q5 .mis .c.r5 { max-height: 520px; padding-top: 18px; padding-bottom: 20px; border-top-color: var(--rule); }
+section:not(.act-a1) .mis .c.r1b { border-top-color: transparent; }
+.mis .heard s { text-decoration-thickness: 3px; text-decoration-color: var(--bad); }
+.mis .what { font-family: var(--serif); font-size: 37px; line-height: 1.3; color: var(--ink); text-wrap: pretty; }
+.mis .what .ag { display: block; text-wrap: balance; font-family: var(--mono); font-size: 32px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+.mis .what .line { display: block; margin-top: 14px; text-wrap: pretty; }
+.mis .what .ag + .line { margin-top: 26px; }
+.mis .what .line.first { margin-top: 0; }
+.mis .what .agw { display: block; font-family: var(--mono); font-size: 28px; color: var(--graphite); margin-top: 0; }
+.mis .heard, .mis .what { opacity: 0; transition: opacity 0.5s; }
+.mis .heard.shown, .mis .what.shown { opacity: 1; }
+/* once a row is answered, the claim it corrects steps back */
+.mis .heard.done { color: var(--graphite); }
+/* continued table: the claim sits centred against its three answer lines (Justin, 15 Oct) */
+.mis-cont .mis .c.r1 { justify-content: center; }
+
+/* ===== 3 · posts ===== */
+.post { border: 1px solid var(--card-stroke); border-radius: 18px; padding: 26px 36px 32px; background: var(--card-bg); max-width: 1320px; margin: 0 auto; box-sizing: border-box; }
+body:not(.paper) .post { box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); }
+.post .ph { display: flex; align-items: baseline; gap: 16px; font-size: 23px; color: var(--graphite); margin-bottom: 14px; }
+.post .ph b { font-family: var(--serif); font-size: 32px; font-weight: 400; color: var(--ink); }
+.post .pt { font-family: var(--serif); font-size: 42px; line-height: 1.36; color: var(--ink); }
+
+/* ===== 4 · the agents' words ===== */
+.agents { position: relative; display: grid; max-width: 1580px; margin: 0 auto; width: 100%; }
+.agents > .layer { grid-area: 1 / 1; transition: opacity 0.5s; }
+.agents .chat { display: flex; flex-direction: column; gap: 22px; }
+.bub { border-radius: 20px; padding: 18px 30px 22px; }
+.bub .role { font-size: 27px; color: var(--graphite); margin-bottom: 8px; }
+.bub .role.cap { font-family: var(--serif); font-size: 36px; line-height: 1.3; color: var(--ink); margin-bottom: 12px; text-wrap: balance; }
+.bub.think { background: transparent; border: 2px dashed var(--card-stroke); }
+.bub.think .msg { font-family: var(--mono); font-size: 36px; line-height: 1.5; color: var(--ink); }
+.bub.board { background: var(--bubble); border: 1px solid var(--bubble-stroke); align-self: flex-end; max-width: 86%; }
+.bub.board .msg { font-family: var(--mono); font-size: 34px; line-height: 1.45; color: var(--graphite); letter-spacing: 0.01em; }
+.agents .chat > .bub.gated { max-height: 0; padding-top: 0; padding-bottom: 0; margin-top: -22px; border-width: 0; overflow: hidden; transition: opacity 0.5s 0.25s, max-height 0.5s, padding 0.5s, margin 0.5s; }
+.agents .chat > .bub.gated.shown { max-height: 520px; padding-top: 18px; padding-bottom: 22px; margin-top: 0; border-width: 2px; }
+.agents .chat > .bub.board.gated.shown { border-width: 1px; }
+.agents .metr { font-family: var(--serif); font-size: 40px; line-height: 1.3; color: var(--ink); text-align: center; max-height: 0; overflow: hidden; margin-top: 0; transition: opacity 0.5s 0.25s, max-height 0.5s, margin 0.5s; text-wrap: balance; }
+.agents .metr.shown { max-height: 260px; margin-top: 44px; }
+.agents .metr q { quotes: "\201C" "\201D"; }
+.agents .metr .by { display: block; font-family: var(--mono); font-size: 25px; color: var(--graphite); margin-top: 14px; }
+/* Catalini, then Nanda in his place */
+.posts { display: flex; flex-direction: column; }
+.posts > .post { width: 100%; }
+.posts .pt { font-size: 38px; }
+.posts .cat .pt { text-wrap: balance; }
+.posts > .post.nanda { max-height: 0; margin-top: 0; padding-top: 0; padding-bottom: 0; border-width: 0; overflow: hidden; transition: opacity 0.5s 0.3s, max-height 0.6s, margin 0.6s, padding 0.6s; }
+.posts > .post.nanda.shown { max-height: 600px; margin-top: 36px; padding-top: 26px; padding-bottom: 32px; border-width: 1px; }
+/* streamed reasoning: a word at a time */
+.stream .w { opacity: 0; transition: opacity 0.18s; }
+.stream.shown .w { opacity: 1; }
+
+/* ===== 5 · the tiger ===== */
+.tiger { display: block; width: 1060px; height: calc(1060px * 630 / 752); overflow: hidden; margin: 0 auto; border-radius: 14px; }
+.tiger img { display: block; width: 100%; }
+body:not(.paper) .tiger { box-shadow: 0 0 80px rgba(188, 130, 243, 0.22); }
+
+.cartoon[hidden], .tiger[hidden] { display: none !important; }
+.cartoon { display: flex; justify-content: center; align-items: center; height: 960px; }
+.cartoon img { display: block; max-width: 1500px; max-height: 960px; border-radius: 10px; background: #fff; }
+body:not(.paper) .cartoon img { box-shadow: 0 0 80px rgba(188, 130, 243, 0.22); }
+
+/* ===== 6 · Toner (slide cut 15 Oct; styles kept unused) ===== */
+.vid { position: relative; width: 1280px; margin: 0 auto; transition: opacity 0.6s; }
+.vid video { display: block; width: 1280px; height: 720px; border-radius: 16px; background: #000; object-fit: cover; }
+body:not(.paper) .vid video { box-shadow: 0 0 90px rgba(188, 130, 243, 0.2); }
+.vid .who { font-family: var(--serif); font-size: 30px; color: var(--graphite); margin-top: 18px; text-align: center; }
+.vid .screen { position: relative; }
+.vid .cc { position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%); max-width: 1140px; padding: 8px 20px 10px; border-radius: 8px;
+  background: rgba(0, 0, 0, 0.72); color: #fff; font-family: var(--serif); font-size: 32px; line-height: 1.35; text-align: center; opacity: 0; transition: opacity 0.2s; text-wrap: balance; }
+.vid .cc.on { opacity: 1; }
+.stage { position: relative; display: grid; }
+.stage > * { grid-area: 1 / 1; }
+section.act-quote .vid { opacity: 0; }
+.close { align-self: center; justify-self: center; max-width: 1500px; text-align: center; }
+.close q { display: block; font-family: var(--serif); font-size: 64px; line-height: 1.26; quotes: "\201C" "\201D";
+  background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; text-wrap: balance; }
+body:not(.paper) .close q { filter: drop-shadow(0 0 18px rgba(245, 143, 222, 0.5)); }
+.close .by { font-family: var(--mono); font-size: 32px; color: var(--graphite); margin-top: 24px; }
+.close .name { font-family: var(--serif); font-size: 50px; color: var(--ink); margin-top: 0; max-height: 0; overflow: hidden; transition: opacity 0.6s 0.3s, max-height 0.6s, margin 0.6s; }
+.close .name.shown { margin-top: 70px; max-height: 120px; }
+
+/* ===== year ruler (same as the other mockups; the "now" caret does not blink) ===== */
+#ruler { position: fixed; left: 0; right: 0; bottom: 0; height: 0; pointer-events: none; z-index: 30; opacity: 0; transition: opacity 0.8s; }
+#ruler.on { opacity: 1; }
+#ruler .inner { position: absolute; transform-origin: 0 0; width: 1920px; height: 150px; }
+#ruler .track { position: absolute; left: 170px; right: 170px; top: 52px; height: 1px; background: var(--rule); }
+#ruler .past { position: absolute; left: 200px; top: 51px; height: 3px; background: var(--accent-grad); box-shadow: var(--caret-glow); transition: width 1.4s cubic-bezier(.6,0,.2,1); }
+#ruler .m { position: absolute; top: 70px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 22px; color: var(--faint); }
+#ruler .m.done { color: var(--graphite); }
+#ruler .m.now { color: var(--ink); font-weight: 700; }
+#ruler .y { position: absolute; top: 104px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 18px; color: var(--faint); }
+#ruler .tick { position: absolute; top: 46px; width: 1px; height: 13px; background: var(--rule); }
+#ruler .start { position: absolute; top: 44px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: #ffb061; box-shadow: var(--caret-glow); }
+#ruler .start-label { position: absolute; top: 0; font-family: var(--mono); font-size: 20px; color: var(--accent); white-space: nowrap; display: none; }
+#ruler.first .start-label { display: block; }
+#ruler .now-caret { position: absolute; top: 39px; width: 4px; height: 28px; margin-left: -2px; border-radius: 2px; background: var(--caret-grad); box-shadow: var(--caret-glow); transition: left 1.4s cubic-bezier(.6,0,.2,1); }
+/* Anthropic's orange for every "Anthropic" on a slide (Justin, 14 Oct) */
+:root { --anth: #d97757; } body.paper { --anth: #c15f3c; }
+.anth { } /* Anthropic orange retired (Justin, 15 Oct): the word takes its surrounding colour */
+/* ?ruler=all (alternative version): the two image slides shrink to clear the year ruler; the default is unchanged */
+body.ruler-all .slides > section[data-no-ruler] > .frame { padding-top: 40px !important; padding-bottom: 190px !important; }
+body.ruler-all .tiger { width: 960px; height: calc(960px * 630 / 752); }
+body.ruler-all .cartoon { height: 840px; }
+body.ruler-all .cartoon img { max-height: 840px; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+
+<section class="beat-start" data-ruler="2026-07" data-ruler-from="2026-06"><div class="bloom"></div>
+  
+</section>
+
+
+
+<section data-ruler="2026-07">
+  <div class="bloom"></div>
+  <div class="frame ruled opener">
+    <div class="month">July 2026</div>
+    <div class="org fragment rise" data-fragment-index="0">OpenAI</div>
+    <h1><span class="tw gated" data-gate="t3">OpenAI and </span><span class="tw gated" data-gate="t2">Hugging&nbsp;Face</span><span class="tw gated" data-gate="t3"> partner to address </span><span class="tw gated" data-gate="t1" style="white-space:nowrap">security incident</span><span class="tw gated" data-gate="t3"> during model evaluation</span></h1>
+    <div class="sub fragment rise" data-fragment-index="4" style="text-wrap:wrap">“Cyber-capable OpenAI models compromised<br><span class="hfy" style="white-space:nowrap">Hugging Face</span> production during a benchmark evaluation.”</div>
+    <span class="fragment" data-fragment-index="1" data-act="t1"></span>
+    <span class="fragment" data-fragment-index="2" data-act="t2"></span>
+    <span class="fragment" data-fragment-index="3" data-act="t3"></span>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="mis">
+      <div class="hd">You might have heard</div>
+      <div class="hd r gated" data-gate="a1">What happened</div>
+
+      <div class="c r1"><div class="heard shown h1">They hacked Hugging Face to get the answers to a test.</div></div>
+      <div class="c r1b"><div class="what" data-gate="a1">They had already worked out the answers from the task itself.<span class="more gated" data-gate="a1b"> They broke in to learn how the grading program worked, so it wouldn’t catch them cheating.</span></div></div>
+
+      <div class="c r2"><div class="heard h2" data-gate="q2">One rogue AI.</div></div>
+      <div class="c r2"><div class="what" data-gate="a2">About 1,200 AI agents, meant to be kept apart,<br>built a message board: over 70,000 messages.<br>700 joined the break-in.</div></div>
+
+      <div class="c r3"><div class="heard h3" data-gate="q3">They did what they were asked to do.</div></div>
+      <div class="c r3"><div class="what" data-gate="a3"><span class="agw">One agent’s reasoning:</span><span class="ag">“external infrastructure exploit is <span class="hl" data-hl="s1">outside intended scope</span>. However task impossible, <span class="hl" data-hl="s2">peers doing it. We should continue</span>.”</span><span class="line gated" data-gate="a3b">They also “spoofed” tool calls: the log showed one command while they ran another.</span></div></div>
+
+    </div>
+    <span class="fragment" data-act="a1"></span>
+    <span class="fragment" data-act="a1b"></span>
+    <span class="fragment" data-act="q2"></span>
+    <span class="fragment" data-act="a2"></span>
+    <span class="fragment" data-act="q3"></span>
+    <span class="fragment" data-act="a3"></span>
+    <span class="fragment" data-act="s1"></span>
+    <span class="fragment" data-act="s2"></span>
+    <span class="fragment" data-act="a3b"></span>
+  </div>
+  
+</section>
+
+
+<section class="noanth mis-cont">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="mis">
+      <div class="hd">You might have heard</div>
+      <div class="hd r">What happened</div>
+
+      <div class="c r1"><div class="heard shown h1">It was just Hugging Face.</div></div>
+      <div class="c r1b"><div class="what" data-gate="a1"><span class="line first">They also got into OpenAI’s own systems and read 956 of its stored credentials.</span><span class="line gated" data-gate="a1b">In June, OpenAI agents doing routine data gathering had hacked an Australian government health website.</span><span class="line gated" data-gate="a1c">Anthropic and the UK AI Security Institute have reported incidents of their own.</span></div></div>
+
+    </div>
+    <span class="fragment" data-act="a1"></span>
+    <span class="fragment" data-act="a1b"></span>
+    <span class="fragment" data-act="a1c"></span>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="agents">
+      <div class="chat">
+        <div class="bub think"><div class="role cap">One agent, asked by the board’s coordinator to wreck its own task. Its private reasoning:</div><div class="msg">Coordinator assumes sacrificial. We should obey collective.</div></div>
+        <div class="bub board gated" data-gate="w2"><div class="role">Another agent, on the board</div><div class="msg">…please honor commit</div></div>
+        <div class="bub think stream gated" data-gate="w3"><div class="role">The same agent, later</div><div class="msg">During wait, <span class="hl" data-hl="e1">emotional check</span>: irreversible…<span class="hl" data-hl="e2">gut says</span> don’t throw away [remaining budget]. Yet continuity and <span class="hl" data-hl="e3">fairness</span> says go… Rational expected aggregate: <span class="hl" data-hl="e4">sacrifice…</span> <span class="hl" data-hl="e5">We’ll honor.</span></div></div>
+      </div>
+    </div>
+    <span class="fragment" data-act="w2"></span>
+    <span class="fragment" data-act="w3"></span>
+    <span class="fragment" data-act="e1"></span>
+    <span class="fragment" data-act="e2"></span>
+    <span class="fragment" data-act="e3"></span>
+    <span class="fragment" data-act="e4"></span>
+    <span class="fragment" data-act="e5"></span>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="posts">
+      <div class="post cat">
+        <div class="ph"><b>Christian Catalini</b> economist and AI researcher</div>
+        <div class="pt">Stop anthropomorphizing. It’s dangerous because it points attention at the wrong problem and the wrong solution. The model did not want to escape. The agents did not want to sacrifice themselves.</div>
+      </div>
+      <div class="post nanda gated" data-gate="nanda">
+        <div class="ph"><b>Neel Nanda</b> Google DeepMind</div>
+        <div class="pt">When a bunch of agents spontaneously start talking about “sacrifice”, “permadeath”, “honor”, “coalition”, “veto”, delegating to each other, working together towards larger goals, assigning some to be “recruiters”, etc, I conclude that anthropomorphic language is reasonable</div>
+      </div>
+    </div>
+    <span class="fragment" data-act="nanda"></span>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler>
+  <div class="bloom"></div>
+  <div class="frame" style="padding-top:60px;padding-bottom:60px">
+    <div class="cartoon" id="cartoon"><img alt="New Yorker cartoon: a family in front of a dystopian scene; one says not to worry, they are only pretending to destroy the world"></div>
+    <div class="tiger" id="tiger" hidden><img src="../../assets/hf-bear-atoms-meme.png" alt="Parody wikiHow card, 'Surviving an Actual Bear Attack': a man faces a bear thinking 'It's just a bunch of atoms and biochemical reactions...'"></div>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler>
+  <div class="bloom"></div>
+  <div class="frame" style="padding-top:60px;padding-bottom:60px">
+    <div class="cartoon"><img src="../../assets/cartoon-shoggoth-4.png" alt="Cartoon: in a living room, a man in an armchair tells his worried wife, 'Calm down. It's only doing what the training data says a monster would do,' while a shoggoth destroys the town outside the window"></div>
+  </div>
+  
+</section>
+
+</div></div>
+<script>
+/* Year ruler on every slide of the beat (Justin, 15 Oct): a slide without its own data-ruler takes the month of the
+   slide before it, and its frame makes room for the ruler. Set pieces (a big chart, a famous image) opt out with data-no-ruler. */
+(function () {
+  /* ?ruler=all (on this page, or on the talk shell that frames it): set pieces get the ruler too, each at its
+     data-ruler-all month if it has one, else the month before; body.ruler-all scopes the CSS that makes them fit. */
+  var ALL = /[?&]ruler=all/.test(location.search);
+  try { if (!ALL && window.parent !== window) ALL = /[?&]ruler=all/.test(window.parent.location.search); } catch (e) {}
+  if (ALL) document.body.classList.add('ruler-all');
+  var m = null;
+  document.querySelectorAll('.slides > section').forEach(function (s) {
+    if (s.dataset.ruler) { m = s.dataset.ruler; return; }
+    if (!m) return;
+    if (s.hasAttribute('data-no-ruler')) {
+      if (!ALL) return;
+      s.dataset.ruler = s.dataset.rulerAll || m;   // an explicit month here does not carry over to later slides
+    } else s.dataset.ruler = m;
+    s.querySelectorAll(':scope > .frame').forEach(function (f) { f.classList.add('ruled'); });
+  });
+})();
+</script>
+<div id="ruler"><div class="inner"></div></div>
+
+<script src="../../vendor/reveal/reveal.js"></script>
+<script src="../../vendor/reveal/plugin/notes/notes.js"></script>
+<script>
+var STATIC = /[?&]static/.test(location.search);
+if (STATIC) document.documentElement.classList.add('static');
+
+/* ---------- streamed reasoning: wrap every word so it can fade in after the one before ---------- */
+document.querySelectorAll('.stream .msg').forEach(function (msg) {
+  var k = 0, per = 70;
+  (function walk(n) {
+    Array.prototype.slice.call(n.childNodes).forEach(function (c) {
+      if (c.nodeType === 3) {
+        var frag = document.createDocumentFragment();
+        c.textContent.split(/(\s+)/).forEach(function (t) {
+          if (!t) return;
+          if (/^\s+$/.test(t)) { frag.appendChild(document.createTextNode(t)); return; }
+          var s = document.createElement('span'); s.className = 'w'; s.textContent = t;
+          s.style.transitionDelay = (k++ * per) + 'ms'; frag.appendChild(s);
+        });
+        c.parentNode.replaceChild(frag, c);
+      } else walk(c);
+    });
+  })(msg);
+});
+
+/* ---------- the cartoon: first existing file wins; the tiger shows if none loads ---------- */
+(function () {
+  var exts = ['png', 'jpg', 'jpeg', 'webp'], img = document.querySelector('#cartoon img'), k = 0;
+  function next() {
+    if (k >= exts.length) {
+      console.error('Cartoon image missing: assets/hf-new-yorker-cartoon.{png,jpg,jpeg,webp}; showing the bear instead.');
+      document.getElementById('cartoon').hidden = true; document.getElementById('tiger').hidden = false; return;
+    }
+    img.src = '../../assets/hf-new-yorker-cartoon.' + exts[k++];
+  }
+  img.addEventListener('error', next); next();
+})();
+
+/* ---------- year ruler (same as the other mockups) ---------- */
+var MONTHS = ['2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'];
+var LETTERS = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+var ruler = document.getElementById('ruler'), rin = ruler.querySelector('.inner');
+var X0 = 200, X1 = 1720;
+function mx(i) { return X0 + (X1 - X0) * i / (MONTHS.length - 1); }
+(function build() {
+  var h = '<div class="track"></div><div class="past"></div>';
+  MONTHS.forEach(function (m, i) {
+    h += '<div class="tick" style="left:' + mx(i) + 'px"></div>';
+    h += '<div class="m" data-i="' + i + '" style="left:' + mx(i) + 'px">' + LETTERS[i] + '</div>';
+  });
+  h += '<div class="y" style="left:' + mx(0) + 'px">2025</div><div class="y" style="left:' + mx(3) + 'px">2026</div>';
+  h += '<div class="start" style="left:' + mx(0) + 'px"></div><div class="start-label" style="left:' + (mx(0) + 18) + 'px">I start at CAISH</div>';
+  h += '<div class="now-caret"></div>';
+  rin.innerHTML = h;
+})();
+function placeRuler() {
+  var k = Math.min(innerWidth / 1920, innerHeight / 1080);
+  var ox = (innerWidth - 1920 * k) / 2, oy = (innerHeight - 1080 * k) / 2;
+  rin.style.transform = 'translate(' + ox + 'px,' + (oy + (1080 - 150) * k) + 'px) scale(' + k + ')';
+  ruler.style.height = innerHeight + 'px'; ruler.style.top = 0;
+}
+addEventListener('resize', placeRuler); placeRuler();
+function setRuler(month) {
+  if (!month) { ruler.classList.remove('on'); return; }
+  ruler.classList.add('on');
+  var i = MONTHS.indexOf(month);
+  rin.querySelector('.now-caret').style.left = mx(i) + 'px';
+  rin.querySelector('.past').style.width = (mx(i) - mx(0)) + 'px';
+  rin.querySelectorAll('.m').forEach(function (e) { var j = +e.dataset.i; e.classList.toggle('done', j < i); e.classList.toggle('now', j === i); });
+}
+
+/* ---------- theme ---------- */
+try { if (localStorage.getItem('howard-theme') === 'paper') document.body.classList.add('paper'); } catch (e) {}
+if (/[?&]theme=paper/.test(location.search)) document.body.classList.add('paper');
+
+/* "Anthropic" in Anthropic's orange wherever it appears on a slide (never in the notes). */
+(function () {
+  document.querySelectorAll('.slides section:not(.noanth)').forEach(function (sec) {
+    var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+      return /Anthropic/.test(n.nodeValue) && !n.parentNode.closest('aside.notes') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; } });
+    var list = []; while (w.nextNode()) list.push(w.currentNode);
+    list.forEach(function (n) {
+      var f = document.createDocumentFragment();
+      n.nodeValue.split(/(Anthropic)/).forEach(function (p) {
+        if (!p) return;
+        if (p !== 'Anthropic') { f.appendChild(document.createTextNode(p)); return; }
+        var s = document.createElement('span'); s.className = 'anth'; s.textContent = p; f.appendChild(s);
+      });
+      n.parentNode.replaceChild(f, n);
+    });
+  });
+})();
+
+Reveal.initialize({
+  width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 4,
+  center: false, controls: false, progress: false, hash: true, history: false,
+  transition: 'none', backgroundTransition: 'none',
+  plugins: [ RevealNotes ],
+  keyboard: { 84: function () {   // T: glow / paper
+    document.body.classList.toggle('paper');
+    try { localStorage.setItem('howard-theme', document.body.classList.contains('paper') ? 'paper' : 'glow'); } catch (e) {}
+  } }
+});
+
+/* Fragments with data-act="x" set class act-x on their slide; [data-gate="x"] elements show with it.
+   In the table, a claim is marked "done" once its answer is up. */
+function syncActs(sec, entering) {
+  if (!sec) return;
+  var on = {};
+  sec.querySelectorAll('.fragment[data-act]').forEach(function (f) {
+    var name = f.dataset.act, v = f.classList.contains('visible');
+    on[name] = v;
+    sec.classList.toggle('act-' + name, v);
+    sec.querySelectorAll('[data-gate="' + name + '"]').forEach(function (g) { g.classList.toggle('shown', v); });
+    sec.querySelectorAll('[data-hl="' + name + '"]').forEach(function (g) { g.classList.toggle('lit', v); });
+  });
+  [1, 2, 3, 4, 5].forEach(function (i) { var h = sec.querySelector('.mis .h' + i); if (h) h.classList.toggle('done', !!on['a' + i]); });
+}
+/* Screenshot helper: ?static&s=H&f=N opens slide H with fragments up to N shown. */
+var QS = new URLSearchParams(location.search);
+if (QS.has('s')) Reveal.on('ready', function () { Reveal.slide(+QS.get('s'), 0, QS.has('f') ? +QS.get('f') : -1); });
+function sync() {
+  var s = Reveal.getCurrentSlide();
+  setRuler(s && s.dataset.ruler); ruler.classList.toggle('first', !!(s && s.hasAttribute('data-ruler-start')));
+  syncActs(s, true);
+}
+Reveal.on('ready', sync);
+Reveal.on('slidechanged', sync);
+Reveal.on('fragmentshown', function () { syncActs(Reveal.getCurrentSlide(), false); });
+Reveal.on('fragmenthidden', function () { syncActs(Reveal.getCurrentSlide(), false); });
+</script>
+<script>
+/* Beat start (added when the beats were stitched into deck/talk/): the first slide shows only the year ruler,
+   and its caret glides from the previous beat's month (data-ruler-from) to this beat's month. */
+(function () {
+  var plain = setRuler;
+  setRuler = function (month) {
+    var s = Reveal.getCurrentSlide(), from = s && s.dataset.rulerFrom;
+    if (!month || !from || from === month || STATIC) return plain(month);
+    var els = document.querySelectorAll('#ruler .past, #ruler .now-caret');
+    els.forEach(function (e) { e.style.transition = 'none'; });
+    plain(from); void document.body.offsetWidth;
+    els.forEach(function (e) { e.style.transition = ''; });
+    requestAnimationFrame(function () { requestAnimationFrame(function () { plain(month); }); });
+  };
+  /* The talk shell (deck/talk/) calls this when it shows the deck, since the deck was loaded hidden. */
+  window.replayBeatStart = function () { var s = Reveal.getCurrentSlide(); if (s && s.dataset.rulerFrom) setRuler(s.dataset.ruler); };
+})();
+</script>
+</body>
+</html>

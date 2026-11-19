@@ -1,0 +1,11 @@
+/* Vendored from Google Fonts (latin subset) so the deck runs offline. SIL Open Font License 1.1. */
+@font-face { font-family: 'Libre Baskerville'; font-style: normal; font-weight: 400 700; font-display: block; src: url(LibreBaskerville-VF.woff2) format('woff2'); }
+@font-face { font-family: 'Libre Baskerville'; font-style: italic; font-weight: 400; font-display: block; src: url(LibreBaskerville-Italic.woff2) format('woff2'); }
+@font-face { font-family: 'Space Mono'; font-style: normal; font-weight: 400; font-display: block; src: url(SpaceMono-Regular.woff2) format('woff2'); }
+@font-face { font-family: 'Space Mono'; font-style: normal; font-weight: 700; font-display: block; src: url(SpaceMono-Bold.woff2) format('woff2'); }
+@font-face { font-family: 'Space Mono'; font-style: italic; font-weight: 400; font-display: block; src: url(SpaceMono-Italic.woff2) format('woff2'); }
+@font-face { font-family: 'Space Grotesk'; font-style: normal; font-weight: 300 700; font-display: block; src: url(SpaceGrotesk-VF.woff2) format('woff2'); }
+@font-face { font-family: 'Instrument Serif'; font-style: normal; font-weight: 400; font-display: block; src: url(InstrumentSerif-Regular.woff2) format('woff2'); }
+@font-face { font-family: 'Instrument Serif'; font-style: italic; font-weight: 400; font-display: block; src: url(InstrumentSerif-Italic.woff2) format('woff2'); }
+@font-face { font-family: 'Geist'; font-style: normal; font-weight: 100 900; font-display: block; src: url(Geist-VF.woff2) format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-weight: 100 900; font-display: block; src: url(InterTight-VF.woff2) format('woff2'); }

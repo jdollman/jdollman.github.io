@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Howard talk — intro mockup</title>
+<link rel="stylesheet" href="../../vendor/reveal/reset.css">
+<link rel="stylesheet" href="../../vendor/reveal/reveal.css">
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+/* ===== Tokens. Default = "glow": the walk-in slide's world (dark glass, Siri-style light)
+   with caish.org's typefaces (Libre Baskerville headings, Space Mono running text).
+   Press T for "paper", the caish.org look (paper #fbfbfa, ink, rust #945947). ===== */
+:root {
+  --paper: #050508;
+  --ink: #f2f1f6;
+  --graphite: rgba(235, 235, 245, 0.66);
+  --faint: rgba(235, 235, 245, 0.34);
+  --accent: #c9a6ff;                         /* lilac from the walk-in palette, for small text */
+  --accent-grad: linear-gradient(90deg, #ffb061, #ff6778 25%, #f58fde 50%, #bc82f3 75%, #8d9fff);
+  --caret-grad: linear-gradient(180deg, #f5b9ea 0%, #c686ff 48%, #8d9fff 100%);
+  --caret-glow: 0 0 10px rgba(198, 134, 255, 0.85), 0 0 22px rgba(141, 159, 255, 0.45);
+  --rule: rgba(235, 235, 245, 0.16);
+  --night: #050508;
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --mono: 'Space Mono', ui-monospace, Menlo, monospace;
+  --img-filter: invert(1) brightness(0.92);
+  --img-opacity: 0.72;
+  --photo-border: #15151b;
+}
+body.paper {
+  --paper: #fbfbfa;
+  --ink: #1a1a1a;
+  --graphite: #4a4a4a;
+  --faint: #a49b92;
+  --accent: #945947;
+  --accent-grad: linear-gradient(90deg, #945947, #945947);
+  --caret-grad: linear-gradient(180deg, #945947, #945947);
+  --caret-glow: none;
+  --rule: rgba(148, 89, 71, 0.28);
+  --img-filter: none;
+  --img-opacity: 0.9;
+  --photo-border: #fff;
+}
+html, body { background: var(--paper); }
+.reveal { font-family: var(--mono); color: var(--ink); font-size: 34px; line-height: 1.55; }
+.reveal .slides { text-align: left; }
+.reveal .slides section { width: 1920px; height: 1080px; padding: 0; box-sizing: border-box; }
+.reveal .slide-background { background: var(--paper); }
+.reveal h1, .reveal h2 { font-family: var(--serif); font-weight: 400; color: var(--ink); margin: 0; letter-spacing: -0.005em; }
+.reveal h1 { font-size: 128px; line-height: 1.08; }
+.reveal h2 { font-size: 92px; line-height: 1.1; }
+.reveal em { font-style: italic; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.08em; }
+:where(.reveal) p { margin: 0; }
+.frame { position: absolute; inset: 0; padding: 150px 170px 190px; }
+.small { font-size: 26px; color: var(--graphite); }
+
+/* A question carried over from the walk-in field: same typeface, same insertion point. */
+.asked { font-family: var(--mono); font-size: 30px; color: var(--ink); display: flex; align-items: center; gap: 4px; margin-bottom: 46px; }
+.caret { display: inline-block; width: 3px; height: 1.15em; border-radius: 1.5px; background: var(--caret-grad); box-shadow: var(--caret-glow); animation: blink 1.06s ease-in-out infinite; vertical-align: -0.2em; }
+@keyframes blink { 0%, 42% { opacity: 1; } 55%, 90% { opacity: 0; } 100% { opacity: 1; } }
+
+/* ===== Pre-timeline slides (polished 14 Oct). Content is centred vertically; only s-bet carries the ruler. ===== */
+.frame.center { padding: 92px 170px; display: flex; flex-direction: column; justify-content: center; }
+.frame.center.ruled { padding-bottom: 190px; }
+.frame.grow { transition: transform 0.7s cubic-bezier(.4,0,.2,1); }   /* see centreGrow() */
+.reveal i { font-style: italic; }
+html.static .caret { animation: none; }
+
+/* ---- 01: name ---- */
+.name-row { display: grid; grid-template-columns: 800px 1fr; gap: 40px; align-items: center; }
+.name-row .caret { animation: blink 1.06s ease-in-out 4; }   /* blinks as the slide arrives, then rests (cold review: a constant blink pulls the eye off the name) */
+.name b { font-weight: 700; }
+.reveal h1.name { font-size: 150px; }
+.name span { color: var(--ink); }   /* white, not grey (Justin, 15 Oct); the initials still stand out by weight and glow */
+/* The initials glow like the CAISH mark on the walk-in slide: white, with the Siri palette drifting round them. */
+:root { --glyph-glow: 0 0 2px rgba(255,255,255,.9), -5px 0 22px rgba(255,103,120,.55), 5px 0 26px rgba(141,159,255,.6), 0 0 54px rgba(188,130,243,.55);
+        --glyph-glow-2: 0 0 2px rgba(255,255,255,.9), 5px 0 22px rgba(255,176,97,.5), -5px 0 26px rgba(245,143,222,.6), 0 0 54px rgba(141,159,255,.55); }
+body.paper { --glyph-glow: 0 0 18px rgba(148,89,71,.32); --glyph-glow-2: 0 0 24px rgba(148,89,71,.42); }
+.name b { text-shadow: var(--glyph-glow); animation: glyphglow 5s ease-in-out infinite alternate; }
+@keyframes glyphglow { from { text-shadow: var(--glyph-glow); } to { text-shadow: var(--glyph-glow-2); } }
+.punt { position: relative; width: 820px; justify-self: end; }
+.punting { position: relative; width: 820px; display: block; filter: var(--img-filter); opacity: var(--img-opacity); }
+/* The drawing's sun (centre at 70.7% / 23.7% of the image, radius ~7.5% of its width) gets a glow behind its lines. */
+.sun { position: absolute; left: 70.7%; top: 23.7%; width: 360px; height: 360px; margin: -180px 0 0 -180px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,214,150,.85) 0%, rgba(255,176,97,.6) 16%, rgba(255,103,120,.3) 34%, rgba(188,130,243,.14) 52%, transparent 70%);
+  animation: sunpulse 4.5s ease-in-out infinite alternate; }
+body.paper .sun { background: radial-gradient(circle, rgba(255,176,97,.75) 0%, rgba(255,176,97,.45) 18%, rgba(255,140,90,.18) 38%, transparent 64%); }
+@keyframes sunpulse { from { transform: scale(0.92); opacity: 0.8; } to { transform: scale(1.06); opacity: 1; } }
+html.static .name b, html.static .sun { animation: none; }
+
+/* ---- 01b: what ---- */
+.org-line { font-family: var(--serif); font-size: 54px; line-height: 1.25; margin-top: 36px; }
+.def { max-width: 1240px; margin-top: 34px; font-size: 32px; line-height: 1.5; color: var(--ink); }
+.def b { color: var(--ink); font-weight: 700; }
+.formats { display: grid; grid-template-columns: 600px 640px; justify-content: start; gap: 16px 0; margin-top: 46px; padding-top: 40px; border-top: 1px solid transparent; transition: border-color 0.5s; max-width: 1240px; }
+.formats:has(.visible) { border-top-color: var(--rule); }
+.formats div { font-size: 40px; }
+.tonight { color: var(--accent); }
+.morph .caret { opacity: 0; animation: none; }
+.morph.typing .caret { opacity: 1; }
+.morph.done .caret { opacity: 1; animation: blink 1.06s ease-in-out 3 forwards; }
+.morph.done.rest .caret { opacity: 0; animation: none; }
+.morph.on { color: var(--accent); }
+.hl { background: rgba(150, 140, 255, 0.34); border-radius: 4px; }
+body.paper .hl { background: rgba(148, 89, 71, 0.2); }
+
+/* ---- typed lines (the walk-in's insertion point, carried through the intro) ---- */
+.typed .caret { margin-left: 4px; }
+.typed.rest .caret { animation: none; opacity: 0; }
+
+/* ---- 01c: Freshers Fair ---- */
+.frame.center.fresh { display: grid; grid-template-columns: 1fr 540px 540px; gap: 60px; align-items: center; align-content: center; }
+.fresh-a, .fresh-b img { width: 540px; height: 720px; object-fit: cover; border-radius: 14px; display: block; }
+.fresh-b { position: relative; overflow: hidden; border-radius: 14px; }
+.fresh-b .hi { position: absolute; left: 51.2%; top: 34.6%; width: 40.2%; height: 29.6%; border-radius: 6px;
+  box-shadow: 0 0 0 4px #c686ff, 0 0 26px 6px rgba(198, 134, 255, 0.75), 0 0 0 2000px rgba(5, 5, 8, 0.45); }
+body.paper .fresh-b .hi { box-shadow: 0 0 0 5px #945947, 0 0 0 2000px rgba(251, 251, 250, 0.55); }
+
+/* ---- 01d: why (the board's axes, redrawn) ---- */
+:root { --quad: rgba(235, 235, 245, 0.035); --quad-hi: rgba(188, 130, 243, 0.2); }
+body.paper { --quad: rgba(26, 26, 26, 0.03); --quad-hi: rgba(148, 89, 71, 0.14); }
+.why { display: grid; grid-template-columns: 720px 1fr; gap: 100px; align-items: center; }
+.quad { width: 720px; height: 640px; }
+.quad svg { width: 100%; height: 100%; overflow: visible; }
+.quad text { font-family: var(--mono); font-size: 26px; fill: var(--graphite); }
+.quad .us { font-family: var(--serif); font-size: 64px; font-style: italic; fill: var(--accent); }
+body:not(.paper) .why:has(.lede.visible) .quad .hi { filter: drop-shadow(0 0 8px rgba(188, 130, 243, 0.4)); }
+.why-text .lede { font-family: var(--serif); font-size: 60px; line-height: 1.2; }
+.why-text .mission { font-size: 34px; line-height: 1.5; margin-top: 44px; }
+.why-text { align-self: center; }   /* centred on the quadrants (Justin, 15 Oct) */
+/* On arrival all four quadrants look alike; one click fills the upper right, writes "us" and shows the line (Justin, 15 Oct). */
+.quad .hi { fill: var(--quad); stroke: var(--rule); stroke-width: 2; transition: fill 0.5s, stroke 0.5s; }
+.quad .us { opacity: 0; transition: opacity 0.5s; }
+.why:has(.lede.visible) .quad .hi { fill: var(--quad-hi); stroke: var(--accent); stroke-width: 3; }
+.why:has(.lede.visible) .quad .us { opacity: 1; }
+
+/* ---- 01e: pause ---- */
+.reveal .pause h2 { font-size: 110px; line-height: 1.25; }
+.pause h2 + h2 { margin-top: 20px; }
+.pause .typed .caret { height: 0.95em; width: 5px; vertical-align: -0.1em; }
+
+/* ---- 02: past life ---- */
+.reveal .life-h { font-size: 80px; margin-bottom: 36px; }
+.life { display: grid; grid-template-columns: 1fr 600px; gap: 100px; align-items: center; }
+.life dl { margin: 0; display: grid; grid-template-columns: 130px 1fr; row-gap: 18px; column-gap: 22px; }
+.life dt { font-family: var(--mono); font-size: 24px; color: var(--graphite); padding-top: 5px; }
+.life dd { margin: 0; font-size: 30px; line-height: 1.4; }
+.life dd ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.life dd li { position: relative; padding-left: 34px; font-size: 26px; line-height: 1.38; color: var(--graphite); }
+.life dd li::before { content: ""; position: absolute; left: 4px; top: 0.72em; width: 14px; height: 2px; background: var(--accent); }
+.life dd li.fragment:has(.typed) { color: var(--ink); }
+.life .note { color: var(--faint); white-space: nowrap; }   /* wraps as a whole, never "(not math, not / CS)" */
+.photos { position: relative; height: 896px; }
+.photos img { position: absolute; border: 10px solid var(--photo-border); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35); }
+.photos .jfk { width: 600px; height: 800px; object-fit: cover; right: 0; top: 48px; transform: rotate(1.4deg); box-sizing: border-box; }
+.photos .viz { width: 680px; right: -70px; top: 330px; transform: rotate(-1.6deg); background: #fff; box-sizing: border-box; }
+
+/* ---- 02a: the job posting ---- */
+.reveal h1.posting-title { font-size: 100px; line-height: 1.1; }   /* same size and place as the bet that follows, so the cut reads as one line of thought */
+.posting-title .caret { height: 0.9em; width: 5px; vertical-align: -0.08em; }
+
+/* ---- the bet ---- */
+.reveal .bet h1 { font-size: 100px; line-height: 1.1; position: relative; max-width: 1580px; text-wrap: balance; }   /* two balanced lines; the continuation follows "bet" after a space, never a line break */
+.bet .core { position: relative; white-space: nowrap; }
+.bet-text { align-self: stretch; transition: transform 0.7s cubic-bezier(.4,0,.2,1); }   /* glides; see centreBet() */
+.bet .ago { position: absolute; left: 0; bottom: 100%; white-space: nowrap; }   /* the line above "I made a bet", outside the flow, so removing it moves nothing */
+.bet .sub { margin-top: 50px; font-size: 36px; color: var(--graphite); max-width: 1300px; }
+.bet .sub + .sub { margin-top: 22px; }
+.reveal .slides section .fragment.cut { transition: none; }   /* plain cut to black */
+/* one click, a slow cross-fade (Justin, 15 Oct: slower, more gradual): "A year ago" fades first, then the rest of the sentence comes in */
+.reveal .slides section .bet .fragment.ago { transition: opacity 1.3s cubic-bezier(.45,0,.25,1); }
+.reveal .slides section .bet .fragment.cont { transition: opacity 1.6s cubic-bezier(.45,0,.25,1) 0.7s; }
+.def, .org-line, .why-text p, .bet .sub, .life dd li { text-wrap: balance; }
+
+/* ---- timeline slides ---- */
+.month { font-family: var(--mono); font-size: 30px; color: var(--accent); margin-bottom: 30px; }
+.tl h2 { max-width: 1500px; }
+.tl .facts { margin-top: 56px; display: grid; gap: 18px; max-width: 1400px; color: var(--graphite); }
+.tl .chart { position: absolute; right: 170px; top: 470px; width: 900px; border-radius: 10px; }
+.tbc { position: absolute; right: 170px; top: 150px; font-size: 22px; color: var(--faint); }
+
+
+/* ---- governance slides ---- */
+.pair { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 64px; margin-top: 60px; max-width: 1580px; }
+.pair.two { grid-template-columns: repeat(2, 1fr); margin-top: 36px; }
+.q { margin: 0; padding-top: 26px; border-top: 1px solid var(--rule); }
+.q figcaption { font-size: 22px; color: var(--faint); margin-bottom: 20px; }
+.q blockquote { margin: 0; font-family: var(--serif); font-size: 36px; line-height: 1.4; color: var(--ink); }
+.pair.two .q blockquote { font-size: 28px; }
+.q blockquote.event { font-family: var(--mono); font-size: 30px; color: var(--accent); }
+.kicker { margin-top: 64px; font-family: var(--serif); font-style: italic; font-size: 48px; color: var(--ink); }
+.states { display: grid; gap: 18px; margin-top: 44px; max-width: 1500px; }
+.states > div { display: grid; grid-template-columns: 150px 1fr; gap: 30px; font-size: 30px; line-height: 1.45; color: var(--graphite); }
+.states .d { color: var(--accent); }
+.states b { color: var(--ink); font-weight: 700; }
+.lines { margin-top: 36px; }
+.lines p { font-family: var(--serif); font-size: 56px; line-height: 1.25; }
+.quote-slide { display: flex; flex-direction: column; justify-content: center; padding-right: 260px; }
+blockquote.big { margin: 0; font-family: var(--serif); font-size: 84px; line-height: 1.22; max-width: 1450px; }
+.who { margin-top: 60px; font-size: 30px; color: var(--graphite); max-width: 1300px; }
+.who span { color: var(--faint); font-size: 24px; }
+.triad { margin-top: 70px; display: grid; gap: 56px; }
+.triad p { display: grid; grid-template-columns: 1120px 1fr; align-items: baseline; }
+.triad span { font-family: var(--serif); font-size: 74px; line-height: 1.1; white-space: nowrap; }
+.triad small { font-size: 26px; color: var(--graphite); }
+h2.clock { font-family: var(--mono); font-size: 118px; letter-spacing: -0.02em; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-block; }
+blockquote.mid { margin: 18px 0 0; font-family: var(--serif); font-size: 34px; line-height: 1.4; max-width: 1400px; }
+.sub-line { margin-top: 20px; font-size: 28px; color: var(--graphite); }
+
+.si { display: grid; grid-template-columns: 470px 1fr; gap: 90px; align-items: start; padding-top: 90px; }
+.si-img { width: 470px; border-radius: 18px; box-shadow: 0 0 60px rgba(188, 130, 243, 0.25); }
+.si-text .states { margin-top: 30px; }
+.si-text .states > div { grid-template-columns: 130px 1fr; font-size: 30px; }
+
+/* ---- Freshers Fair ---- */
+.fresh { display: grid; grid-template-columns: 1fr 560px 560px; gap: 60px; align-items: center; padding-top: 110px; padding-bottom: 170px; }
+.fresh-text h2 { margin-bottom: 24px; }
+.fresh-a, .fresh-b img { width: 560px; height: 747px; object-fit: cover; border-radius: 14px; display: block; }
+.fresh-b { position: relative; overflow: hidden; border-radius: 14px; }
+.fresh-b .hi { position: absolute; left: 51.2%; top: 34.6%; width: 40.2%; height: 29.6%; border-radius: 6px;
+  box-shadow: 0 0 0 4px #c686ff, 0 0 26px 6px rgba(198, 134, 255, 0.75), 0 0 0 2000px rgba(5, 5, 8, 0.45); }
+/* ===== Year ruler: fixed across the timeline. Oct 2025 → Oct 2026, with the insertion point at "now". ===== */
+#ruler { position: fixed; left: 0; right: 0; bottom: 0; height: 0; pointer-events: none; z-index: 30; }
+#ruler .inner { position: absolute; transform-origin: 0 0; width: 1920px; height: 150px; }
+#ruler .track { position: absolute; left: 170px; right: 170px; top: 52px; height: 1px; background: var(--rule); }
+#ruler .past { position: absolute; left: 200px; top: 51px;   /* starts at the first month (X0), so it ends exactly at the caret */ height: 3px; background: var(--accent-grad); box-shadow: var(--caret-glow); transition: width 1.4s cubic-bezier(.6,0,.2,1); }
+#ruler .m { position: absolute; top: 70px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 22px; color: var(--faint); transition: color 0.6s; }
+#ruler .m.done { color: var(--graphite); }
+#ruler .m.now { color: var(--ink); font-weight: 700; }
+#ruler .y { position: absolute; top: 104px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 18px; color: var(--faint); }   /* centred under its month, like the month labels */
+#ruler .tick { position: absolute; top: 46px; width: 1px; height: 13px; background: var(--rule); }
+#ruler .start { position: absolute; top: 44px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: #ffb061; box-shadow: var(--caret-glow); }
+#ruler .start-label { position: absolute; top: -6px; font-family: var(--mono); font-size: 24px; color: var(--accent); white-space: nowrap; }
+#ruler .start-label { display: none; } #ruler.first .start-label { display: block; }
+#ruler.first .now-caret { opacity: 0; }   /* on the bet slide the start dot alone marks October (dot + caret read as a smudge) */
+#ruler .now-caret { position: absolute; top: 39px; width: 4px; height: 28px; margin-left: -2px; border-radius: 2px; background: var(--caret-grad); box-shadow: var(--caret-glow); transition: left 1.4s cubic-bezier(.6,0,.2,1); }
+#ruler { opacity: 0; transition: opacity 0.8s; }
+html.static *, html.static *::before { transition: none !important; }
+#ruler.on { opacity: 1; }
+
+/* Lights up: the first paper slide fades in from the walk-in black. */
+#ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.55; transition: opacity 1s;
+  background: radial-gradient(60% 38% at 18% 112%, rgba(255, 103, 120, 0.16), transparent 70%),
+              radial-gradient(55% 40% at 82% 115%, rgba(141, 159, 255, 0.18), transparent 70%),
+              radial-gradient(40% 30% at 50% 120%, rgba(188, 130, 243, 0.14), transparent 70%); }
+body.paper #ambient, body.on-opening #ambient { opacity: 0; }
+.reveal { z-index: 1; }
+.reveal .slide-background { background: transparent; }
+html, body, .reveal-viewport { background: var(--paper) !important; }
+#dark { position: fixed; inset: 0; background: var(--night); z-index: 50; pointer-events: none; opacity: 0; transition: opacity 1.6s ease; }
+#dark.on { opacity: 1; transition: none; }
+
+/* Fragments: plain fade, no slide-up. */
+.reveal .slides section .fragment { transition: opacity 0.5s ease; }
+.reveal .slides section .fragment.fade-in-then-semi-out.visible:not(.current-fragment) { opacity: 0.35; }
+
+#hint { position: fixed; left: 16px; bottom: 12px; font: 13px var(--mono); color: var(--faint); z-index: 60; opacity: 0.0; transition: opacity 0.4s; }
+body:hover #hint { opacity: 0.7; }
+/* Anthropic's orange for every "Anthropic" on a slide (Justin, 14 Oct) */
+:root { --anth: #d97757; } body.paper { --anth: #c15f3c; }
+.anth { } /* Anthropic orange retired (Justin, 15 Oct): the word takes its surrounding colour */
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+  
+  <section id="s-opening" data-background-iframe="../../opening/option-a/index.html" data-background-color="#050508" data-transition="none">
+    
+  </section>
+
+  
+  <section id="s-name" data-transition="fade">
+    <div class="frame center grow">
+      <div class="name-row">
+        <div>
+          <div class="asked">What's CAISH?<span class="caret"></span></div>
+          <h1 class="name"><b class="fragment" data-fragment-index="0">C</b><span class="fragment" data-fragment-index="0">ambridge</span><br><b class="fragment" data-fragment-index="0">AI</b> <b class="fragment" data-fragment-index="0">S</b><span class="fragment" data-fragment-index="0">afety</span><br><b class="fragment" data-fragment-index="0">H</b><span class="fragment" data-fragment-index="0">ub</span></h1>
+        </div>
+        <div class="punt fragment" data-fragment-index="0">
+          <div class="sun"></div>
+          <img class="punting" src="../../assets/caish-punting-min.png" alt="Line drawing: a punt under the Mathematical Bridge, with a rising sun">
+        </div>
+      </div>
+    </div>
+    
+  </section>
+
+  
+  <section id="s-what">
+    <div class="frame center grow">
+      <h2>What <i>is</i> CAISH?</h2>
+      <p class="org-line fragment">An AI safety <em>fieldbuilding</em> organization</p>
+      <div class="formats">
+        <div class="fragment">Reading groups</div>
+        <div class="fragment">Discussion groups</div>
+        <div class="fragment">Writing groups</div>
+        <div class="fragment">Hackathons</div>
+        <div class="fragment">Retreats</div>
+        <div class="fragment">Two-week intensives</div>
+        <div class="fragment">Weekly socials</div>
+        <div class="fragment"><span class="morph" data-to="Evenings like this one"><span class="tt">Talks</span><span class="caret"></span></span></div>
+      </div>
+      <span class="fragment morph-go"></span>
+    </div>
+    
+  </section>
+
+  
+  <section id="s-freshers">
+    <div class="frame center fresh">
+      <div class="fresh-text">
+        <h2><i>Why</i> is CAISH?</h2>
+      </div>
+      <img class="fresh-a fragment" src="../../assets/freshers-fair-2026-a-web.jpg" alt="A CAISH committee member at Freshers Fair pointing at the board">
+      <div class="fresh-b fragment">
+        <img src="../../assets/freshers-fair-2026-b-web.jpg" alt="The board: How big of a deal is AI? Pins on a two-by-two grid">
+        <div class="hi fragment"></div>
+      </div>
+    </div>
+    
+  </section>
+
+  
+  <section id="s-why">
+    <div class="frame center">
+      <div class="why">
+        <div class="quad">
+          <svg viewBox="0 0 720 640" role="img" aria-label="The board's two axes. Left to right: AI is just a tool, AI transforms civilization. Bottom to top: manageable, existential. CAISH is in the upper right.">
+            <rect x="80" y="70" width="276" height="246" rx="6" fill="var(--quad)" stroke="var(--rule)" stroke-width="2"/>
+            <rect x="80" y="324" width="276" height="246" rx="6" fill="var(--quad)" stroke="var(--rule)" stroke-width="2"/>
+            <rect x="364" y="324" width="276" height="246" rx="6" fill="var(--quad)" stroke="var(--rule)" stroke-width="2"/>
+            <rect class="hi" x="364" y="70" width="276" height="246" rx="6" fill="var(--quad-hi)" stroke="var(--accent)" stroke-width="3"/>
+            <text class="us" x="502" y="212" text-anchor="middle">us</text>
+            <text x="360" y="44" text-anchor="middle">Existential</text>
+            <text x="360" y="616" text-anchor="middle">Manageable</text>
+            <text transform="translate(46 320) rotate(-90)" text-anchor="middle">AI is just a tool</text>
+            <text transform="translate(674 320) rotate(90)" text-anchor="middle">AI transforms civilization</text>
+          </svg>
+        </div>
+        <div class="why-text">
+          <p class="lede fragment">We’re upper-right quadrant people.</p>
+        </div>
+      </div>
+    </div>
+    
+  </section>
+
+  
+  <section id="s-who">
+    <div class="frame center pause">
+      <h2>That’s CAISH.</h2>
+      <h2 class="fragment"><span class="typed" data-text="Who am I?"><span class="tt"></span><span class="caret"></span></span></h2>
+    </div>
+    
+  </section>
+
+  
+  <section id="s-life">
+    <div class="frame center">
+      <div class="life">
+        <div class="life-left">
+          <h2 class="life-h">Past life</h2>
+          <dl>
+            <dt class="fragment" data-fragment-index="0">Undergrad</dt><dd class="fragment" data-fragment-index="0">Philosophy and psychology</dd>
+            <dt class="fragment" data-fragment-index="2">Then</dt><dd class="fragment" data-fragment-index="2">Taught English in Peru</dd>
+            <dt class="fragment" data-fragment-index="4">PhD</dt>
+            <dd class="fragment" data-fragment-index="4">Political Science
+              <ul>
+                <li class="fragment" data-fragment-index="5">Urban–rural differences in ideology</li>
+                <li class="fragment" data-fragment-index="6">Immigration and public opinion</li>
+                <li class="fragment" data-fragment-index="7">Audited Yann LeCun’s deep learning class at NYU</li>
+                <li class="fragment" data-fragment-index="8">Told people to use o3-mini instead of 4o to solve their econometrics homework</li>
+                <li class="fragment" data-fragment-index="9">Didn’t want to end up at Western North Dakota Technical College (Southeast Campus)</li>
+              </ul>
+            </dd>
+            <dt class="fragment" data-fragment-index="10">ABD</dt>
+            <dd class="fragment" data-fragment-index="10">Used my ABD time to upskill in AI safety
+              <ul>
+                <li class="fragment" data-fragment-index="11">Took a BlueDot course</li>
+                <li class="fragment" data-fragment-index="12">Led a BlueDot reading group</li>
+                <li class="fragment" data-fragment-index="13"><span class="typed" data-text="Saw a job posting"><span class="tt"></span><span class="caret"></span></span></li>
+              </ul>
+            </dd>
+          </dl>
+        </div>
+        <div class="photos">
+          <img class="jfk fragment" data-fragment-index="3" src="../../assets/me-jfk.JPG" alt="Justin at JFK airport, a suitcase on his head">
+          <img class="viz fragment" data-fragment-index="6" src="../../assets/dataviz-dissertation.png" alt="Dissertation chart: change in immigration opposition, Obama's first to second term and Obama to Trump">
+        </div>
+      </div>
+    </div>
+    
+  </section>
+
+  
+  <section id="s-posting">
+    <div class="frame center">
+      <h1 class="posting-title"><span class="typed arrive" data-text="Co-Director,|Cambridge AI Safety Hub"><span class="tt"></span><span class="caret"></span></span></h1>
+    </div>
+    
+  </section>
+
+  
+  <section id="s-bet" data-ruler="2025-10" data-ruler-start data-ruler-at="3">
+    <div class="frame center bet">
+      <div class="bet-text fragment fade-out cut" data-fragment-index="3">
+        <h1><span class="core"><span class="ago fragment fade-out" data-fragment-index="0">A year ago</span>I made a bet</span><span class="cont fragment" data-fragment-index="0"> that AI&nbsp;safety would be a good career&nbsp;move</span></h1>
+        <p class="sub fragment" data-fragment-index="1">It was the first time I had been truly strategic about my career.</p>
+        <p class="sub fragment" data-fragment-index="2">Here’s what’s happened since.</p>
+      </div>
+    </div>
+    
+  </section>
+
+</div></div>
+
+<div id="ruler"><div class="inner"></div></div>
+<div id="dark"></div>
+<div id="ambient"></div>
+<div id="hint">→ next · ← back · T glow/paper · S speaker view · F full screen</div>
+
+<script src="../../vendor/reveal/reveal.js"></script>
+<script src="../../vendor/reveal/plugin/notes/notes.js"></script>
+<script>
+/* ---------- year ruler ---------- */
+var MONTHS = ['2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'];
+var LETTERS = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+var ruler = document.getElementById('ruler'), rin = ruler.querySelector('.inner');
+var X0 = 200, X1 = 1720;
+function mx(i) { return X0 + (X1 - X0) * i / (MONTHS.length - 1); }
+(function build() {
+  var h = '<div class="track"></div><div class="past"></div>';
+  MONTHS.forEach(function (m, i) {
+    h += '<div class="tick" style="left:' + mx(i) + 'px"></div>';
+    h += '<div class="m" data-i="' + i + '" style="left:' + mx(i) + 'px">' + LETTERS[i] + '</div>';
+  });
+  h += '<div class="y" style="left:' + mx(0) + 'px">2025</div><div class="y" style="left:' + mx(3) + 'px">2026</div>';
+  h += '<div class="start" style="left:' + mx(0) + 'px"></div><div class="start-label" style="left:' + (mx(0) + 18) + 'px">I start at CAISH</div>';
+  h += '<div class="now-caret"></div>';
+  rin.innerHTML = h;
+})();
+function placeRuler() {
+  var k = Math.min(innerWidth / 1920, innerHeight / 1080);
+  var ox = (innerWidth - 1920 * k) / 2, oy = (innerHeight - 1080 * k) / 2;
+  rin.style.transform = 'translate(' + ox + 'px,' + (oy + (1080 - 150) * k) + 'px) scale(' + k + ')';
+  ruler.style.height = innerHeight + 'px'; ruler.style.top = 0;
+}
+addEventListener('resize', placeRuler); placeRuler();
+function setRuler(month) {
+  if (!month) { ruler.classList.remove('on'); return; }
+  ruler.classList.add('on');
+  var i = MONTHS.indexOf(month);
+  rin.querySelector('.now-caret').style.left = mx(i) + 'px';
+  rin.querySelector('.past').style.width = (mx(i) - mx(0)) + 'px';
+  rin.querySelectorAll('.m').forEach(function (el) {
+    var j = +el.dataset.i;
+    el.classList.toggle('done', j < i); el.classList.toggle('now', j === i);
+  });
+}
+
+/* ---------- theme ---------- */
+try { if (localStorage.getItem('howard-theme') === 'paper') document.body.classList.add('paper'); } catch (e) {}
+if (/[?&]theme=paper/.test(location.search)) document.body.classList.add('paper');
+
+/* ---------- deck ---------- */
+var STATIC = /[?&]static/.test(location.search);   // for screenshots: no transitions
+if (STATIC) document.documentElement.classList.add('static');
+/* "Anthropic" in Anthropic's orange wherever it appears on a slide (never in the notes). Runs after charts are drawn. */
+(function () {
+  document.querySelectorAll('.slides section').forEach(function (sec) {
+    var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+      return /Anthropic/.test(n.nodeValue) && !n.parentNode.closest('aside.notes') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; } });
+    var list = []; while (w.nextNode()) list.push(w.currentNode);
+    list.forEach(function (n) {
+      var svg = n.parentNode instanceof SVGElement, f = document.createDocumentFragment();
+      n.nodeValue.split(/(Anthropic)/).forEach(function (p) {
+        if (!p) return;
+        if (p !== 'Anthropic') { f.appendChild(document.createTextNode(p)); return; }
+        var s = svg ? document.createElementNS('http://www.w3.org/2000/svg', 'tspan') : document.createElement('span');
+        s.setAttribute('class', 'anth'); s.textContent = p; f.appendChild(s);
+      });
+      n.parentNode.replaceChild(f, n);
+    });
+  });
+})();
+
+Reveal.initialize({
+  width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 4,
+  center: false, controls: false, progress: false, hash: true, history: false,
+  transition: 'none', transitionSpeed: 'default', backgroundTransition: 'none',
+  postMessage: false,            // the walk-in iframe's key forwarding is routed through handoff() below
+  plugins: [ RevealNotes ],
+  keyboard: { 84: function () {  // T: glow / paper
+    document.body.classList.toggle('paper');
+    try { localStorage.setItem('howard-theme', document.body.classList.contains('paper') ? 'paper' : 'glow'); } catch (e) {}
+  } }
+});
+
+/* Walk-in → first slide. "Next" on the walk-in slide asks the field to type the question,
+   waits for it to finish, then advances with the lights coming up. A second press skips the wait. */
+var handing = false, wasAway = false;
+function openingIframe() { var bg = Reveal.getSlideBackground(0); return bg && bg.querySelector('iframe'); }
+function advanceFromOpening() {
+  handing = false;
+  var d = document.getElementById('dark'); d.classList.add('on');
+  Reveal.next();
+  requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.remove('on'); }); });
+}
+function handoff() {
+  if (handing) { advanceFromOpening(); return; }
+  var f = openingIframe();
+  if (!f || !f.contentWindow) { advanceFromOpening(); return; }
+  handing = true;
+  f.contentWindow.postMessage({ caish: 'handoff', text: "What's CAISH?", holdMs: 2600 }, '*');   // the question lingers in the field (Justin, 14 Oct)
+  setTimeout(function () { if (handing) advanceFromOpening(); }, 9000);   // never strand the speaker
+}
+function onOpening() { return Reveal.getIndices().h === 0; }
+addEventListener('keydown', function (e) {
+  if (!onOpening()) return;
+  if (['ArrowRight','ArrowDown','PageDown',' ','Enter','n','N'].indexOf(e.key) < 0) return;
+  e.preventDefault(); e.stopImmediatePropagation(); handoff();
+}, true);
+addEventListener('message', function (e) {
+  var m = e.data; if (typeof m === 'string') { try { m = JSON.parse(m); } catch (err) { return; } }
+  if (!m) return;
+  if (m.caish === 'handoff-done' && handing) { advanceFromOpening(); return; }
+  if (m.method === 'next') { if (onOpening()) handoff(); else Reveal.next(); }
+  if (m.method === 'prev') Reveal.prev();
+});
+
+function sync() {
+  var s = Reveal.getCurrentSlide();
+  var rulerOn = s && s.dataset.ruler;
+  if (rulerOn && s.dataset.rulerAt !== undefined) {   // the bet slide: the ruler comes up only on its last click
+    var f = Reveal.getIndices().f; if (!(f >= +s.dataset.rulerAt)) rulerOn = null;
+  }
+  setRuler(rulerOn); ruler.classList.toggle('first', !!(s && s.hasAttribute('data-ruler-start')));
+  document.body.classList.toggle('on-opening', onOpening());
+  if (onOpening()) {
+    if (handing || wasAway) { var f = openingIframe(); if (f && f.contentWindow) f.contentWindow.postMessage({ caish: 'resume' }, '*'); }
+    handing = false; wasAway = false;
+  } else wasAway = true;
+}
+Reveal.on('ready', sync); Reveal.on('slidechanged', sync);
+Reveal.on('fragmentshown', sync); Reveal.on('fragmenthidden', sync);
+
+/* ---------- typed lines and the "Talks" retype: the walk-in's insertion point, carried through the intro ----------
+   .typed[data-text]: types its text when its click comes ("|" = line break); .typed.arrive types on slide arrival.
+   .morph[data-to] + a .morph-go fragment: the word is selected, then typed over. Going back resets them;
+   arriving at a state by any other route (back, ?s=…) shows it finished, without animation. */
+function typedVisible(el) {
+  var sec = el.closest('section'); if (sec !== Reveal.getCurrentSlide()) return false;
+  var fr = el.closest('.fragment'); return !fr || fr.classList.contains('visible');
+}
+function writeTyped(el, n) {
+  var t = el.dataset.text.slice(0, n), tt = el.querySelector('.tt');
+  tt.innerHTML = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\|/g, '<br>');
+}
+function typeOut(el) {
+  var tok = el._tok = (el._tok || 0) + 1, text = el.dataset.text, i = 0;
+  el.classList.remove('rest'); el._state = 'typing';
+  (function step() {
+    if (el._tok !== tok) return;
+    writeTyped(el, ++i);
+    if (i >= text.length) { el._state = 'done'; return; }
+    var c = text.charAt(i - 1), d = 60 + Math.random() * 70;
+    if (c === ' ') d *= 1.35; if (c === ',' || c === '|') d *= 3;
+    setTimeout(step, d);
+  })();
+}
+function morphTo(el, animate) {
+  var tok = el._tok = (el._tok || 0) + 1, tt = el.querySelector('.tt'), to = el.dataset.to;
+  el._state = 'done';
+  if (!animate) { tt.textContent = to; el.className = 'morph on done rest'; return; }
+  tt.innerHTML = '<span class="hl">Talks</span>'; el.className = 'morph';
+  setTimeout(function () {
+    if (el._tok !== tok) return;
+    tt.textContent = ''; el.className = 'morph on typing'; var i = 0;
+    (function step() {
+      if (el._tok !== tok) return;
+      tt.textContent = to.slice(0, ++i);
+      if (i >= to.length) { el.className = 'morph on done'; setTimeout(function () { if (el._tok === tok) el.classList.add('rest'); }, 3400); return; }
+      setTimeout(step, 55 + Math.random() * 60);
+    })();
+  }, 650);
+}
+function morphReset(el) { el._tok = (el._tok || 0) + 1; el._state = null; el.querySelector('.tt').textContent = 'Talks'; el.className = 'morph'; }
+function syncTyped(animateIn) {
+  document.querySelectorAll('.typed').forEach(function (el) {
+    var vis = typedVisible(el);
+    if (!vis) { el._tok = (el._tok || 0) + 1; el._state = null; writeTyped(el, 0); return; }
+    if (el._state) return;
+    if (!STATIC && animateIn && animateIn(el)) typeOut(el);
+    else { el._state = 'done'; writeTyped(el, el.dataset.text.length); }
+  });
+  document.querySelectorAll('.morph').forEach(function (el) {
+    var go = el.closest('section').querySelector('.morph-go');
+    if (!(go.classList.contains('visible') && el.closest('section') === Reveal.getCurrentSlide())) { if (el._state) morphReset(el); return; }
+    if (el._state) return;
+    morphTo(el, !STATIC && animateIn && animateIn(go));
+  });
+}
+var lastH = 0;
+Reveal.on('ready', function () { syncTyped(); });
+Reveal.on('slidechanged', function (e) {
+  var fwd = e.indexh === lastH + 1; lastH = e.indexh;
+  syncTyped(function (el) { return fwd && el.classList.contains('arrive'); });
+});
+Reveal.on('fragmentshown', function (e) {
+  var shown = e.fragments || [e.fragment];
+  syncTyped(function (el) { return shown.some(function (f) { return f === el || f.contains(el); }); });
+});
+Reveal.on('fragmenthidden', function () { syncTyped(); });
+
+/* ---------- the bet slide (Justin, 15 Oct: "I made a bet" must not jump around; one click swaps "A year ago" for the continuation) ----------
+   The whole sentence is laid out from the start (the continuation is only transparent) and "A year ago" sits on the line
+   above, outside the flow, so "I made a bet" never moves while "A year ago" leaves and the sentence continues. The block
+   is centred on "A year ago" + the sentence; it glides up only when the smaller sub-lines arrive. */
+function centreBet() {
+  var bt = document.querySelector('#s-bet .bet-text'); if (!bt) return;
+  var k = Reveal.getScale() || 1, B = bt.getBoundingClientRect();
+  function box(els) {
+    var L = Infinity, R = -Infinity, T = Infinity, Bo = -Infinity;
+    els.forEach(function (el) { Array.prototype.forEach.call(el.getClientRects(), function (r) {
+      if (!r.width) return;
+      L = Math.min(L, (r.left - B.left) / k); R = Math.max(R, (r.right - B.left) / k);
+      T = Math.min(T, (r.top - B.top) / k); Bo = Math.max(Bo, (r.bottom - B.top) / k);
+    }); });
+    return { L: L, R: R, T: T, B: Bo };
+  }
+  var ago = bt.querySelector('.ago'), core = bt.querySelector('.core'), cont = bt.querySelector('.cont');
+  var h = box([core, cont]);
+  var subs = Array.prototype.filter.call(bt.querySelectorAll('.sub'), function (el) { return el.classList.contains('visible'); });
+  var v = box([ago, core, cont].concat(subs));   /* the "A year ago" line stays reserved, so its leaving moves nothing */
+  var dx = 960 - (bt.offsetLeft + (h.L + h.R) / 2), dy = 540 - (bt.offsetTop + (v.T + v.B) / 2);
+  bt.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+}
+/* ---------- grow from the centre (Justin's rule: start centred, move up as later clicks add material) ----------
+   On a .frame.grow, what is visible is kept centred vertically: hidden fragments keep their place in the layout,
+   and the frame glides up as they appear. */
+function centreGrow() {
+  var k = Reveal.getScale() || 1;
+  document.querySelectorAll('.frame.grow').forEach(function (fr) {
+    if (!fr.closest('section').classList.contains('present')) return;
+    var F = fr.getBoundingClientRect(), T = Infinity, B = -Infinity;
+    function add(el, r) {
+      var f = el.closest('.fragment'); if (f && !f.classList.contains('visible')) return;
+      if (el.closest('.fragment:not(.visible)') || !r.height) return;
+      T = Math.min(T, (r.top - F.top) / k); B = Math.max(B, (r.bottom - F.top) / k);
+    }
+    var w = document.createTreeWalker(fr, NodeFilter.SHOW_TEXT), n, rg = document.createRange();   // text and images only
+    while ((n = w.nextNode())) { if (!n.nodeValue.trim()) continue; rg.selectNodeContents(n); add(n.parentElement, rg.getBoundingClientRect()); }
+    fr.querySelectorAll('img').forEach(function (im) { add(im, im.getBoundingClientRect()); });
+    if (T === Infinity) return;
+    fr.style.transform = 'translateY(' + (540 - (T + B) / 2) + 'px)';
+  });
+}
+['ready', 'slidechanged', 'fragmentshown', 'fragmenthidden', 'resize'].forEach(function (ev) { Reveal.on(ev, centreBet); Reveal.on(ev, centreGrow); });
+if (document.fonts) document.fonts.ready.then(centreGrow);
+if (document.fonts) document.fonts.ready.then(centreBet);   /* measure with the real font, not the fallback */
+/* Screenshot helper: ?static&s=H&f=N opens slide H with fragments up to N shown (-1 = arrival). */
+var QS = new URLSearchParams(location.search);
+if (QS.has('s')) Reveal.on('ready', function () { Reveal.slide(+QS.get('s'), 0, QS.has('f') ? +QS.get('f') : -1); });
+</script>
+</body>
+</html>

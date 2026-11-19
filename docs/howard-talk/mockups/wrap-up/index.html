@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap-up</title>
+<link rel="stylesheet" href="../../vendor/reveal/reset.css">
+<link rel="stylesheet" href="../../vendor/reveal/reveal.css">
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+/* Same tokens as the other beat decks: "glow" by default, T for caish.org "paper". */
+:root {
+  --paper: #050508;
+  --ink: #f2f1f6;
+  --graphite: rgba(235, 235, 245, 0.66);
+  --accent: #c9a6ff;
+  --accent-grad: linear-gradient(90deg, #ffb061, #ff6778 25%, #f58fde 50%, #bc82f3 75%, #8d9fff);
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --mono: 'Space Mono', ui-monospace, Menlo, monospace;
+}
+body.paper { --paper: #fbfbfa; --ink: #1a1a1a; --graphite: #4a4a4a; --accent: #945947; --accent-grad: linear-gradient(90deg, #945947, #945947); }
+html, body { background: var(--paper); }
+.reveal { font-family: var(--mono); color: var(--ink); font-size: 32px; line-height: 1.5; }
+.reveal .slides { text-align: left; }
+.reveal .slides section { width: 1920px; height: 1080px; padding: 0; box-sizing: border-box; }
+.reveal .slide-background { background: var(--paper); }
+.bloom { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 38% at 18% 112%, rgba(255, 103, 120, 0.13), transparent 70%),
+              radial-gradient(55% 40% at 82% 115%, rgba(141, 159, 255, 0.15), transparent 70%),
+              radial-gradient(40% 30% at 50% 120%, rgba(188, 130, 243, 0.12), transparent 70%); }
+body.paper .bloom { display: none; }
+.static *, .static *::before, .static *::after { transition: none !important; animation: none !important; }
+.sg { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .sg { filter: drop-shadow(0 0 14px rgba(245, 143, 222, 0.45)); }
+
+/* "Seems bleak" → "But": one word-line at a time, in the same place */
+.word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 140px; color: var(--ink); transition: opacity 0.5s; }
+.act-but .w1 { opacity: 0; }
+.w2 { opacity: 0; } .act-but .w2 { opacity: 1; }
+
+/* The pile: each picture lands on top of the last, a little off-centre */
+.pile { position: absolute; inset: 0; }
+.pile img { position: absolute; left: 50%; top: 50%; max-width: 1240px; max-height: 760px;
+  border-radius: 10px; box-shadow: 0 18px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy) + 24px)) rotate(var(--r));
+  opacity: 0; transition: opacity 0.45s, transform 0.45s; }
+.pile img.shown { opacity: 1; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--r)); }
+.pile img.portrait { max-height: 820px; }
+
+/* the last click on the pile fades everything to black */
+.pile, .pile ~ .bloom { transition: opacity 1.4s ease; }
+.act-fade .pile, .act-fade .bloom { opacity: 0; }
+.andnow { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 120px; color: var(--ink); }
+/* Hand-off */
+.hand { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 170px; }
+.hand .k { font-size: 30px; color: var(--accent); margin-bottom: 22px; }
+.hand .n { font-family: var(--serif); font-size: 120px; line-height: 1.1; }
+.hand .o { font-family: var(--serif); font-size: 64px; color: var(--graphite); margin-top: 18px; }
+.hand .fragment { transition: opacity 0.5s; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="word w1">Seems bleak.</div>
+  <div class="word w2">But</div>
+  <span class="fragment" data-act="but"></span>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="pile">
+    <img data-step="0" src="../../assets/wrap-ai-2040.png" alt="AI 2040" style="--dx:-120px;--dy:-40px;--r:-2.5deg">
+    <img data-step="1" src="../../assets/wrap-pacing-the-frontier.png" alt="Pacing the Frontier" style="--dx:-60px;--dy:30px;--r:-1deg">
+    <img data-step="2" src="../../assets/wrap-coxon.png" alt="Coxon" style="--dx:80px;--dy:10px;--r:1.5deg">
+    <img data-step="3" class="portrait" src="../../assets/wrap-lab-quitters.png" alt="Lab quitters" style="--dx:-90px;--dy:0px;--r:-2deg">
+    <img data-step="4" src="../../assets/hobbhahn-senate.jpg" alt="Marius Hobbhahn in the Senate" style="--dx:120px;--dy:-30px;--r:2.5deg">
+    <img data-step="5" src="../../assets/painter-hawley-senate.png" alt="Chris Painter in the Senate" style="--dx:-110px;--dy:40px;--r:-1.5deg">
+    <img data-step="6" class="portrait" src="../../assets/wrap-sana.png" alt="Sana Shams" style="--dx:60px;--dy:-10px;--r:1deg">
+    <img data-step="7" src="../../assets/wrap-gaurav.jpeg" alt="Gaurav" style="--dx:0px;--dy:0px;--r:0deg">
+  </div>
+  <span class="fragment"></span><span class="fragment"></span><span class="fragment"></span><span class="fragment"></span>
+  <span class="fragment"></span><span class="fragment"></span><span class="fragment"></span>
+  <span class="fragment" data-act="fade"></span>
+  
+</section>
+
+
+<section data-blank>
+  
+</section>
+
+
+<section>
+  <div class="andnow">And now …</div>
+  
+</section>
+
+
+<section data-blank>
+  
+</section>
+
+</div></div>
+
+<script src="../../vendor/reveal/reveal.js"></script>
+<script src="../../vendor/reveal/plugin/notes/notes.js"></script>
+<script>
+var STATIC = /[?&]static/.test(location.search);
+if (STATIC) document.documentElement.classList.add('static');
+try { if (localStorage.getItem('howard-theme') === 'paper') document.body.classList.add('paper'); } catch (e) {}
+document.querySelectorAll('.pile img').forEach(function (im) {
+  im.addEventListener('error', function () { console.error('Wrap-up image missing:', im.getAttribute('src')); });
+});
+
+Reveal.initialize({
+  width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 4,
+  center: false, controls: false, progress: false, hash: true, history: false,
+  transition: 'none', backgroundTransition: 'none',
+  plugins: [ RevealNotes ],
+  keyboard: { 84: function () {   // T: glow / paper
+    document.body.classList.toggle('paper');
+    try { localStorage.setItem('howard-theme', document.body.classList.contains('paper') ? 'paper' : 'glow'); } catch (e) {}
+  } }
+});
+
+/* Fragments with data-act="x" set class act-x on their slide. The pile shows picture 0 on arrival and one more per fragment. */
+function sync() {
+  var sec = Reveal.getCurrentSlide(); if (!sec) return;
+  sec.querySelectorAll('.fragment[data-act]').forEach(function (f) { sec.classList.toggle('act-' + f.dataset.act, f.classList.contains('visible')); });
+  var pile = sec.querySelector('.pile');
+  if (pile) {
+    var n = sec.querySelectorAll('.fragment.visible:not([data-act])').length;
+    pile.querySelectorAll('img').forEach(function (im) { im.classList.toggle('shown', +im.dataset.step <= n); });
+  }
+}
+Reveal.on('ready', sync); Reveal.on('slidechanged', sync);
+Reveal.on('fragmentshown', sync); Reveal.on('fragmenthidden', sync);
+
+/* Screenshot helper: ?static&s=H&f=N opens slide H with fragments up to N shown. */
+var QS = new URLSearchParams(location.search);
+if (QS.has('s')) Reveal.on('ready', function () { Reveal.slide(+QS.get('s'), 0, QS.has('f') ? +QS.get('f') : -1); sync(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Howard talk</title>
+<style>
+/* The whole talk: every beat deck runs unchanged in its own frame; the shell moves from one to the next.
+   Keys (also from a clicker): → Space PageDown N = next, ← PageUp P = back; at a deck's end "next" opens the
+   next deck at its start, at a deck's start "back" opens the previous deck at its end.
+   T glow/paper (all decks), F full screen, S speaker notes window, L list of beats, [ / ] previous / next beat. */
+html, body { margin: 0; height: 100%; background: #050508; overflow: hidden; }
+body.paper { background: #fbfbfa; }
+iframe { position: fixed; inset: 0; width: 100vw; height: 100vh; border: 0; visibility: hidden; }
+iframe.on { visibility: visible; }
+#list { position: fixed; inset: 0; display: none; background: rgba(5, 5, 8, 0.94); color: #f2f1f6; z-index: 10;
+  font: 28px/1.6 'Space Mono', ui-monospace, Menlo, monospace; padding: 80px 120px; box-sizing: border-box; }
+#list.open { display: block; }
+#list div { cursor: pointer; } #list div:hover, #list div.cur { color: #c9a6ff; }
+#err { position: fixed; left: 20px; bottom: 20px; z-index: 11; color: #ff6778; font: 18px/1.4 ui-monospace, Menlo, monospace; white-space: pre; }
+</style>
+</head>
+<body>
+<div id="list"></div>
+<div id="err"></div>
+<script>
+/* Talk order. Beats 07 (Coxon and Pacing) and 09 (self-regulation, Senate hearing) have no deck yet. */
+var DECKS = [
+  ['intro', 'Walk-in, CAISH, past life, the bet'],
+  ['ai-bubble', 'Oct 2025 · The AI bubble'],
+  ['trump-h200', 'Dec 2025 · Chips and state laws'],
+  ['mythos', 'Apr 2026 · Claude Mythos Preview'],
+  ['rsi', 'Jun 2026 · Recursive self-improvement'],
+  ['hugging-face', 'Jul 2026 · OpenAI agents and Hugging Face'],
+  ['torment-nexus', 'Sep 2026 · Thinking off the page'],
+  ['wrap-up', 'Seems bleak → the pile → black → And now … → black'],
+  ['caish-a', "What's on at CAISH"]
+];
+
+var frames = [], cur = -1, notesWin = null;
+var NEXT = { 39: 1, 32: 1, 34: 1, 78: 1, 40: 1 }, PREV = { 37: 1, 33: 1, 80: 1, 38: 1 };
+
+function fail(msg) { console.error(msg); document.getElementById('err').textContent += msg + '\n'; }
+function R(i) { var f = frames[i]; return f && f.contentWindow && f.contentWindow.Reveal; }
+function ready(i) { var r = R(i); return !!(r && r.isReady && r.isReady()); }
+function atEnd(r) { return r.isLastSlide() && !r.availableFragments().next; }
+function atStart(r) { return r.isFirstSlide() && !r.availableFragments().prev; }
+
+function show(i, fromEnd) {
+  if (i < 0 || i >= DECKS.length) return;
+  if (!ready(i)) { fail('Deck not ready yet: ' + DECKS[i][0]); return; }
+  var r = R(i);
+  if (fromEnd) r.slide(r.getTotalSlides() - 1, 0, 999); else r.slide(0, 0, -1);
+  frames.forEach(function (f, j) { f.classList.toggle('on', j === i); });
+  cur = i;
+  r.layout();
+  frames[i].contentWindow.focus();
+  if (!fromEnd && frames[i].contentWindow.replayBeatStart) frames[i].contentWindow.replayBeatStart();   // the ruler caret glides in from the previous beat's month
+  try { history.replaceState(null, '', '#' + DECKS[i][0]); } catch (e) {}
+  renderList(); updateNotes();
+}
+function next() { var r = R(cur); if (!r) return; if (atEnd(r)) show(cur + 1, false); else r.next(); updateNotes(); }
+function prev() { var r = R(cur); if (!r) return; if (atStart(r)) show(cur - 1, true); else r.prev(); updateNotes(); }
+
+function toggleTheme() {
+  var paper = !document.body.classList.contains('paper');
+  document.body.classList.toggle('paper', paper);
+  try { localStorage.setItem('howard-theme', paper ? 'paper' : 'glow'); } catch (e) {}
+  frames.forEach(function (f) { try { f.contentDocument.body.classList.toggle('paper', paper); } catch (e) {} });
+}
+function fullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(function (e) { fail('Full screen refused: ' + e.message); });
+}
+function renderList() {
+  var l = document.getElementById('list');
+  l.innerHTML = DECKS.map(function (d, i) { return '<div data-i="' + i + '" class="' + (i === cur ? 'cur' : '') + '">' + (i + 1) + '. ' + d[1] + '</div>'; }).join('');
+}
+document.getElementById('list').addEventListener('click', function (e) {
+  var i = e.target.dataset && e.target.dataset.i; if (i === undefined) return;
+  this.classList.remove('open'); show(+i, false);
+});
+
+/* One key handler for the shell and for every frame (capture phase, so the deck's own handler never sees these keys). */
+function onKey(e) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  var k = e.keyCode, handled = true;
+  var list = document.getElementById('list');
+  if (list.classList.contains('open') && k === 27) list.classList.remove('open');
+  else if (NEXT[k]) next();
+  else if (PREV[k]) prev();
+  else if (k === 84) toggleTheme();                 // T
+  else if (k === 70) fullscreen();                  // F
+  else if (k === 83) { /* no speaker notes in the public copy */ }
+  else if (k === 76) list.classList.toggle('open'); // L
+  else if (k === 221) show(cur + 1, false);         // ]
+  else if (k === 219) show(cur - 1, false);         // [
+  else handled = false;                              // e.g. B / . (black screen) go to the deck
+  if (handled) { e.preventDefault(); e.stopImmediatePropagation(); }
+}
+window.addEventListener('keydown', onKey, true);
+
+/* Speaker notes: the current slide's notes, where you are, and what comes next. */
+function openNotes() {
+  if (notesWin && !notesWin.closed) { notesWin.focus(); return; }
+  notesWin = window.open('', 'howard-notes', 'width=1100,height=800');
+  if (!notesWin) { fail('Notes window blocked by the browser: allow pop-ups for this page.'); return; }
+  notesWin.document.write('<!doctype html><title>Notes · Howard talk</title><style>body{background:#111;color:#eee;font:24px/1.5 Georgia,serif;margin:30px}#top{font:20px/1.4 Menlo,monospace;color:#c9a6ff;display:flex;justify-content:space-between}#nx{font:18px/1.4 Menlo,monospace;color:#999;margin-top:24px;border-top:1px solid #333;padding-top:12px}#clock{color:#fff}</style><div id="top"><span id="where"></span><span id="clock"></span></div><div id="notes"></div><div id="nx"></div>');
+  notesWin.document.close();
+  notesWin.addEventListener('keydown', onKey, true);
+  notesWin.START = Date.now();
+  notesWin.setInterval(function () {
+    var s = Math.floor((Date.now() - notesWin.START) / 1000);
+    notesWin.document.getElementById('clock').textContent = new Date().toTimeString().slice(0, 5) + '  ·  ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + ' elapsed';
+  }, 1000);
+  updateNotes();
+}
+function updateNotes() {
+  if (!notesWin || notesWin.closed || cur < 0) return;
+  var r = R(cur); if (!r) return;
+  var d = notesWin.document, idx = r.getIndices(), total = r.getTotalSlides();
+  var frag = r.availableFragments();
+  d.getElementById('where').textContent = (cur + 1) + '/' + DECKS.length + ' ' + DECKS[cur][1] + '  ·  slide ' + (idx.h + 1) + '/' + total + (frag.next ? '  ·  more clicks on this slide' : '');
+  d.getElementById('notes').innerHTML = r.getSlideNotes() || '<i>(no notes)</i>';
+  var nx;
+  if (frag.next) nx = 'Next: another click on this slide.';
+  else if (idx.h + 1 < total) nx = 'Next: slide ' + (idx.h + 2) + '. ' + ((r.getSlideNotes(r.getSlide(idx.h + 1)) || '').replace(/<[^>]+>/g, '').slice(0, 220) + '…');
+  else nx = cur + 1 < DECKS.length ? 'Next: new beat, ' + DECKS[cur + 1][1] : 'End of the deck.';
+  d.getElementById('nx').textContent = nx;
+}
+
+/* Load every deck at once so that moving between them is a plain cut. */
+try { if (localStorage.getItem('howard-theme') === 'paper') document.body.classList.add('paper'); } catch (e) {}
+var start = Math.max(0, DECKS.findIndex(function (d) { return '#' + d[0] === location.hash; }));
+var loaded = 0;
+DECKS.forEach(function (d, i) {
+  var f = document.createElement('iframe');
+  f.src = '../mockups/' + d[0] + '/index.html';
+  f.title = d[1];
+  f.addEventListener('load', function () {
+    var w = f.contentWindow;
+    if (!w.Reveal) { fail('No Reveal in deck ' + d[0]); return; }
+    w.addEventListener('keydown', onKey, true);
+    ['slidechanged', 'fragmentshown', 'fragmenthidden'].forEach(function (ev) { w.Reveal.on(ev, function () { if (i === cur) updateNotes(); }); });
+    function go() { if (++loaded === DECKS.length || i === start) { if (cur < 0 && ready(start)) show(start, false); } }
+    if (w.Reveal.isReady()) go(); else w.Reveal.on('ready', go);
+    chainRulers();
+  });
+  f.addEventListener('error', function () { fail('Deck failed to load: ' + d[0]); });
+  document.body.appendChild(f);
+  frames.push(f);
+});
+/* Each beat's first slide glides the ruler from the previous deck's last month (data-ruler-from), so the
+   timeline stays continuous whichever decks are in the list (e.g. the quick version skips November). */
+function lastRuler(i) {
+  try { var r = frames[i].contentDocument.querySelectorAll('.slides section[data-ruler]'); return r.length ? r[r.length - 1].dataset.ruler : null; } catch (e) { return null; }
+}
+function chainRulers() {
+  frames.forEach(function (f, i) {
+    if (!i) return;
+    try {
+      var first = f.contentDocument.querySelector('.slides section[data-ruler-from]'), from = lastRuler(i - 1);
+      if (first && from) first.dataset.rulerFrom = from;
+    } catch (e) {}
+  });
+}
+window.addEventListener('hashchange', function () {   // typing #rsi etc. into the address bar jumps there
+  var i = DECKS.findIndex(function (d) { return '#' + d[0] === location.hash; });
+  if (i >= 0 && i !== cur) show(i, false);
+});
+setTimeout(function () { DECKS.forEach(function (d, i) { if (!ready(i)) fail('Deck still not ready after 10 s: ' + d[0]); }); }, 10000);
+renderList();
+</script>
+</body>
+</html>

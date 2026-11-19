@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chips and State Laws</title>
+<link rel="stylesheet" href="../../vendor/reveal/reset.css">
+<link rel="stylesheet" href="../../vendor/reveal/reveal.css">
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+/* Same tokens as mockups/ai-bubble and mockups/emergent-misalignment: "glow" by default, T for caish.org "paper". */
+:root {
+  --paper: #050508;
+  --ink: #f2f1f6;
+  --graphite: rgba(235, 235, 245, 0.66);
+  --faint: rgba(235, 235, 245, 0.34);
+  --accent: #c9a6ff;
+  --accent-grad: linear-gradient(90deg, #ffb061, #ff6778 25%, #f58fde 50%, #bc82f3 75%, #8d9fff);
+  --caret-grad: linear-gradient(180deg, #f5b9ea 0%, #c686ff 48%, #8d9fff 100%);
+  --caret-glow: 0 0 10px rgba(198, 134, 255, 0.85), 0 0 22px rgba(141, 159, 255, 0.45);
+  --rule: rgba(235, 235, 245, 0.16);
+  --grid: rgba(235, 235, 245, 0.09);
+  --card-stroke: rgba(235, 235, 245, 0.2);
+  --card-bg: #0d0d13;
+  --bubble: #15151e;
+  --bubble-stroke: rgba(235, 235, 245, 0.08);
+  --line: #c9a6ff;
+  --line2: rgba(235, 235, 245, 0.5);
+  --thing: #ffb061;
+  --bad: #ff6778;
+  --bad-wash: rgba(255, 103, 120, 0.3);
+  --area-top: rgba(188, 130, 243, 0.32);
+  --c-kw: #8d9fff; --c-fn: #f58fde; --c-num: #ffb061; --c-str: #9fe0b0; --c-com: rgba(235, 235, 245, 0.4);
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --mono: 'Space Mono', ui-monospace, Menlo, monospace;
+}
+body.paper {
+  --paper: #fbfbfa;
+  --ink: #1a1a1a;
+  --graphite: #4a4a4a;
+  --faint: #a49b92;
+  --accent: #945947;
+  --accent-grad: linear-gradient(90deg, #945947, #945947);
+  --caret-grad: linear-gradient(180deg, #945947, #945947);
+  --caret-glow: none;
+  --rule: rgba(148, 89, 71, 0.28);
+  --grid: rgba(26, 26, 26, 0.08);
+  --card-stroke: rgba(26, 26, 26, 0.22);
+  --card-bg: #ffffff;
+  --bubble: #ffffff;
+  --bubble-stroke: rgba(26, 26, 26, 0.12);
+  --line: #945947;
+  --line2: #a49b92;
+  --thing: #a8661c;
+  --bad: #b0413e;
+  --bad-wash: rgba(176, 65, 62, 0.18);
+  --area-top: rgba(148, 89, 71, 0.22);
+  --c-kw: #3d4f9f; --c-fn: #8a3a78; --c-num: #a8661c; --c-str: #2f7a45; --c-com: #a49b92;
+}
+html, body { background: var(--paper); }
+.reveal { font-family: var(--mono); color: var(--ink); font-size: 32px; line-height: 1.5; }
+.reveal .slides { text-align: left; }
+.reveal .slides section { width: 1920px; height: 1080px; padding: 0; box-sizing: border-box; }
+.reveal .slide-background { background: var(--paper); }
+.reveal h1, .reveal h2 { font-family: var(--serif); font-weight: 400; color: var(--ink); margin: 0; letter-spacing: -0.005em; }
+.reveal h2 { font-size: 68px; line-height: 1.15; }
+.reveal em { font-style: italic; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.08em; }
+.reveal b { font-weight: 700; color: var(--ink); }
+:where(.reveal) p { margin: 0; }
+/* Content is centred vertically on its final state: clicks fill space reserved from arrival, so nothing jumps. Only slides that carry the year ruler reserve its 150px at the bottom. */
+.frame { position: absolute; inset: 0; padding: 92px 170px; display: flex; flex-direction: column; justify-content: center; }
+.frame.ruled { padding-bottom: 190px; }
+/* .grow: the block is laid out in its final state (nothing reflows), then shifted so what is shown so far sits in the middle; it glides up as clicks add. */
+.frame.grow { transition: transform 0.6s cubic-bezier(.4,0,.2,1); }
+.month { font-family: var(--mono); font-size: 26px; color: var(--accent); margin-bottom: 18px; }
+.cap { font-size: 27px; color: var(--graphite); margin-top: 16px; }
+.reveal .slides section .fragment { transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal .slides section .fragment.rise { transform: translateY(14px); }
+.reveal .slides section .fragment.rise.visible { transform: none; }
+.gated { opacity: 0; transition: opacity 0.6s; }
+.gated.shown { opacity: 1; }
+.bloom { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 38% at 18% 112%, rgba(255, 103, 120, 0.13), transparent 70%),
+              radial-gradient(55% 40% at 82% 115%, rgba(141, 159, 255, 0.15), transparent 70%),
+              radial-gradient(40% 30% at 50% 120%, rgba(188, 130, 243, 0.12), transparent 70%); }
+body.paper .bloom { display: none; }
+.static *, .static *::before, .static *::after { transition: none !important; animation: none !important; }
+.punch { margin-top: 44px; font-family: var(--serif); font-size: 52px; line-height: 1.2; }
+.punch small { display: block; font-family: var(--mono); font-size: 24px; color: var(--graphite); margin-top: 12px; }
+
+.bub .msg { font-family: var(--serif); font-size: 29px; line-height: 1.38; }
+.bub.think .msg { font-family: var(--mono); font-size: 28px; line-height: 1.5; color: var(--graphite); }
+.hole { display: inline-block; outline: 3px solid var(--bad); outline-offset: 3px; border-radius: 4px; }
+body:not(.paper) .hole { box-shadow: 0 0 26px rgba(255, 103, 120, 0.4); }
+.note { font-size: 23px; color: var(--graphite); margin-top: 18px; line-height: 1.45; }
+/* reasoning that arrives a word at a time, like a model streaming */
+.stream .w { opacity: 0; transition: opacity 0.18s; }
+.stream.shown .w { opacity: 1; }
+.bignum { font-family: var(--serif); font-size: 132px; line-height: 1; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .bignum { filter: drop-shadow(0 0 18px rgba(245, 143, 222, 0.45)); }
+.bigwhat { font-size: 25px; color: var(--graphite); margin-top: 14px; line-height: 1.4; }
+.sg { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .sg { filter: drop-shadow(0 0 14px rgba(245, 143, 222, 0.45)); }
+.reveal h2, .reveal q, .punch, .opener h1 { text-wrap: balance; }
+
+/* ===== 1 · the paper: the beat's opener (month, then who, then the title) ===== */
+.opener .org { font-family: var(--serif); font-size: 46px; color: var(--graphite); margin-top: 6px; }
+.reveal .opener h1 { font-size: 104px; line-height: 1.08; margin-top: 22px; }
+.opener .sub { font-family: var(--serif); font-size: 54px; line-height: 1.2; color: var(--graphite); margin-top: 18px; }
+.opener .sub.qt { margin-top: 44px; max-width: 1000px; text-wrap: balance; }
+
+
+/* ===== shared: quotes, big labels ===== */
+.qb q { display: block; font-family: var(--serif); font-size: 44px; line-height: 1.28; quotes: "\201C" "\201D"; text-wrap: balance; }
+.qb .who { font-size: 23px; color: var(--graphite); margin-top: 12px; }
+.qstack { display: flex; flex-direction: column; gap: 54px; max-width: 1520px; }
+.kick { font-family: var(--mono); font-size: 26px; color: var(--accent); margin-bottom: 18px; }
+.reveal h2 { text-wrap: balance; }
+svg.chart .big { font-family: var(--serif); font-size: 46px; fill: var(--ink); }
+svg.chart .when { fill: var(--graphite); font-size: 23px; }
+/* ===== year ruler (same as mockups/intro; the "now" caret does not blink) ===== */
+#ruler { position: fixed; left: 0; right: 0; bottom: 0; height: 0; pointer-events: none; z-index: 30; opacity: 0; transition: opacity 0.8s; }
+#ruler.on { opacity: 1; }
+#ruler .inner { position: absolute; transform-origin: 0 0; width: 1920px; height: 150px; }
+#ruler .track { position: absolute; left: 170px; right: 170px; top: 52px; height: 1px; background: var(--rule); }
+#ruler .past { position: absolute; left: 200px; top: 51px;   /* starts at the first month (X0), so it ends exactly at the caret */ height: 3px; background: var(--accent-grad); box-shadow: var(--caret-glow); transition: width 1.4s cubic-bezier(.6,0,.2,1); }
+#ruler .m { position: absolute; top: 70px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 22px; color: var(--faint); }
+#ruler .m.done { color: var(--graphite); }
+#ruler .m.now { color: var(--ink); font-weight: 700; }
+#ruler .y { position: absolute; top: 104px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 18px; color: var(--faint); }   /* centred under its month, like the month labels */
+#ruler .tick { position: absolute; top: 46px; width: 1px; height: 13px; background: var(--rule); }
+#ruler .start { position: absolute; top: 44px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: #ffb061; box-shadow: var(--caret-glow); }
+#ruler .start-label { position: absolute; top: 0; font-family: var(--mono); font-size: 20px; color: var(--accent); white-space: nowrap; }
+#ruler .start-label { display: none; } #ruler.first .start-label { display: block; }
+#ruler .now-caret { position: absolute; top: 39px; width: 4px; height: 28px; margin-left: -2px; border-radius: 2px; background: var(--caret-grad); box-shadow: var(--caret-glow); transition: left 1.4s cubic-bezier(.6,0,.2,1); }
+.opener .byline { font-size: 24px; color: var(--graphite); margin-top: 22px; }
+.rsi-hl { transition: color 0.6s; }
+section.act-hlrsi .rsi-hl { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) section.act-hlrsi .rsi-hl { filter: drop-shadow(0 0 12px rgba(245, 143, 222, 0.5)); }
+
+/* ===================== beat 03: H200, Biden's order, the states ===================== */
+.reveal .opener h1.qt { font-size: 74px; line-height: 1.16; max-width: 1500px; quotes: "\201C" "\201D"; }
+.reveal .opener h1.qt::before { content: open-quote; } .reveal .opener h1.qt::after { content: close-quote; }
+.opener .sub.qt::before { content: "\201C"; } .opener .sub.qt::after { content: "\201D"; }
+.dim { transition: opacity 0.6s; }
+
+/* 2 · compute governance, the chips (the quote gives way to the table in the same place; space reserved, nothing jumps) */
+.stk { display: grid; }
+.stk > * { grid-area: 1 / 1; }
+.stk .qgo { align-self: center; max-width: 1500px; transition: opacity 0.6s; }
+.qb .who { font-size: 27px; }
+.chips { max-width: 1580px; }
+.chips .lead2 { font-family: var(--serif); font-size: 44px; line-height: 1.3; text-wrap: balance; margin-bottom: 30px; }
+.chipwrap { display: grid; grid-template-columns: 1100px 1fr; column-gap: 60px; align-items: center; }
+.chip { display: grid; grid-template-columns: 270px 450px 1fr; align-items: baseline; border-top: 1px solid var(--rule); padding: 16px 0 14px; }
+.chip .cn { font-family: var(--serif); font-size: 44px; }
+.chip .cg { font-size: 30px; color: var(--graphite); }
+.chip .cs { display: grid; font-family: var(--serif); font-size: 38px; }
+.chip .cs span { grid-area: 1 / 1; white-space: nowrap; transition: opacity 0.6s; }
+.ban { color: var(--bad); }
+.chip .cs .ok { opacity: 0; }
+section.act-c2 .chip.h200 .cs .ban { opacity: 0; }
+section.act-c2 .chip.h200 .cs .ok { opacity: 1; }
+.chip .cs .ok { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; justify-self: start; }
+section.act-c2 .chip.h200 .cn { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tbl { max-width: 1100px; }
+.qunder { margin-top: 64px; max-width: 1500px; }
+
+/* 4 · Biden's order */
+.reveal h2.title { font-size: 58px; max-width: 1450px; }
+.lead { font-family: var(--serif); font-size: 42px; line-height: 1.3; margin-top: 46px; max-width: 1400px; text-wrap: balance; color: var(--graphite); }
+.lead b { font-weight: 400; color: var(--ink); }
+.nw { white-space: nowrap; }
+.reveal sup { vertical-align: super; font-size: 0.6em; line-height: 0; }
+.req { display: flex; flex-direction: column; gap: 20px; margin-top: 30px; max-width: 1500px; }
+.req .r { display: grid; grid-template-columns: 70px 1fr; align-items: baseline; border-top: 1px solid var(--rule); padding-top: 18px; }
+.req .rn { font-family: var(--mono); font-size: 28px; color: var(--accent); }
+.req .rt { font-family: var(--serif); font-size: 42px; line-height: 1.25; }
+.req .rt small { display: block; font-family: var(--mono); font-size: 32px; color: var(--ink); opacity: 0.78; margin-top: 8px; }
+
+/* 5 · 78 revoked orders */
+.reveal .revA h2 { font-size: 52px; }
+.wall { position: relative; display: grid; grid-auto-flow: column; grid-template-rows: repeat(26, 25px); grid-template-columns: repeat(3, 1fr); column-gap: 40px; margin-top: 30px; }
+.wall .it { font-family: var(--serif); font-size: 17px; line-height: 25px; color: var(--graphite); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity 0.6s, color 0.6s; }
+.wall .it .k { font-family: var(--mono); font-size: 14px; color: var(--faint); margin-right: 8px; }
+section.act-e1 .wall .it { opacity: 0.22; }
+section.act-e1 .wall .it.ai { opacity: 1; color: var(--ink); box-shadow: inset 0 -0.6em 0 rgba(245, 143, 222, 0.32); }
+body.paper section.act-e1 .wall .it.ai { box-shadow: inset 0 -0.6em 0 rgba(148, 89, 71, 0.32); }
+.callout { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: 1180px; padding: 30px 44px 34px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--card-stroke); text-align: left; }
+body:not(.paper) .callout { box-shadow: 0 24px 80px rgba(0, 0, 0, 0.75), 0 0 60px rgba(188, 130, 243, 0.18); }
+.callout .ck { font-size: 24px; color: var(--graphite); }
+.callout .ct { font-family: var(--serif); font-size: 44px; line-height: 1.25; margin-top: 10px; }
+.callout .cof { font-family: var(--serif); font-size: 34px; color: var(--accent); margin-top: 16px; }
+/* 6 · the push to ban state AI laws: dated rows */
+.drows { display: flex; flex-direction: column; gap: 0; margin-top: 30px; max-width: 1580px; }
+.drow { display: grid; grid-template-columns: 330px 1fr; gap: 40px; align-items: baseline; border-top: 1px solid var(--rule); padding: 22px 0 24px; }
+.drow .dd { font-family: var(--mono); font-size: 27px; color: var(--accent); }
+.drow .dt { font-family: var(--serif); font-size: 40px; line-height: 1.28; color: var(--ink); text-wrap: balance; }
+.drow .dt q { quotes: "\201C" "\201D"; }
+.drow .dt small { display: block; font-family: var(--serif); font-size: 34px; line-height: 1.35; color: var(--graphite); margin-top: 12px; text-wrap: wrap; }
+.drow.cont { border-top-color: transparent; padding-top: 0; }
+.drow .dt .w99 { font-size: 52px; }
+
+/* 7 · the same order */
+.oq { display: block; font-family: var(--serif); font-size: 54px; line-height: 1.28; max-width: 1500px; quotes: "\201C" "\201D"; text-wrap: balance; margin-top: 20px; }
+.oq .hlr { transition: box-shadow 0.6s, color 0.6s; }
+.oq-who { font-size: 24px; color: var(--graphite); margin-top: 26px; }
+.oq1 { margin-top: 0; margin-bottom: 64px; }
+.sacks { margin-top: 0; }
+.sacks .sq { font-family: var(--serif); font-size: 50px; line-height: 1.28; max-width: 1500px; }
+.oq.oq1 { font-size: 50px; }
+.sacks .sq .sl { display: block; text-wrap: balance; }
+.sacks .sq .sl + .sl { margin-top: 16px; }
+.oq .hlp { transition: box-shadow 0.6s; }
+section.act-p1 .oq .hlp { box-shadow: inset 0 -0.45em 0 rgba(245, 143, 222, 0.55); }
+body.paper section.act-p1 .oq .hlp { box-shadow: inset 0 -0.45em 0 rgba(148, 89, 71, 0.4); }
+
+/* 8 · the states: shared rows (headers on arrival, one row per click) */
+.st { display: grid; grid-template-columns: 450px 1fr 1fr; column-gap: 40px; margin-top: 56px; max-width: 1580px; }
+.st .h { padding-bottom: 18px; }
+.st .h .sn { font-family: var(--serif); font-size: 46px; line-height: 1.1; }
+.st .h .ss { font-size: 30px; line-height: 1.45; color: var(--graphite); margin-top: 12px; }
+.st .c, .st .l { border-top: 1px solid var(--rule); padding: 20px 0 22px; }
+.st .l { font-family: var(--serif); font-size: 34px; line-height: 1.3; color: var(--ink); }
+.st .c { font-family: var(--serif); font-size: 38px; line-height: 1.2; white-space: nowrap; }
+.st .c.yes { font-size: 46px; line-height: 1; }
+.st .yes { color: #8fd3c7; } body.paper .st .yes { color: #3d7f74; }
+.payoff { font-family: var(--serif); font-size: 52px; line-height: 1.2; margin-top: 44px; }
+
+/* 9 · 2028 */
+.mk { display: flex; flex-direction: column; gap: 34px; margin-top: 54px; max-width: 1500px; }
+.mrow { display: grid; grid-template-columns: 330px 1fr; align-items: center; }
+.mrow .pn { font-family: var(--serif); font-size: 44px; }
+.mrow .tr { position: relative; height: 96px; }
+.mrow .rail { position: absolute; inset: 0; border-radius: 0 8px 8px 0; background: var(--grid); }
+.mrow .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 0 8px 8px 0; transition: width 1.2s cubic-bezier(.5,0,.2,1); }
+.mrow .val { position: absolute; top: 50%; transform: translateY(-50%); font-family: var(--serif); font-size: 60px; white-space: nowrap; opacity: 0; transition: opacity 0.5s 0.9s; }
+section.on.act-b1 .mrow .val { opacity: 1; }
+.mrow.dem .pn, .mrow.dem .val { color: #8d9fff; } .mrow.dem .bar { background: #8d9fff; }
+.mrow.rep .pn, .mrow.rep .val { color: #ff6778; } .mrow.rep .bar { background: #ff6778; }
+body:not(.paper) .mrow.dem .bar { box-shadow: 0 0 30px rgba(141, 159, 255, 0.45); }
+body:not(.paper) .mrow.rep .bar { box-shadow: 0 0 30px rgba(255, 103, 120, 0.35); }
+body.paper .mrow.dem .pn, body.paper .mrow.dem .val { color: #3d4f9f; } body.paper .mrow.dem .bar { background: #3d4f9f; }
+body.paper .mrow.rep .pn, body.paper .mrow.rep .val { color: #b0413e; } body.paper .mrow.rep .bar { background: #b0413e; }
+.mq { font-family: var(--serif); font-size: 50px; line-height: 1.25; margin-top: 56px; color: var(--ink); }
+.mcap { font-size: 27px; color: var(--graphite); margin-top: 14px; }
+.mk .rail { transition: opacity 0.5s; } .mk .mrow .pn { transition: opacity 0.5s; }
+section.mkt:not(.act-b1) .mk .rail, section.mkt:not(.act-b1) .mk .pn { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+
+<section class="beat-start" data-ruler="2025-12" data-ruler-from="2025-11"><div class="bloom"></div>
+  
+</section>
+
+
+
+<section data-ruler="2025-12">
+  <div class="bloom"></div>
+  <div class="frame ruled opener">
+    <div class="month">December 2025</div>
+    <div class="org fragment rise">Donald Trump</div>
+    <h1 class="qt fragment rise">The United States will allow NVIDIA to ship its H200 products to approved customers in&nbsp;China</h1>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame grow">
+    <div class="chips">
+      <div class="lead2">Since October 2022 the US has banned selling China its best AI&nbsp;chips.</div>
+      <div class="tbl">
+        <div class="chip fragment rise" data-fragment-index="0"><div class="cn">Rubin</div><div class="cg">next generation</div><div class="cs"><span class="ban">banned</span></div></div>
+        <div class="chip fragment rise" data-fragment-index="1"><div class="cn">Blackwell</div><div class="cg">current generation</div><div class="cs"><span class="ban">banned</span></div></div>
+        <div class="chip h200 fragment rise" data-fragment-index="2"><div class="cn">H200</div><div class="cg">previous generation</div><div class="cs"><span class="ban">banned</span></div></div>
+      </div>
+    </div>
+    <div class="qb qunder gated" data-gate="sq">
+      <q>AI-relevant compute is a particularly effective point of intervention: it is detectable, excludable, and quantifiable, and is produced via an extremely concentrated supply&nbsp;chain.</q>
+      <div class="who">Sastry, Heim et al., 2024</div>
+    </div>
+    <span class="fragment" data-act="sq" data-fragment-index="3"></span>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame grow">
+    <div class="kick">The push to ban state AI laws</div>
+    <div class="drows">
+      <div class="drow fragment rise"><div class="dd">June 2025</div><div class="dt">A ten-year ban on state AI laws, in Trump’s budget&nbsp;bill<small>David Sacks, Trump’s AI czar:<br><q>We need preemption in OBBB [the budget&nbsp;bill].</q></small></div></div>
+      <div class="drow fragment rise"><div class="dd">July 2025</div><div class="dt">The Senate strikes it out, <span class="w99">99–1</span></div></div>
+      <div class="drow fragment rise"><div class="dd">December 2025</div><div class="dt">Trump: <q>There must be only One Rulebook if we are going to continue to lead in&nbsp;AI.</q></div></div>
+      <div class="drow cont fragment rise"><div class="dd"></div><div class="dt">His executive order sets up <q>an AI Litigation Task Force … whose sole responsibility shall be to challenge State AI&nbsp;laws</q></div></div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame grow">
+    <h2>Two states passed<br>frontier AI safety laws anyway.</h2>
+    <div class="st">
+      <div></div>
+      <div class="h"><div class="sn fragment" data-fragment-index="0">California<br>SB 53</div><div class="ss fragment" data-fragment-index="1">September 2025</div></div>
+      <div class="h"><div class="sn fragment" data-fragment-index="2">New York<br>RAISE Act</div><div class="ss fragment" data-fragment-index="3">December 2025</div></div>
+      <div class="l fragment" data-fragment-index="4">Publish how it manages catastrophic risks</div><div class="c yes fragment" data-fragment-index="4">✓</div><div class="c yes fragment" data-fragment-index="4">✓</div>
+      <div class="l fragment" data-fragment-index="5">Report serious incidents to the state</div><div class="c fragment" data-fragment-index="5">within 15 days</div><div class="c fragment" data-fragment-index="5">within 72 hours</div>
+      <div class="l fragment" data-fragment-index="6">Fines</div><div class="c fragment" data-fragment-index="6">up to $1 million</div><div class="c fragment" data-fragment-index="6">$1 million, then $3 million</div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section class="mkt">
+  <div class="bloom"></div>
+  <div class="frame grow">
+    <h2>The next president takes office<br>in January 2029.</h2>
+    <div class="mq fragment rise">Which party wins the 2028 US presidential election?</div>
+    <div class="mcap fragment">On Polymarket, today (15 October 2026)</div>
+    <div class="mk gated" data-gate="b1">
+      <div class="mrow dem"><div class="pn">Democrats</div><div class="tr"><div class="rail"></div><div class="bar"></div><div class="val"></div></div></div>
+      <div class="mrow rep"><div class="pn">Republicans</div><div class="tr"><div class="rail"></div><div class="bar"></div><div class="val"></div></div></div>
+    </div>
+    <span class="fragment" data-act="b1"></span>
+  </div>
+  
+</section>
+
+</div></div>
+<script>
+/* Year ruler on every slide of the beat (Justin, 15 Oct): a slide without its own data-ruler takes the month of the
+   slide before it, and its frame makes room for the ruler. Set pieces (a big chart, a famous image) opt out with data-no-ruler. */
+(function () {
+  /* ?ruler=all (on this page, or on the talk shell that frames it): set pieces get the ruler too, each at its
+     data-ruler-all month if it has one, else the month before; body.ruler-all scopes the CSS that makes them fit. */
+  var ALL = /[?&]ruler=all/.test(location.search);
+  try { if (!ALL && window.parent !== window) ALL = /[?&]ruler=all/.test(window.parent.location.search); } catch (e) {}
+  if (ALL) document.body.classList.add('ruler-all');
+  var m = null;
+  document.querySelectorAll('.slides > section').forEach(function (s) {
+    if (s.dataset.ruler) { m = s.dataset.ruler; return; }
+    if (!m) return;
+    if (s.hasAttribute('data-no-ruler')) {
+      if (!ALL) return;
+      s.dataset.ruler = s.dataset.rulerAll || m;   // an explicit month here does not carry over to later slides
+    } else s.dataset.ruler = m;
+    s.querySelectorAll(':scope > .frame').forEach(function (f) { f.classList.add('ruled'); });
+  });
+})();
+</script>
+
+<div id="ruler"><div class="inner"></div></div>
+
+<script src="../../vendor/reveal/reveal.js"></script>
+<script src="../../vendor/reveal/plugin/notes/notes.js"></script>
+<script src="data.js"></script>
+<script>
+var STATIC = /[?&]static/.test(location.search);
+if (STATIC) document.documentElement.classList.add('static');
+
+/* ---------- 9 · Polymarket bars ---------- */
+(function () {
+  var M = DATA.market;
+  [['dem', M.dem], ['rep', M.rep]].forEach(function (p) {
+    var row = document.querySelector('.mrow.' + p[0]), pct = Math.round(p[1] * 100);
+    row.querySelector('.bar').dataset.w = pct;
+    var v = row.querySelector('.val'); v.textContent = pct + '%'; v.style.left = 'calc(' + pct + '% + 24px)';
+  });
+})();
+function setBars(sec) {
+  document.querySelectorAll('.mkt').forEach(function (s) {
+    var on = s === sec; s.classList.toggle('on', on);
+    var grow = on && s.classList.contains('act-b1');   // bars grow on the first click, after the question
+    s.querySelectorAll('.bar').forEach(function (b) { b.style.width = grow ? b.dataset.w + '%' : '0'; });
+  });
+}
+
+
+/* ---------- year ruler (same as mockups/intro) ---------- */
+var MONTHS = ['2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'];
+var LETTERS = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+var ruler = document.getElementById('ruler'), rin = ruler.querySelector('.inner');
+var X0 = 200, X1 = 1720;
+function mx(i) { return X0 + (X1 - X0) * i / (MONTHS.length - 1); }
+(function build() {
+  var h = '<div class="track"></div><div class="past"></div>';
+  MONTHS.forEach(function (m, i) {
+    h += '<div class="tick" style="left:' + mx(i) + 'px"></div>';
+    h += '<div class="m" data-i="' + i + '" style="left:' + mx(i) + 'px">' + LETTERS[i] + '</div>';
+  });
+  h += '<div class="y" style="left:' + mx(0) + 'px">2025</div><div class="y" style="left:' + mx(3) + 'px">2026</div>';
+  h += '<div class="start" style="left:' + mx(0) + 'px"></div><div class="start-label" style="left:' + (mx(0) + 18) + 'px">I start at CAISH</div>';
+  h += '<div class="now-caret"></div>';
+  rin.innerHTML = h;
+})();
+function placeRuler() {
+  var k = Math.min(innerWidth / 1920, innerHeight / 1080);
+  var ox = (innerWidth - 1920 * k) / 2, oy = (innerHeight - 1080 * k) / 2;
+  rin.style.transform = 'translate(' + ox + 'px,' + (oy + (1080 - 150) * k) + 'px) scale(' + k + ')';
+  ruler.style.height = innerHeight + 'px'; ruler.style.top = 0;
+}
+addEventListener('resize', placeRuler); placeRuler();
+function setRuler(month) {
+  if (!month) { ruler.classList.remove('on'); return; }
+  ruler.classList.add('on');
+  var i = MONTHS.indexOf(month);
+  rin.querySelector('.now-caret').style.left = mx(i) + 'px';
+  rin.querySelector('.past').style.width = (mx(i) - mx(0)) + 'px';
+  rin.querySelectorAll('.m').forEach(function (e) { var j = +e.dataset.i; e.classList.toggle('done', j < i); e.classList.toggle('now', j === i); });
+}
+
+/* ---------- theme ---------- */
+try { if (localStorage.getItem('howard-theme') === 'paper') document.body.classList.add('paper'); } catch (e) {}
+if (/[?&]theme=paper/.test(location.search)) document.body.classList.add('paper');
+
+/* ---------- deck: plain cuts between slides ---------- */
+Reveal.initialize({
+  width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 4,
+  center: false, controls: false, progress: false, hash: true, history: false,
+  transition: 'none', backgroundTransition: 'none',
+  plugins: [ RevealNotes ],
+  keyboard: { 84: function () {   // T: glow / paper
+    document.body.classList.toggle('paper');
+    try { localStorage.setItem('howard-theme', document.body.classList.contains('paper') ? 'paper' : 'glow'); } catch (e) {}
+  } }
+});
+
+/* Fragments with data-act="x" set class act-x on their slide; [data-gate="x"] elements show with it. */
+function syncActs(sec) {
+  if (!sec) return;
+  sec.querySelectorAll('.fragment[data-act]').forEach(function (f) {
+    var name = f.dataset.act, v = f.classList.contains('visible');
+    sec.classList.toggle('act-' + name, v);
+    sec.querySelectorAll('[data-gate="' + name + '"]').forEach(function (g) { g.classList.toggle('shown', v); });
+  });
+}
+/* Centre what is shown so far on .frame.grow slides (hidden = an unshown fragment or gate, or inside one). */
+function hiddenIn(el, frame) {
+  for (var e = el; e && e !== frame; e = e.parentElement) {
+    if (e.classList.contains('fragment') && !e.classList.contains('visible')) return true;
+    if (e.classList.contains('gated') && !e.classList.contains('shown')) return true;
+  }
+  return false;
+}
+function centreGrow(sec) {
+  if (!sec) return;
+  var fr = sec.querySelector('.frame.grow'); if (!fr) return;
+  var k = Reveal.getScale() || 1, base = fr.getBoundingClientRect(), top = Infinity, bot = -Infinity;
+  fr.querySelectorAll('*').forEach(function (el) {
+    var leaf = el.matches('img, svg, .bar, .rail') || Array.prototype.some.call(el.childNodes, function (n) { return n.nodeType === 3 && n.nodeValue.trim(); });
+    if (!leaf || hiddenIn(el, fr)) return;
+    var r = el.getBoundingClientRect(); if (!r.height) return;
+    top = Math.min(top, (r.top - base.top) / k); bot = Math.max(bot, (r.bottom - base.top) / k);
+  });
+  if (top === Infinity) return;
+  var shift = Math.round(1080 / 2 - (top + bot) / 2);   // offsets are relative to the frame, so they don't include the current shift
+  fr.style.transform = 'translateY(' + shift + 'px)';
+}
+/* Screenshot helper: ?static&s=H&f=N opens slide H with fragments up to N shown. */
+var QS = new URLSearchParams(location.search);
+if (QS.has('s')) Reveal.on('ready', function () { Reveal.slide(+QS.get('s'), 0, QS.has('f') ? +QS.get('f') : -1); });
+function sync() { var s = Reveal.getCurrentSlide(); setRuler(s && s.dataset.ruler); ruler.classList.toggle('first', !!(s && s.hasAttribute('data-ruler-start'))); syncActs(s); setBars(s); centreGrow(s); }
+Reveal.on('ready', sync);
+Reveal.on('slidechanged', sync);
+Reveal.on('fragmentshown', function () { var s = Reveal.getCurrentSlide(); syncActs(s); setBars(s); centreGrow(s); });
+Reveal.on('fragmenthidden', function () { var s = Reveal.getCurrentSlide(); syncActs(s); setBars(s); centreGrow(s); });
+if (document.fonts) document.fonts.ready.then(function () { centreGrow(Reveal.getCurrentSlide()); });
+</script>
+<script>
+/* Beat start (added when the beats were stitched into deck/talk/): the first slide shows only the year ruler,
+   and its caret glides from the previous beat's month (data-ruler-from) to this beat's month. */
+(function () {
+  var plain = setRuler;
+  setRuler = function (month) {
+    var s = Reveal.getCurrentSlide(), from = s && s.dataset.rulerFrom;
+    if (!month || !from || from === month || STATIC) return plain(month);
+    var els = document.querySelectorAll('#ruler .past, #ruler .now-caret');
+    els.forEach(function (e) { e.style.transition = 'none'; });
+    plain(from); void document.body.offsetWidth;
+    els.forEach(function (e) { e.style.transition = ''; });
+    requestAnimationFrame(function () { requestAnimationFrame(function () { plain(month); }); });
+  };
+  /* The talk shell (deck/talk/) calls this when it shows the deck, since the deck was loaded hidden. */
+  window.replayBeatStart = function () { var s = Reveal.getCurrentSlide(); if (s && s.dataset.rulerFrom) setRuler(s.dataset.ruler); };
+})();
+</script>
+</body>
+</html>

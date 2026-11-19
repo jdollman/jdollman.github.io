@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The AI bubble</title>
+<link rel="stylesheet" href="../../vendor/reveal/reset.css">
+<link rel="stylesheet" href="../../vendor/reveal/reveal.css">
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+/* Same tokens as mockups/intro and mockups/one-pass: "glow" by default, T for caish.org "paper". */
+:root {
+  --paper: #050508;
+  --ink: #f2f1f6;
+  --graphite: rgba(235, 235, 245, 0.66);
+  --faint: rgba(235, 235, 245, 0.34);
+  --accent: #c9a6ff;
+  --accent-grad: linear-gradient(90deg, #ffb061, #ff6778 25%, #f58fde 50%, #bc82f3 75%, #8d9fff);
+  --caret-grad: linear-gradient(180deg, #f5b9ea 0%, #c686ff 48%, #8d9fff 100%);
+  --caret-glow: 0 0 10px rgba(198, 134, 255, 0.85), 0 0 22px rgba(141, 159, 255, 0.45);
+  --rule: rgba(235, 235, 245, 0.16);
+  --grid: rgba(235, 235, 245, 0.09);
+  --card-stroke: rgba(235, 235, 245, 0.2);
+  --line: #c9a6ff;
+  --line2: rgba(235, 235, 245, 0.5);
+  --thing: #ffb061;
+  --area-top: rgba(188, 130, 243, 0.32);
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --mono: 'Space Mono', ui-monospace, Menlo, monospace;
+  --img-dark: invert(1) hue-rotate(180deg) brightness(0.92) saturate(1.3);
+}
+body.paper {
+  --paper: #fbfbfa;
+  --ink: #1a1a1a;
+  --graphite: #4a4a4a;
+  --faint: #a49b92;
+  --accent: #945947;
+  --accent-grad: linear-gradient(90deg, #945947, #945947);
+  --caret-grad: linear-gradient(180deg, #945947, #945947);
+  --caret-glow: none;
+  --rule: rgba(148, 89, 71, 0.28);
+  --grid: rgba(26, 26, 26, 0.08);
+  --card-stroke: rgba(26, 26, 26, 0.22);
+  --line: #945947;
+  --line2: #a49b92;
+  --thing: #a8661c;
+  --area-top: rgba(148, 89, 71, 0.22);
+  --img-dark: none;
+}
+html, body { background: var(--paper); }
+.reveal { font-family: var(--mono); color: var(--ink); font-size: 32px; line-height: 1.5; }
+.reveal .slides { text-align: left; }
+.reveal .slides section { width: 1920px; height: 1080px; padding: 0; box-sizing: border-box; }
+.reveal .slide-background { background: var(--paper); }
+.reveal h1, .reveal h2 { font-family: var(--serif); font-weight: 400; color: var(--ink); margin: 0; letter-spacing: -0.005em; }
+.reveal h2 { font-size: 68px; line-height: 1.15; }
+.reveal em { font-style: italic; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.08em; }
+.reveal b { font-weight: 700; color: var(--ink); }
+:where(.reveal) p { margin: 0; }
+/* Content is centred vertically. Only slides that carry the year ruler reserve its 150px at the bottom. */
+.frame { position: absolute; inset: 0; padding: 92px 170px; display: flex; flex-direction: column; justify-content: center; }
+.frame.ruled { display: block; padding-bottom: 190px; }
+.month { font-family: var(--mono); font-size: 26px; color: var(--accent); margin-bottom: 18px; }
+.cap { font-size: 25px; color: var(--graphite); margin-top: 16px; }
+.reveal .slides section .fragment { transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal .slides section .fragment.rise { transform: translateY(14px); }
+.reveal .slides section .fragment.rise.visible { transform: none; }
+.gated { opacity: 0; transition: opacity 0.6s; }
+.gated.shown { opacity: 1; }
+.bloom { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 38% at 18% 112%, rgba(255, 103, 120, 0.13), transparent 70%),
+              radial-gradient(55% 40% at 82% 115%, rgba(141, 159, 255, 0.15), transparent 70%),
+              radial-gradient(40% 30% at 50% 120%, rgba(188, 130, 243, 0.12), transparent 70%); }
+body.paper .bloom { display: none; }
+.static *, .static *::before, .static *::after { transition: none !important; }
+
+/* ===== charts (SVG, drawn by script from data.js) ===== */
+svg.chart { display: block; overflow: visible; }
+svg.chart text { font-family: var(--mono); fill: var(--faint); font-size: 22px; }
+svg.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+svg.chart .baseline { stroke: var(--rule); stroke-width: 1.5; }
+svg.chart .ln { fill: none; stroke: var(--line); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; transition: stroke 0.6s, opacity 0.6s; }
+svg.chart .ln2 { fill: none; stroke: var(--line2); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart .ln-thing { fill: none; stroke: var(--thing); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart .ar { stroke: none; transition: opacity 0.6s; }
+svg.chart .lab { fill: var(--ink); font-size: 26px; }
+svg.chart .big { font-family: var(--serif); font-size: 46px; fill: var(--ink); }
+svg.chart .when { fill: var(--graphite); font-size: 23px; }
+svg.chart .tick-y { text-anchor: end; }
+svg.chart .tick-x { text-anchor: middle; }
+svg.chart .dot { fill: var(--line); stroke: var(--paper); stroke-width: 3; }
+svg.chart .dot.thing { fill: var(--thing); }
+svg.chart .lead { stroke: var(--graphite); stroke-width: 2; }
+svg.chart .band { fill: var(--accent); opacity: 0.1; }
+body:not(.paper) svg.chart .ln { filter: drop-shadow(0 0 8px rgba(188, 130, 243, 0.55)); }
+body:not(.paper) svg.chart .ln-thing { filter: drop-shadow(0 0 8px rgba(255, 176, 97, 0.5)); }
+
+/* ===== 1 · everyone says bubble ===== */
+.clips { position: absolute; left: 170px; right: 170px; top: 370px; height: 520px; }
+.clip { position: absolute; width: 500px; box-sizing: border-box; padding: 26px 32px 28px; border: 1px solid var(--card-stroke); border-radius: 14px;
+  background: var(--paper); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55); }
+body.paper .clip { background: #fff; box-shadow: 0 10px 30px rgba(26, 26, 26, 0.12); }
+.clip .who { font-size: 21px; line-height: 1.35; color: var(--graphite); margin-bottom: 12px; }
+.clip .who b { color: var(--accent); font-weight: 400; }
+.clip q { display: block; font-family: var(--serif); font-size: 29px; line-height: 1.38; color: var(--ink); quotes: "\201C" "\201D"; }
+.reveal .slides section .clip.fragment { transform: translateY(30px) rotate(var(--r)) scale(0.97); }
+.reveal .slides section .clip.fragment.visible { transform: rotate(var(--r)); }
+
+/* ===== 2 · the circular-deals image, alive ===== */
+.figwrap { position: relative; width: 880px; height: 880px; margin: 0 auto; }
+.figwrap img { width: 100%; height: 100%; display: block; filter: var(--img-dark); border-radius: 18px; }
+body:not(.paper) .figwrap img {   /* feather the inverted diagram's black square into the page */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent), linear-gradient(180deg, transparent, #000 9%, #000 91%, transparent);
+  -webkit-mask-composite: source-in; mask-composite: intersect; }
+.figwrap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.flow { fill: none; stroke: url(#loopgrad); stroke-width: 14; stroke-linecap: round; opacity: 0; transition: opacity 0.6s; }
+body:not(.paper) .flow { filter: drop-shadow(0 0 10px rgba(245, 143, 222, 0.7)); }
+.coin { opacity: 0; }
+.coin circle { fill: #ffb061; }
+body:not(.paper) .coin circle { filter: drop-shadow(0 0 12px #ffb061); }
+.coin text { font-family: var(--mono); font-size: 40px; font-weight: 700; fill: #1a1a1a; text-anchor: middle; dominant-baseline: central; }
+section.act-loop .flow.f-a, section.act-loop .flow.f-b, section.act-all .flow { opacity: 1; }
+
+/* ===== 3 · Hacker News ===== */
+.hn-title { font-size: 28px; color: var(--ink); margin-top: 6px; }
+.hn-chart { margin-top: 30px; }
+.reveal .hn h2 { margin-top: 2px; }
+.spark-row { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; margin-top: 26px; }
+.spark-row .sh { font-size: 24px; color: var(--accent); margin-bottom: 30px; }
+svg.chart .pk { fill: var(--faint); font-size: 19px; }
+svg.chart .stick { fill: var(--faint); font-size: 18px; text-anchor: middle; }
+.soap { transform-box: fill-box; transform-origin: 50% 50%; transform: scale(0.2); opacity: 0; transition: transform 1.1s cubic-bezier(.2,1.4,.4,1), opacity 0.5s; }
+section.act-soap .soap { transform: scale(1); opacity: 1; }
+section.act-soap.act-after .soap { transform: scale(1.35); opacity: 0; transition: transform 0.35s ease-out, opacity 0.35s ease-out; }
+
+/* ===== 4 · it hasn't popped ===== */
+.bars { margin-top: 64px; max-width: 1500px; }
+.bars .bh { font-size: 26px; color: var(--graphite); margin-bottom: 20px; }
+.brow { display: grid; grid-template-columns: 220px 1fr; align-items: center; height: 96px; }
+.brow .bl { font-size: 30px; color: var(--graphite); }
+.track { position: relative; height: 60px; }
+.bar { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 0 4px 4px 0; background: var(--line2); transition: width 1.3s cubic-bezier(.2,.7,.2,1); }
+.bar.hi { background: var(--accent-grad); }
+body:not(.paper) .bar.hi { box-shadow: 0 0 34px rgba(188, 130, 243, 0.35); }
+.bval { position: absolute; top: 50%; transform: translate(18px, -50%); font-size: 34px; color: var(--ink); white-space: nowrap; opacity: 0; transition: opacity 0.5s 1s; }
+section.act-b1 .r1 .bar, section.act-b2 .r2 .bar { width: var(--w); }
+section.act-b1 .r1 .bval, section.act-b2 .r2 .bval { opacity: 1; }
+.dkt { margin-top: 64px; padding-top: 34px; border-top: 1px solid var(--rule); max-width: 1500px; }
+.dkt .who { font-size: 24px; color: var(--graphite); margin-bottom: 12px; }
+.dkt .qq { font-family: var(--serif); font-size: 46px; line-height: 1.3; }
+
+/* ===== 5 · Twain, Siri-fied ===== */
+@property --spin { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.siri { position: relative; width: 640px; height: 800px; margin: 0 auto; border-radius: 30px; }
+.siri::before, .siri::after { content: ""; position: absolute; border-radius: 36px; background: conic-gradient(from var(--spin), #ffb061, #ff6778, #f58fde, #bc82f3, #8d9fff, #ffb061); animation: spin 6s linear infinite; }
+.siri::before { inset: -26px; filter: blur(34px); opacity: 0.85; }
+.siri::after { inset: -5px; }
+@keyframes spin { to { --spin: 360deg; } }
+.siri .photo { position: absolute; inset: 0; z-index: 1; border-radius: 30px; overflow: hidden; background: #000; }
+.siri img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; transform: scale(1.12); filter: grayscale(1) contrast(1.1); display: block; }
+.siri .tint { position: absolute; inset: 0; background: linear-gradient(160deg, #ffb061, #ff6778 30%, #f58fde 55%, #bc82f3 78%, #8d9fff); mix-blend-mode: color; opacity: 0.6; }
+.siri .meme { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 90px 40px 34px; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.85) 45%);
+  font-family: var(--serif); font-size: 42px; line-height: 1.22; color: #fff; text-align: center; border-radius: 0 0 30px 30px; }
+.siri .meme small { display: block; margin-top: 12px; font-family: var(--mono); font-size: 22px; color: rgba(255,255,255,0.75); }
+
+/* ===== 6 · megaprojects: totals, then per year ===== */
+.mega { position: relative; margin-top: 44px; height: 528px; }
+.mrow { position: absolute; left: 0; right: 0; top: var(--tt); display: grid; grid-template-columns: 420px 1fr; align-items: center; height: 58px; transition: top 0.9s cubic-bezier(.5,0,.2,1); }
+section.act-py .mrow { top: var(--tp); }
+.mrow .mn { font-size: 27px; color: var(--graphite); }
+.mrow .mt { position: relative; height: 40px; }
+.mrow .mb { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 0 4px 4px 0; background: var(--line2); transition: width 1.2s cubic-bezier(.2,.7,.2,1); }
+.mrow .mv { position: absolute; top: 50%; transform: translate(16px, -50%); font-size: 25px; color: var(--ink); white-space: nowrap; opacity: 0; transition: opacity 0.4s 0.9s, left 1.2s cubic-bezier(.2,.7,.2,1); }
+.mrow .mv small { color: var(--graphite); font-size: 23px; }
+.mrow .mv .per { display: none; }
+section.act-mg .mrow.old .mb, section.act-dc .mrow.dc .mb { width: var(--w); }
+section.act-mg .mrow.old .mv, section.act-dc .mrow.dc .mv { opacity: 1; left: var(--w); }
+section.act-py .mrow .mb { width: var(--wp) !important; }
+section.act-py .mrow .mv { left: var(--wp) !important; }
+section.act-py .mrow .mv .tot { display: none; }
+section.act-py .mrow .mv .per { display: inline; }
+.mrow.dc .mn { color: var(--ink); }
+.mrow.dc .mb { background: var(--accent-grad); }
+body:not(.paper) .mrow.dc .mb { box-shadow: 0 0 34px rgba(188, 130, 243, 0.4); }
+.capswap .per { display: none; }
+section.act-py .capswap .tot { display: none; }
+section.act-py .capswap .per { display: inline; color: var(--ink); }
+
+/* ===== 7 · what if it does pop: price and the thing on one plot each ===== */
+.eras { display: grid; grid-template-columns: 1fr 1fr; gap: 110px; margin-top: 46px; }
+.era h3 { font-family: var(--serif); font-weight: 400; font-size: 36px; margin: 0 0 6px; color: var(--ink); }
+.era { opacity: 0; transition: opacity 0.6s; }
+section.act-rp .era.rail, section.act-dp .era.dotcom { opacity: 1; }
+section.act-rm #rail .ln, section.act-du #dotcom .ln { stroke: var(--line2); filter: none; }
+section.act-rm #rail .ar, section.act-du #dotcom .ar { opacity: 0.25; }
+svg.chart .ax-price { fill: var(--line); font-size: 22px; }
+svg.chart .ax-thing { fill: var(--thing); font-size: 22px; }
+svg.chart .tick-thing { fill: var(--thing); opacity: 0.8; font-size: 20px; }
+.punch { margin-top: 44px; }
+.punch .p1 { font-family: var(--serif); font-size: 64px; line-height: 1.15; }
+.punch .p2 { font-size: 30px; color: var(--graphite); margin-top: 10px; }
+
+/* ===== 8 · pivot ===== */
+.pivot h2 { font-size: 112px; line-height: 1.1; white-space: nowrap; margin-top: 120px; }
+
+/* ===== 9 · who gets paid ===== */
+.lab-chart { margin-top: 40px; }
+
+/* ===== 10 · democracy ===== */
+.fad-bar { position: relative; height: 66px; margin-top: 48px; width: 1580px; }
+.fad-bar .all { position: absolute; left: 0; right: 0; top: 0; height: 26px; border-radius: 4px; background: var(--line2); opacity: 0.35; }
+.fad-bar .dem { position: absolute; right: 0; top: 0; height: 26px; width: 63px; border-radius: 0 4px 4px 0; background: var(--accent-grad); opacity: 0; transition: opacity 0.6s; }
+body:not(.paper) .fad-bar .dem { box-shadow: 0 0 24px rgba(245, 143, 222, 0.55); }
+section.act-dem .fad-bar .dem { opacity: 1; }
+.fad-bar .l1 { position: absolute; left: 0; top: 38px; font-size: 24px; color: var(--graphite); }
+.fad-bar .l2 { position: absolute; right: 0; top: 38px; font-size: 24px; color: var(--ink); text-align: right; }
+.fad-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; margin-top: 44px; max-width: 1580px; }
+.route { border-top: 1px solid var(--rule); padding-top: 16px; font-size: 25px; line-height: 1.45; color: var(--graphite); }
+.route b { display: block; font-family: var(--serif); font-weight: 400; font-size: 33px; color: var(--ink); margin-bottom: 6px; }
+.qblock { margin-top: 36px; }
+.qblock q { display: block; font-family: var(--serif); font-size: 38px; line-height: 1.3; max-width: 1560px; quotes: "\201C" "\201D"; }
+.qblock .who { font-size: 22px; color: var(--graphite); margin-top: 10px; }
+
+/* ===== 11 · power ===== */
+.p80 q { display: block; font-family: var(--serif); font-size: 60px; line-height: 1.25; max-width: 1500px; quotes: "\201C" "\201D"; }
+.p80 .who { font-size: 24px; color: var(--graphite); margin-top: 18px; }
+.sg { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .sg { filter: drop-shadow(0 0 14px rgba(245, 143, 222, 0.45)); }
+.routes { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 70px; margin-top: 56px; max-width: 1580px; }
+.routes .route { font-size: 26px; }
+.routes .route b { font-size: 34px; }
+.route q { quotes: "\201C" "\201D"; }
+.route .by { display: block; margin-top: 6px; font-size: 22px; color: var(--faint, var(--graphite)); }
+.route.kk q { display: block; font-family: var(--serif); font-size: 40px; line-height: 1.3; quotes: "\201C" "\201D";
+  background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .route.kk q { filter: drop-shadow(0 0 14px rgba(245, 143, 222, 0.55)); }
+.route.kk span { display: block; margin-top: 12px; font-size: 22px; color: var(--graphite); }
+
+/* ===== year ruler (same as mockups/intro; the "now" caret does not blink) ===== */
+#ruler { position: fixed; left: 0; right: 0; bottom: 0; height: 0; pointer-events: none; z-index: 30; opacity: 0; transition: opacity 0.8s; }
+#ruler.on { opacity: 1; }
+#ruler .inner { position: absolute; transform-origin: 0 0; width: 1920px; height: 150px; }
+#ruler .track { position: absolute; left: 170px; right: 170px; top: 52px; height: 1px; background: var(--rule); }
+#ruler .past { position: absolute; left: 200px; top: 51px;   /* starts at the first month (X0), so it ends exactly at the caret */ height: 3px; background: var(--accent-grad); box-shadow: var(--caret-glow); transition: width 1.4s cubic-bezier(.6,0,.2,1); }
+#ruler .m { position: absolute; top: 70px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 22px; color: var(--faint); }
+#ruler .m.done { color: var(--graphite); }
+#ruler .m.now { color: var(--ink); font-weight: 700; }
+#ruler .y { position: absolute; top: 104px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 18px; color: var(--faint); }   /* centred under its month, like the month labels */
+#ruler .tick { position: absolute; top: 46px; width: 1px; height: 13px; background: var(--rule); }
+#ruler .start { position: absolute; top: 44px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: #ffb061; box-shadow: var(--caret-glow); }
+#ruler .start-label { position: absolute; top: 0; font-family: var(--mono); font-size: 20px; color: var(--accent); white-space: nowrap; }
+#ruler .start-label { display: none; } #ruler.first .start-label { display: block; }
+#ruler .now-caret { position: absolute; top: 39px; width: 4px; height: 28px; margin-left: -2px; border-radius: 2px; background: var(--caret-grad); box-shadow: var(--caret-glow); transition: left 1.4s cubic-bezier(.6,0,.2,1); }
+/* Anthropic's orange for every "Anthropic" on a slide (Justin, 14 Oct) */
+:root { --anth: #d97757; } body.paper { --anth: #c15f3c; }
+.anth { } /* Anthropic orange retired (Justin, 15 Oct): the word takes its surrounding colour */
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+
+<section data-ruler="2025-10">
+  <div class="bloom"></div>
+  <div class="frame ruled">
+    <div class="month" style="position:absolute;left:170px;top:290px">October 2025</div>   
+    <div class="clips">
+      <div class="clip fragment" style="left:0;top:20px;--r:-2deg">
+        <div class="who"><b>Sam Altman</b>, CEO of OpenAI</div>
+        <q>Are we in a phase where investors as a whole are overexcited about AI? … My opinion is yes.</q>
+      </div>
+      <div class="clip fragment" style="left:540px;top:0;--r:1.5deg">
+        <div class="who"><b>Jeff Bezos</b>, founder of Amazon</div>
+        <q>This is a kind of industrial bubble.</q>
+      </div>
+      <div class="clip fragment" style="left:1080px;top:30px;--r:-1deg">
+        <div class="who"><b>Bank of England</b></div>
+        <q>The risk of a sharp market correction has increased.</q>
+      </div>
+      <div class="clip fragment" style="left:545px;top:250px;--r:-1.8deg">
+        <div class="who"><b>Sundar Pichai</b>, CEO of Google, on a crash</div>
+        <q>I think no company is going to be immune, including us.</q>
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler class="act-all">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="figwrap">
+      <img src="../../assets/ai-bubble-circular-deals.png" alt="Diagram of deals between OpenAI, Nvidia, Oracle and CoreWeave">
+      <svg viewBox="0 0 1500 1500" aria-hidden="true" id="flows">
+        <defs>
+          <linearGradient id="loopgrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffb061"/><stop offset="0.5" stop-color="#f58fde"/><stop offset="1" stop-color="#8d9fff"/>
+          </linearGradient>
+        </defs>
+        
+        <path class="flow f-a" d="M 902 676 C 925 545 835 430 640 424"/>             
+        <path class="flow f-b" d="M 272 617 C 236 720 300 806 404 818"/>             
+        <path class="flow f-c" d="M 606 322 C 720 175 1010 165 1140 352"/>            
+        <path class="flow f-d" d="M 1248 862 C 1258 960 1130 1005 1040 968"/>         
+        <path class="flow f-e" d="M 208 612 C 120 655 118 760 160 812"/>             
+        <path class="flow f-f" d="M 252 1110 C 300 1205 425 1205 490 1142"/>          
+        <path class="flow f-g" d="M 530 1195 C 430 1285 262 1262 190 1132"/>          
+      </svg>
+    </div>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler class="hn">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="month">October 2025</div>
+    <h2 class="fragment" data-act="soap" data-fragment-index="3">The talk about a bubble was itself a <em>bubble</em>.</h2>
+    <div class="hn-title">Posts and comments containing “AI bubble” on Hacker News, per month</div>
+    <svg class="chart hn-chart" id="hn" viewBox="0 0 1580 400" width="1580" height="400"></svg>
+    <div class="spark-row gated" data-gate="also">
+      <div><div class="sh">Views of the Wikipedia page “AI bubble”</div><svg class="chart" id="wiki" viewBox="0 0 740 112" width="740" height="112"></svg></div>
+      <div><div class="sh">New York Times articles</div><svg class="chart" id="nyt" viewBox="0 0 740 112" width="740" height="112"></svg></div>
+    </div>
+    <span class="fragment" data-act="pre" data-fragment-index="1"></span>
+    <span class="fragment" data-act="spike" data-fragment-index="2"></span>
+    <span class="fragment" data-act="after" data-fragment-index="4"></span>
+    <span class="fragment" data-act="also" data-fragment-index="5"></span>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler data-ruler-all="2026-10">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="month">A year later</div>
+    <h2>It hasn't popped.</h2>
+    <div class="bars">
+      <div class="bh fragment" data-act="b1">Spending on data centers by Amazon, Google, Meta and Microsoft</div>
+      <div class="brow r1"><div class="bl">2025</div><div class="track"><div class="bar" style="--w:52%"></div><div class="bval" style="left:52%">about $400 billion</div></div></div>
+      <div class="brow r2"><div class="bl">2026<br><span style="font-size:22px;color:var(--faint)">planned</span></div><div class="track"><div class="bar hi" style="--w:91%"></div><div class="bval" style="left:91%;transform:translate(-100%,-50%) translateX(-18px);color:var(--paper);font-weight:700">about $700 billion</div></div></div>
+      <span class="fragment" data-act="b2"></span>
+    </div>
+    <div class="dkt fragment rise">
+      <div class="who">Derek Thompson, who wrote “This Is How the AI Bubble Will Pop”, six months ago:</div>
+      <div class="qq">from “AI is surely a bubble” to “for now, it surely is not.”</div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler data-ruler-all="2026-10">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="siri">
+      <div class="photo">
+        <img src="../../assets/twain.jpg" alt="Mark Twain">
+        <div class="tint"></div>
+      </div>
+      <div class="meme fragment">Reports of my death have been greatly exaggerated.<small>— the AI boom, October 2026</small></div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler data-ruler-all="2026-10">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="month">A year later</div>
+    <h2>The biggest building project in history</h2>
+    <div class="cap capswap"><span class="tot">Total cost, inflation-adjusted, billions of dollars</span><span class="per">Spending per year, inflation-adjusted, billions of dollars</span></div>
+    <div class="mega" id="mega"></div>
+    <span class="fragment" data-act="mg"></span>
+    <span class="fragment" data-act="dc"></span>
+    <span class="fragment" data-act="py"></span>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame">
+    <h2>What if it does pop?</h2>
+    <div class="eras">
+      <div class="era rail"><h3>Britain's Railway Mania, 1840s</h3><svg class="chart" id="rail" viewBox="0 0 735 580" width="735" height="580"></svg></div>
+      <div class="era dotcom"><h3>The dot-com bubble, 2000</h3><svg class="chart" id="dotcom" viewBox="0 0 735 580" width="735" height="580"></svg></div>
+    </div>
+    <span class="fragment" data-act="rp"></span>
+    <span class="fragment" data-act="rm"></span>
+    <span class="fragment" data-act="dp"></span>
+    <span class="fragment" data-act="du"></span>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame">
+    <h2 class="pivot">What if it <em>isn't</em> a bubble?</h2>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="p80">
+      <q>Advanced AI could enable much more <span class="sg">extreme power concentration</span> than we’ve seen so far.</q>
+      <div class="who">80,000 Hours</div>
+    </div>
+    <div class="routes">
+      <div class="route fragment rise"><b>Extreme inequality</b>One company or country outgrows everyone else.</div>
+      <div class="route fragment rise"><b>The state stops needing its people</b><q>If human labor loses its value, then this strikes me as bad news for democracy.</q><span class="by">Ben Garfinkel, <i>Is Democracy a Fad?</i></span></div>
+      <div class="route fragment rise"><b>Control of information</b>Secrecy, speed, biased AI advisers, AI persuasion: the public can no longer tell what is going on.</div>
+      <div class="route fragment rise"><b>Power grabs</b>A small group uses AI to take control: an automated military coup, AI systems secretly loyal to one person.</div>
+    </div>
+  </div>
+  
+</section>
+
+</div></div>
+<script>
+/* Year ruler on every slide of the beat (Justin, 15 Oct): a slide without its own data-ruler takes the month of the
+   slide before it, and its frame makes room for the ruler. Set pieces (a big chart, a famous image) opt out with data-no-ruler. */
+(function () {
+  /* ?ruler=all (on this page, or on the talk shell that frames it): set pieces get the ruler too, each at its
+     data-ruler-all month if it has one, else the month before; body.ruler-all scopes the CSS that makes them fit. */
+  var ALL = /[?&]ruler=all/.test(location.search);
+  try { if (!ALL && window.parent !== window) ALL = /[?&]ruler=all/.test(window.parent.location.search); } catch (e) {}
+  if (ALL) document.body.classList.add('ruler-all');
+  var m = null;
+  document.querySelectorAll('.slides > section').forEach(function (s) {
+    if (s.dataset.ruler) { m = s.dataset.ruler; return; }
+    if (!m) return;
+    if (s.hasAttribute('data-no-ruler')) {
+      if (!ALL) return;
+      s.dataset.ruler = s.dataset.rulerAll || m;   // an explicit month here does not carry over to later slides
+    } else s.dataset.ruler = m;
+    s.querySelectorAll(':scope > .frame').forEach(function (f) { f.classList.add('ruled'); });
+  });
+})();
+</script>
+
+<div id="ruler"><div class="inner"></div></div>
+
+<script src="../../vendor/reveal/reveal.js"></script>
+<script src="../../vendor/reveal/plugin/notes/notes.js"></script>
+<script src="data.js"></script>
+<script>
+var STATIC = /[?&]static/.test(location.search);
+if (STATIC) document.documentElement.classList.add('static');
+var SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent, text) {
+  var e = document.createElementNS(SVGNS, tag);
+  for (var k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function ease(u) { u = Math.max(0, Math.min(1, u)); return u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; }
+var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function mlabel(m) { return MON[+m.slice(5, 7) - 1] + ' ' + m.slice(0, 4); }
+
+/* A line that reveals itself left to right (a growing clip rect). */
+function Reveal1(svg, pts, opt) {
+  this.opt = opt;
+  var defs = svg.querySelector('defs') || el('defs', {}, svg);
+  var key = opt.id || svg.id, gid = key + '-g', cid = key + '-c';
+  var g = el('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+  el('stop', { offset: 0, style: 'stop-color:var(--area-top)' }, g);
+  el('stop', { offset: 1, style: 'stop-color:var(--area-top);stop-opacity:0' }, g);
+  var cp = el('clipPath', { id: cid }, defs);
+  this.clip = el('rect', { x: 0, y: -400, width: 0, height: 2000 }, cp);
+  var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1); }).join(' ');
+  var body = el('g', { 'clip-path': 'url(#' + cid + ')' }, svg);
+  if (opt.area !== false) el('path', { class: 'ar', d: d + ' L' + pts[pts.length - 1].x + ' ' + opt.y0 + ' L' + pts[0].x + ' ' + opt.y0 + ' Z', fill: 'url(#' + gid + ')' }, body);
+  el('path', { class: opt.cls || 'ln', d: d }, body);
+  this.cur = 0; this.from = 0; this.to = 0; this.t0 = 0;
+}
+Reveal1.prototype.go = function (x, instant) {
+  if (x === this.to) return;
+  this.from = this.cur; this.to = x; this.t0 = performance.now();
+  if (instant || STATIC) { this.cur = x; this.clip.setAttribute('width', x); }
+};
+Reveal1.prototype.tick = function (now) {
+  if (this.cur === this.to) return;
+  var u = (now - this.t0) / (this.opt.dur || 1400);
+  this.cur = u >= 1 ? this.to : this.from + (this.to - this.from) * ease(u);
+  this.clip.setAttribute('width', this.cur);
+};
+
+var charts = [];   // {sec, stages:[{act, x}], line}
+function gate(node, act) { node.classList.add('gated'); node.setAttribute('data-gate', act); return node; }
+/* A label in the deck's one style: big number, and under it when. */
+function bigLabel(g, x, y, num, when, anchor) {
+  el('text', { class: 'big', x: x, y: y, 'text-anchor': anchor || 'start' }, g, num);
+  el('text', { class: 'when', x: x, y: y + 34, 'text-anchor': anchor || 'start' }, g, when);
+}
+
+/* ---------- 3 · Hacker News ---------- */
+(function () {
+  var svg = document.getElementById('hn'), H = DATA.hn;
+  var L = 70, R = 1350, T = 20, B = 340, YMAX = 320;
+  function X(i) { return L + (R - L) * i / (H.length - 1); }
+  function Y(v) { return B - (B - T) * v / YMAX; }
+  [0, 100, 200, 300].forEach(function (v) {
+    el('line', { class: v ? 'gridline' : 'baseline', x1: L, x2: R, y1: Y(v), y2: Y(v) }, svg);
+    el('text', { class: 'tick-y', x: L - 14, y: Y(v) + 8 }, svg, v);
+  });
+  H.forEach(function (r, i) { if (r.m.slice(5) === '01') el('text', { class: 'tick-x', x: X(i), y: B + 44 }, svg, r.m.slice(0, 4)); });
+  var line = new Reveal1(svg, H.map(function (r, i) { return { x: X(i), y: Y(r.v) }; }), { y0: B });
+  function idx(m) { for (var i = 0; i < H.length; i++) if (H[i].m === m) return i; }
+  function avg(a, b) { var s = 0, n = 0; for (var i = idx(a); i <= idx(b); i++) { s += H[i].v; n++; } return s / n; }
+  var i24 = idx('2024-12'), i25 = idx('2025-12'), ipk = idx('2025-10'), iend = H.length - 1;
+  var a24 = avg('2024-01', '2024-12'), a26 = avg('2026-01', H[iend].m);
+  var g1 = gate(el('g', {}, svg), 'pre');
+  el('line', { class: 'lead', x1: X(idx('2024-01')), x2: X(i24), y1: Y(a24), y2: Y(a24) }, g1);
+  bigLabel(g1, X(idx('2024-06')), Y(a24) - 92, Math.round(a24), '2024', 'middle');
+  var g2 = gate(el('g', {}, svg), 'spike');
+  el('circle', { class: 'dot', cx: X(ipk), cy: Y(H[ipk].v), r: 9 }, g2);
+  el('line', { class: 'lead', x1: X(ipk) - 178, x2: X(ipk) - 14, y1: Y(H[ipk].v), y2: Y(H[ipk].v) }, g2);
+  bigLabel(g2, X(ipk) - 190, Y(H[ipk].v) + 14, H[ipk].v, mlabel(H[ipk].m), 'end');
+  // the soap bubble round the spike; it forms with the headline and pops at "after"
+  var sg = el('g', { class: 'soap' }, svg), cx = X(ipk) + 10, cy = Y(170), r = 150, defs = svg.querySelector('defs');
+  var rg = el('radialGradient', { id: 'soapfill', cx: '50%', cy: '50%', r: '50%' }, defs);
+  el('stop', { offset: '0.70', 'stop-color': '#ffffff', 'stop-opacity': 0 }, rg);
+  el('stop', { offset: '0.92', 'stop-color': '#c9a6ff', 'stop-opacity': 0.18 }, rg);
+  el('stop', { offset: '1', 'stop-color': '#8d9fff', 'stop-opacity': 0.42 }, rg);
+  var lg = el('linearGradient', { id: 'soaprim', x1: 0, y1: 0, x2: 1, y2: 1 }, defs);
+  ['#ffb061', '#ff6778', '#f58fde', '#bc82f3', '#8d9fff'].forEach(function (c, k) { el('stop', { offset: k / 4, 'stop-color': c }, lg); });
+  el('circle', { cx: cx, cy: cy, r: r, fill: 'url(#soapfill)', stroke: 'url(#soaprim)', 'stroke-width': 3, opacity: 0.95 }, sg);
+  var g3 = gate(el('g', {}, svg), 'after');
+  el('line', { class: 'lead', x1: X(idx('2026-01')), x2: X(iend) + 14, y1: Y(a26), y2: Y(a26) }, g3);
+  bigLabel(g3, X(iend) + 28, Y(a26) + 14, Math.round(a26), '2026');
+  charts.push({ sec: svg.closest('section'), line: line, stages: [
+    { act: 'pre', x: X(i24) + 1 }, { act: 'spike', x: X(i25) + 1 }, { act: 'after', x: X(iend) + 6 } ] });
+
+  // small charts: their own months (Apr 2025 – Sep 2026), so no empty tails
+  var M0 = '2025-04', months = H.filter(function (r) { return r.m >= M0; }).map(function (r) { return r.m; });
+  function spark(id, S, fmt) {
+    var s = document.getElementById(id), W = 740, h = 78;
+    S = S.filter(function (r) { return r.m >= M0; });
+    var mx = Math.max.apply(null, S.map(function (r) { return r.v; }));
+    function SX(m) { return 6 + (W - 12) * months.indexOf(m) / (months.length - 1); }
+    el('line', { class: 'baseline', x1: 0, x2: W, y1: h, y2: h }, s);
+    ['2025-07', '2026-01', '2026-07'].forEach(function (m) { el('text', { class: 'stick', x: SX(m), y: h + 28 }, s, mlabel(m)); });
+    var sl = new Reveal1(s, S.map(function (r) { return { x: SX(r.m), y: h - (h - 8) * r.v / mx }; }), { y0: h, cls: 'ln2', area: false });
+    sl.go(W + 10, true);
+    var pk = S.reduce(function (a, r) { return r.v > a.v ? r : a; });
+    el('circle', { class: 'dot', cx: SX(pk.m), cy: 8, r: 6, style: 'fill:var(--line2)' }, s);
+    el('text', { class: 'pk', x: SX(pk.m), y: -10, 'text-anchor': 'middle' }, s, 'peak ' + fmt(pk.v) + ', ' + mlabel(pk.m));
+  }
+  spark('wiki', DATA.wiki, function (v) { return Math.round(v / 1000) + 'k'; });
+  spark('nyt', DATA.nyt, function (v) { return v; });
+})();
+
+/* ---------- 6 · megaprojects: totals, then per year (endpoints from Fin Moorhouse's chart, 2024 dollars) ---------- */
+(function () {
+  var rows = [['Data centers', 930, 6, 'dc'], ['Interstate highways', 620, 37], ['US railroads', 550, 71], ['F-35 fighter jet', 400, 25],
+              ['Apollo programme', 257, 14], ['Marshall Plan', 170, 4], ['Space Station', 150, 27], ['Manhattan Project', 36, 5]];
+  var per = rows.map(function (r) { return r[1] / r[2]; }), maxPer = Math.max.apply(null, per);
+  var order = rows.map(function (r, i) { return i; }).sort(function (a, b) { return per[b] - per[a]; });
+  document.getElementById('mega').innerHTML = rows.map(function (r, i) {
+    var w = (r[1] / 930 * 82).toFixed(1) + '%', wp = (per[i] / maxPer * 82).toFixed(1) + '%';
+    return '<div class="mrow ' + (r[3] === 'dc' ? 'dc' : 'old') + '" style="--tt:' + i * 66 + 'px;--tp:' + order.indexOf(i) * 66 + 'px;--w:' + w + ';--wp:' + wp + '">' +
+      '<div class="mn">' + r[0] + '</div><div class="mt"><div class="mb"></div>' +
+      '<div class="mv"><span class="tot">$' + r[1] + 'bn <small>in ' + r[2] + ' years</small></span><span class="per">$' + Math.round(per[i]) + 'bn <small>a year</small></span></div></div></div>';
+  }).join('');
+})();
+
+/* ---------- 7 · price and the thing itself, one plot per bubble, two scales ---------- */
+function era(id, cfg) {
+  var svg = document.getElementById(id), L = 78, R = 650, T = 50, B = svg.viewBox.baseVal.height - 60;   /* taller since the punch line went (Justin, 15 Oct) */
+  function X(t) { return L + (R - L) * (t - cfg.x0) / (cfg.x1 - cfg.x0); }
+  function YP(v) { return B - (B - T) * v / cfg.pMax; }
+  function YT(v) { return B - (B - T) * v / cfg.tMax; }
+  var band = el('rect', { class: 'band', x: X(cfg.band[0]), width: X(cfg.band[1]) - X(cfg.band[0]), y: T - 10, height: B - T + 10 }, svg);
+  gate(band, cfg.acts[0]);
+  el('line', { class: 'baseline', x1: L, x2: R, y1: B, y2: B }, svg);
+  cfg.ticks.forEach(function (t) { el('text', { class: 'tick-x', x: X(t), y: B + 40 }, svg, t); });
+  // left scale: prices
+  var gp = gate(el('g', {}, svg), cfg.acts[0]);
+  el('text', { class: 'ax-price', x: L - 10, y: T - 26, 'text-anchor': 'start' }, gp, cfg.pLabel);
+  cfg.pTicks.forEach(function (v) { el('text', { class: 'tick-y', x: L - 12, y: YP(v) + 7, style: 'fill:var(--line);opacity:0.8;font-size:20px' }, gp, cfg.pFmt(v)); });
+  // right scale: the thing
+  var gt = gate(el('g', {}, svg), cfg.acts[1]);
+  el('text', { class: 'ax-thing', x: R + 10, y: T - 26, 'text-anchor': 'end' }, gt, cfg.tLabel);
+  cfg.tTicks.forEach(function (v) { el('text', { class: 'tick-thing', x: R + 12, y: YT(v) + 7 }, gt, cfg.tFmt(v)); });
+  var lp = new Reveal1(svg, cfg.price.map(function (r) { return { x: X(cfg.tx(r)), y: YP(r.v) }; }), { y0: B, id: id + 'p' });
+  var lt = new Reveal1(svg, cfg.thing.map(function (r) { return { x: X(r.y), y: YT(r.v) }; }), { y0: B, id: id + 't', cls: 'ln-thing', area: false });
+  charts.push({ sec: svg.closest('section'), line: lp, stages: [{ act: cfg.acts[0], x: R + 10 }] });
+  charts.push({ sec: svg.closest('section'), line: lt, stages: [{ act: cfg.acts[1], x: R + 10 }] });
+  cfg.labels.forEach(function (lb) {
+    var g = gate(el('g', {}, svg), lb.act), Y = lb.thing ? YT : YP;
+    el('circle', { class: 'dot' + (lb.thing ? ' thing' : ''), cx: X(lb.t), cy: Y(lb.v), r: 7 }, g);
+    el('text', { class: 'lab', x: X(lb.t) + (lb.dx || 14), y: Y(lb.v) + (lb.dy || 8), 'text-anchor': lb.anchor || 'start', style: 'font-size:22px' }, g, lb.text);
+  });
+}
+(function () {
+  var rp = DATA.rail_px, rm = DATA.rail_mi, nq = DATA.nasdaq, us = DATA.users;
+  function at(rows, y) { for (var i = 0; i < rows.length; i++) if (rows[i].y === y) return rows[i].v; }
+  function ym(m) { return +m.slice(0, 4) + (+m.slice(5, 7) - 1) / 12; }
+  function comma(v) { return v.toLocaleString('en-GB'); }
+  era('rail', { x0: 1840, x1: 1860, band: [1845, 1850], acts: ['rp', 'rm'], price: rp, thing: rm, tx: function (r) { return r.y; },
+    pMax: 130, tMax: 11500, pLabel: 'Share prices', tLabel: 'Track open (miles)', ticks: [1840, 1845, 1850, 1855, 1860],
+    pTicks: [], pFmt: String, tTicks: [0, 5000, 10000], tFmt: comma,
+    labels: [
+      { act: 'rp', t: 1845, v: at(rp, 1845), text: 'peak, 1845', dx: -16, anchor: 'end' },
+      { act: 'rp', t: 1850, v: at(rp, 1850), text: 'halved by 1850', dy: 32 },
+      { act: 'rm', thing: true, t: 1845, v: at(rm, 1845), text: '2,400', dx: 0, dy: 34, anchor: 'middle' },
+      { act: 'rm', thing: true, t: 1860, v: at(rm, 1860), text: '10,400', dx: -14, anchor: 'end', dy: -14 } ] });
+  var top = nq.reduce(function (a, r) { return r.v > a.v ? r : a; });
+  var low = nq.filter(function (r) { return r.m >= '2002-01' && r.m <= '2003-03'; }).reduce(function (a, r) { return r.v < a.v ? r : a; });
+  era('dotcom', { x0: 1995, x1: 2013, band: [ym('2000-03'), ym('2002-10')], acts: ['dp', 'du'], price: nq, thing: us, tx: function (r) { return ym(r.m); },
+    pMax: 5300, tMax: 2600, pLabel: 'Nasdaq share index', tLabel: 'People online (millions)', ticks: [1995, 2000, 2005, 2010],
+    pTicks: [], pFmt: String, tTicks: [0, 1000, 2000], tFmt: comma,
+    labels: [
+      { act: 'dp', t: ym(top.m), v: top.v, text: 'peak, March 2000' },
+      { act: 'dp', t: ym(low.m), v: low.v, text: '−78% by Oct 2002', dy: 34 },
+      { act: 'du', thing: true, t: 2000, v: at(us, 2000), text: '391', dx: -14, anchor: 'end', dy: -12 },
+      { act: 'du', thing: true, t: 2012, v: at(us, 2012), text: '2,390', dx: -14, anchor: 'end', dy: -14 } ] });
+})();
+
+/* (9 · labour share: slide cut, Justin 15 Oct; code in index.before-last.html) */
+
+/* ---------- 2 · money running along the diagram's arrows ---------- */
+var FLOWS = Array.prototype.slice.call(document.querySelectorAll('#flows .flow')).map(function (p, k) {
+  var c = el('g', { class: 'coin' }, document.getElementById('flows'));
+  el('circle', { r: 30 }, c); el('text', {}, c, '$');
+  return { p: p, len: p.getTotalLength(), coin: c, period: 2.2 + (k % 3) * 0.35, phase: k * 0.53, ab: /f-a|f-b/.test(p.getAttribute('class')) };
+});
+var flowSec = document.getElementById('flows').closest('section'), flowT0 = null;
+function flowTick(now) {
+  var loop = flowSec.classList.contains('act-loop'), all = flowSec.classList.contains('act-all');
+  if (!loop && !all) { flowT0 = null; FLOWS.forEach(function (f) { f.coin.style.opacity = 0; }); return; }
+  if (flowT0 == null) flowT0 = now;
+  var t = (now - flowT0) / 1000;
+  FLOWS.forEach(function (f) {
+    if (!all && !f.ab) { f.coin.style.opacity = 0; return; }
+    var u;
+    if (!all) {   // first click: one coin, Nvidia → OpenAI → Nvidia, hidden inside the bubbles
+      var c = t % 3.2, onA = /f-a/.test(f.p.getAttribute('class'));
+      var s = onA ? c / 1.3 : (c - 1.6) / 1.3;
+      if (s < 0 || s > 1) { f.coin.style.opacity = 0; return; }
+      u = ease(s);
+    } else {
+      u = ((t + f.phase) % f.period) / f.period;
+    }
+    if (STATIC) u = 0.5;
+    var p = f.p.getPointAtLength(f.len * u);
+    f.coin.style.opacity = Math.min(1, Math.min(u, 1 - u) * 8);
+    f.coin.setAttribute('transform', 'translate(' + p.x + ',' + p.y + ')');
+  });
+}
+
+/* ---------- year ruler (same as mockups/intro) ---------- */
+var MONTHS = ['2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'];
+var LETTERS = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+var ruler = document.getElementById('ruler'), rin = ruler.querySelector('.inner');
+var X0 = 200, X1 = 1720;
+function mx(i) { return X0 + (X1 - X0) * i / (MONTHS.length - 1); }
+(function build() {
+  var h = '<div class="track"></div><div class="past"></div>';
+  MONTHS.forEach(function (m, i) {
+    h += '<div class="tick" style="left:' + mx(i) + 'px"></div>';
+    h += '<div class="m" data-i="' + i + '" style="left:' + mx(i) + 'px">' + LETTERS[i] + '</div>';
+  });
+  h += '<div class="y" style="left:' + mx(0) + 'px">2025</div><div class="y" style="left:' + mx(3) + 'px">2026</div>';
+  h += '<div class="start" style="left:' + mx(0) + 'px"></div><div class="start-label" style="left:' + (mx(0) + 18) + 'px">I start at CAISH</div>';
+  h += '<div class="now-caret"></div>';
+  rin.innerHTML = h;
+})();
+function placeRuler() {
+  var k = Math.min(innerWidth / 1920, innerHeight / 1080);
+  var ox = (innerWidth - 1920 * k) / 2, oy = (innerHeight - 1080 * k) / 2;
+  rin.style.transform = 'translate(' + ox + 'px,' + (oy + (1080 - 150) * k) + 'px) scale(' + k + ')';
+  ruler.style.height = innerHeight + 'px'; ruler.style.top = 0;
+}
+addEventListener('resize', placeRuler); placeRuler();
+function setRuler(month) {
+  if (!month) { ruler.classList.remove('on'); return; }
+  ruler.classList.add('on');
+  var i = MONTHS.indexOf(month);
+  rin.querySelector('.now-caret').style.left = mx(i) + 'px';
+  rin.querySelector('.past').style.width = (mx(i) - mx(0)) + 'px';
+  rin.querySelectorAll('.m').forEach(function (e) { var j = +e.dataset.i; e.classList.toggle('done', j < i); e.classList.toggle('now', j === i); });
+}
+
+/* ---------- theme ---------- */
+try { if (localStorage.getItem('howard-theme') === 'paper') document.body.classList.add('paper'); } catch (e) {}
+if (/[?&]theme=paper/.test(location.search)) document.body.classList.add('paper');
+
+/* ---------- deck: plain cuts between slides (no cross-fade glow) ---------- */
+/* "Anthropic" in Anthropic's orange wherever it appears on a slide (never in the notes). Runs after charts are drawn. */
+(function () {
+  document.querySelectorAll('.slides section').forEach(function (sec) {
+    var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+      return /Anthropic/.test(n.nodeValue) && !n.parentNode.closest('aside.notes') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; } });
+    var list = []; while (w.nextNode()) list.push(w.currentNode);
+    list.forEach(function (n) {
+      var svg = n.parentNode instanceof SVGElement, f = document.createDocumentFragment();
+      n.nodeValue.split(/(Anthropic)/).forEach(function (p) {
+        if (!p) return;
+        if (p !== 'Anthropic') { f.appendChild(document.createTextNode(p)); return; }
+        var s = svg ? document.createElementNS('http://www.w3.org/2000/svg', 'tspan') : document.createElement('span');
+        s.setAttribute('class', 'anth'); s.textContent = p; f.appendChild(s);
+      });
+      n.parentNode.replaceChild(f, n);
+    });
+  });
+})();
+
+Reveal.initialize({
+  width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 4,
+  center: false, controls: false, progress: false, hash: true, history: false,
+  transition: 'none', backgroundTransition: 'none',
+  plugins: [ RevealNotes ],
+  keyboard: { 84: function () {   // T: glow / paper
+    document.body.classList.toggle('paper');
+    try { localStorage.setItem('howard-theme', document.body.classList.contains('paper') ? 'paper' : 'glow'); } catch (e) {}
+  } }
+});
+
+/* Fragments with data-act="x" set class act-x on their slide; [data-gate="x"] elements show with it. */
+function syncActs(sec, entering) {
+  if (!sec) return;
+  var on = {};
+  sec.querySelectorAll('.fragment[data-act]').forEach(function (f) {
+    var name = f.dataset.act, v = f.classList.contains('visible');
+    on[name] = v;
+    sec.classList.toggle('act-' + name, v);
+    sec.querySelectorAll('[data-gate="' + name + '"]').forEach(function (g) { g.classList.toggle('shown', v); });
+  });
+  charts.forEach(function (c) {
+    if (c.sec !== sec) return;
+    var x = 0;
+    c.stages.forEach(function (s) { if (on[s.act]) x = s.x; });
+    c.line.go(x, entering && x === 0);
+  });
+}
+/* Screenshot helper: ?static&s=H&f=N opens slide H with fragments up to N shown. */
+var QS = new URLSearchParams(location.search);
+if (QS.has('s')) Reveal.on('ready', function () { Reveal.slide(+QS.get('s'), 0, QS.has('f') ? +QS.get('f') : -1); });
+function sync() { var s = Reveal.getCurrentSlide(); setRuler(s && s.dataset.ruler); ruler.classList.toggle('first', !!(s && s.hasAttribute('data-ruler-start'))); syncActs(s, true); }
+Reveal.on('ready', sync);
+Reveal.on('slidechanged', sync);
+Reveal.on('fragmentshown', function () { syncActs(Reveal.getCurrentSlide(), false); });
+Reveal.on('fragmenthidden', function () { syncActs(Reveal.getCurrentSlide(), false); });
+function frame(now) { charts.forEach(function (c) { c.line.tick(now); }); flowTick(now); requestAnimationFrame(frame); }
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

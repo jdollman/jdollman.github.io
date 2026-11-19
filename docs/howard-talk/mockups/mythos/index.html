@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mythos Preview</title>
+<link rel="stylesheet" href="../../vendor/reveal/reset.css">
+<link rel="stylesheet" href="../../vendor/reveal/reveal.css">
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+/* Same tokens as mockups/trump-h200, mockups/rsi and mockups/emergent-misalignment: "glow" by default, T for caish.org "paper". */
+:root {
+  --paper: #050508;
+  --ink: #f2f1f6;
+  --graphite: rgba(235, 235, 245, 0.66);
+  --faint: rgba(235, 235, 245, 0.34);
+  --accent: #c9a6ff;
+  --accent-grad: linear-gradient(90deg, #ffb061, #ff6778 25%, #f58fde 50%, #bc82f3 75%, #8d9fff);
+  --caret-grad: linear-gradient(180deg, #f5b9ea 0%, #c686ff 48%, #8d9fff 100%);
+  --caret-glow: 0 0 10px rgba(198, 134, 255, 0.85), 0 0 22px rgba(141, 159, 255, 0.45);
+  --rule: rgba(235, 235, 245, 0.16);
+  --grid: rgba(235, 235, 245, 0.09);
+  --card-stroke: rgba(235, 235, 245, 0.2);
+  --card-bg: #0d0d13;
+  --bad: #ff6778;
+  --hl: rgba(245, 143, 222, 0.32);
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --mono: 'Space Mono', ui-monospace, Menlo, monospace;
+}
+body.paper {
+  --paper: #fbfbfa;
+  --ink: #1a1a1a;
+  --graphite: #4a4a4a;
+  --faint: #a49b92;
+  --accent: #945947;
+  --accent-grad: linear-gradient(90deg, #945947, #945947);
+  --caret-grad: linear-gradient(180deg, #945947, #945947);
+  --caret-glow: none;
+  --rule: rgba(148, 89, 71, 0.28);
+  --grid: rgba(26, 26, 26, 0.08);
+  --card-stroke: rgba(26, 26, 26, 0.22);
+  --card-bg: #ffffff;
+  --bad: #b0413e;
+  --hl: rgba(148, 89, 71, 0.3);
+}
+html, body { background: var(--paper); }
+.reveal { font-family: var(--mono); color: var(--ink); font-size: 32px; line-height: 1.5; }
+.reveal .slides { text-align: left; }
+.reveal .slides section { width: 1920px; height: 1080px; padding: 0; box-sizing: border-box; }
+.reveal .slide-background { background: var(--paper); }
+.reveal h1, .reveal h2 { font-family: var(--serif); font-weight: 400; color: var(--ink); margin: 0; letter-spacing: -0.005em; }
+.reveal h2 { font-size: 68px; line-height: 1.15; text-wrap: balance; }
+.reveal em { font-style: italic; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.08em; }
+:where(.reveal) p { margin: 0; }
+/* Content is centred vertically. Only the slide that carries the year ruler reserves its 150px at the bottom. */
+.frame { position: absolute; inset: 0; padding: 92px 170px; display: flex; flex-direction: column; justify-content: center; }
+.frame.ruled { padding-bottom: 190px; }
+.month { font-family: var(--mono); font-size: 26px; color: var(--accent); margin-bottom: 18px; }
+.reveal .slides section .fragment { transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal .slides section .fragment.rise { transform: translateY(14px); }
+.reveal .slides section .fragment.rise.visible { transform: none; }
+.gated { opacity: 0; transition: opacity 0.6s; }
+.gated.shown { opacity: 1; }
+.bloom { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 38% at 18% 112%, rgba(255, 103, 120, 0.13), transparent 70%),
+              radial-gradient(55% 40% at 82% 115%, rgba(141, 159, 255, 0.15), transparent 70%),
+              radial-gradient(40% 30% at 50% 120%, rgba(188, 130, 243, 0.12), transparent 70%); }
+body.paper .bloom { display: none; }
+.static *, .static *::before, .static *::after { transition: none !important; animation: none !important; }
+.bignum { font-family: var(--serif); font-size: 132px; line-height: 1; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .bignum { filter: drop-shadow(0 0 18px rgba(245, 143, 222, 0.45)); }
+.reveal h2, .reveal q, .opener h1 { text-wrap: balance; }
+.dim { transition: opacity 0.6s; }
+/* a highlight drawn only after its words are up (data-lit, Justin 15 Oct) */
+.hl { box-shadow: inset 0 -0.5em 0 transparent; transition: box-shadow 0.6s 0.1s; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.hl.lit { box-shadow: inset 0 -0.5em 0 rgba(188, 130, 243, 0.45); }
+body.paper .hl.lit { box-shadow: inset 0 -0.5em 0 rgba(148, 89, 71, 0.22); }
+.part { opacity: 0; transition: opacity 0.6s; } .part.shown { opacity: 1; }
+/* the closing quote mark waits for the rest of Thompson's sentence */
+.mk-a q::after { transition: color 0.6s; } section:not(.act-m2) .mk-a q::after { color: transparent; }
+.center { align-items: center; text-align: center; }
+
+/* ===== the beat's opener (month, then who, then the title, then the subtitle) ===== */
+.opener .org { font-family: var(--serif); font-size: 46px; color: var(--graphite); margin-top: 6px; }
+.reveal .opener h1 { font-size: 104px; line-height: 1.08; margin-top: 22px; }
+.opener .sub { font-family: var(--serif); font-size: 54px; line-height: 1.2; color: var(--graphite); margin-top: 18px; }
+.reveal .opener h1.qt { font-size: 80px; line-height: 1.14; max-width: 1500px; }
+.reveal .opener h1.qt::before { content: "\201C"; } .reveal .opener h1.qt::after { content: "\201D"; }
+.opener .sub.qt { font-size: 44px; line-height: 1.3; max-width: 1480px; margin-top: 34px; text-wrap: balance; }
+.opener .sub.qt::before { content: "\201C"; } .opener .sub.qt::after { content: "\201D"; }
+
+/* ===== shared: quotes, kickers ===== */
+.qb q { display: block; font-family: var(--serif); font-size: 44px; line-height: 1.3; quotes: "\201C" "\201D"; text-wrap: balance; }
+.qb .who { font-size: 26px; color: var(--graphite); margin-top: 14px; }
+.reveal .key { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .reveal .key { filter: drop-shadow(0 0 12px rgba(245, 143, 222, 0.45)); }
+/* A highlight comes on its own click, after its words (Justin, round 2): .hold stays plain ink until its [data-lit] act is shown. */
+.reveal .key.hold:not(.lit) { background: none; color: inherit; -webkit-text-fill-color: currentColor; filter: none; }
+.qstack { display: flex; flex-direction: column; gap: 52px; max-width: 1540px; }
+.kick { font-family: var(--mono); font-size: 26px; color: var(--accent); margin-bottom: 18px; }
+.nw { white-space: nowrap; }
+/* auto-centre: the visible content stays centred as clicks add to it (wrapper set by script) */
+.acw { transition: transform 0.7s cubic-bezier(.4,0,.2,1); }
+.frame.center .acw { display: flex; flex-direction: column; align-items: center; }
+
+/* ===== year ruler (same as mockups/intro; the "now" caret does not blink) ===== */
+#ruler { position: fixed; left: 0; right: 0; bottom: 0; height: 0; pointer-events: none; z-index: 30; opacity: 0; transition: opacity 0.8s; }
+#ruler.on { opacity: 1; }
+#ruler .inner { position: absolute; transform-origin: 0 0; width: 1920px; height: 150px; }
+#ruler .track { position: absolute; left: 170px; right: 170px; top: 52px; height: 1px; background: var(--rule); }
+#ruler .past { position: absolute; left: 200px; top: 51px;   /* starts at the first month (X0), so it ends exactly at the caret */ height: 3px; background: var(--accent-grad); box-shadow: var(--caret-glow); transition: width 1.4s cubic-bezier(.6,0,.2,1); }
+#ruler .m { position: absolute; top: 70px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 22px; color: var(--faint); }
+#ruler .m.done { color: var(--graphite); }
+#ruler .m.now { color: var(--ink); font-weight: 700; }
+#ruler .y { position: absolute; top: 104px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 18px; color: var(--faint); }
+#ruler .tick { position: absolute; top: 46px; width: 1px; height: 13px; background: var(--rule); }
+#ruler .start { position: absolute; top: 44px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: #ffb061; box-shadow: var(--caret-glow); }
+#ruler .start-label { position: absolute; top: 0; font-family: var(--mono); font-size: 20px; color: var(--accent); white-space: nowrap; }
+#ruler .start-label { display: none; } #ruler.first .start-label { display: block; }
+#ruler .now-caret { position: absolute; top: 39px; width: 4px; height: 28px; margin-left: -2px; border-radius: 2px; background: var(--caret-grad); box-shadow: var(--caret-glow); transition: left 1.4s cubic-bezier(.6,0,.2,1); }
+
+
+/* ===================== beat 04: the Fable ban ===================== */
+
+/* 2 · what was switched off */
+.mcards { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; max-width: 1580px; width: 100%; }
+.mcard { position: relative; display: flex; flex-direction: column; border: 1px solid var(--card-stroke); border-radius: 18px; background: var(--card-bg); padding: 34px 42px 36px; transition: opacity 0.6s; }
+body:not(.paper) .mcard { box-shadow: 0 0 50px rgba(188, 130, 243, 0.12); }
+.mcard .mn { font-family: var(--serif); font-size: 62px; line-height: 1.1; }
+.mcard .md { font-size: 24px; color: var(--graphite); margin-top: auto; padding-top: 22px; line-height: 1.45; }
+.mcard .ml { font-family: var(--serif); font-size: 34px; line-height: 1.35; margin-top: 16px; quotes: "\201C" "\201D"; display: block; text-wrap: balance; }
+.mcard .off { position: absolute; top: 34px; right: 40px; font-family: var(--mono); font-size: 25px; color: var(--bad); }
+section.act-d1 .mcard .mn, section.act-d1 .mcard .md, section.act-d1 .mcard .ml { opacity: 0.38; transition: opacity 0.6s; }
+/* the quote sits under the Fable card, the "18" under the Mythos card; both columns share a top line */
+.offrow { display: grid; grid-template-columns: 1fr 1fr; column-gap: 50px; align-items: start; margin-top: 56px; max-width: 1580px; width: 100%; }
+.offq { padding: 0 6px; }
+.offq q { font-size: 42px; }
+.offq q b { font-weight: 700; }
+.zero { text-align: center; }
+.zero .zw { font-size: 24px; color: var(--graphite); white-space: nowrap; }
+.zero .bignum { font-size: 190px; margin-top: 6px; }
+.zero .when { font-size: 26px; color: var(--graphite); margin-top: 4px; }
+
+/* 3 · February: the supply-chain-risk label */
+.lead { font-family: var(--serif); font-size: 44px; line-height: 1.3; max-width: 1500px; text-wrap: balance; }
+.uses { display: flex; flex-direction: column; margin-top: 26px; max-width: 1200px; }
+.uses .u { display: grid; grid-template-columns: 70px 1fr; align-items: baseline; border-top: 1px solid var(--rule); padding: 18px 0 16px; }
+.uses .un { font-size: 28px; color: var(--accent); }
+.uses .ut { font-family: var(--serif); font-size: 48px; line-height: 1.2; }
+.label { margin-top: 64px; max-width: 1540px; }
+.label .lt { font-family: var(--serif); font-size: 52px; line-height: 1.25; text-wrap: balance; }
+.label .lg { font-family: var(--serif); font-size: 40px; line-height: 1.3; color: var(--graphite); margin-top: 18px; text-wrap: balance; }
+.label .lg q { quotes: "\201C" "\201D"; }
+.label .lw { font-size: 26px; color: var(--graphite); margin-top: 12px; }
+
+/* 4 · the jibe, in a real post */
+.jibe { text-align: center; }
+.jibe q { font-size: 84px; line-height: 1.2; }
+.jibe .who { margin-top: 30px; }
+
+/* 5 · what Dario wrote / what Anthropic said: two columns on shared rows (name, date, quote) */
+.meme { display: grid; grid-template-columns: 1fr 1fr; column-gap: 110px; max-width: 1580px; }
+.meme .mh { font-family: var(--serif); font-size: 56px; line-height: 1.1; }
+.meme .mw { font-size: 25px; color: var(--accent); margin-top: 12px; padding-bottom: 24px; }
+.meme .mq { border-top: 1px solid var(--rule); padding-top: 28px; font-family: var(--serif); font-size: 38px; line-height: 1.38; text-wrap: pretty; }
+.meme .mq q { quotes: "\201C" "\201D"; }
+.meme .mq .sent { display: block; text-wrap: balance; }
+
+/* 5 · Europe */
+.reveal h2.hed { font-size: 54px; line-height: 1.22; max-width: 1500px; }
+.reveal h2.hed::before { content: "\201C"; }
+.eu { margin-top: 56px; }
+.eu q { font-size: 40px; }
+section.act-e2 .eu-a { opacity: 0.3; }
+.eu-b { margin-top: 50px; }
+
+/* 6 · Glasswing */
+.reveal h2.mod { font-size: 84px; }
+.msub { font-family: var(--serif); font-size: 40px; color: var(--graphite); margin-top: 12px; }
+.gw-q { margin-top: 54px; max-width: 1540px; }
+.gw-q q { font-size: 46px; }
+.gw-nr { font-family: var(--serif); font-size: 60px; margin-top: 56px; }
+/* 7 · the launch partners */
+.gw { max-width: 1600px; width: 100%; }
+.gw .gl { font-family: var(--serif); font-size: 46px; line-height: 1.3; margin-bottom: 34px; text-wrap: balance; max-width: 1400px; }
+.pgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 56px; }
+.pgrid .p { font-family: var(--serif); font-size: 42px; line-height: 1.2; border-top: 1px solid var(--rule); padding: 20px 0; white-space: nowrap; }
+.gw-all { font-family: var(--serif); font-size: 60px; margin-top: 48px; }
+
+/* 7 · just marketing? */
+.mk q { font-size: 42px; }
+section.act-r1 .mk-a { opacity: 0.32; }
+
+/* 8 · Arora */
+.ar q { font-size: 54px; line-height: 1.26; }
+.ex { margin-top: 70px; display: flex; flex-direction: column; gap: 18px; max-width: 1500px; }
+.ex .row { display: grid; grid-template-columns: 170px 1fr; align-items: baseline; }
+.ex .sp { font-size: 25px; color: var(--graphite); }
+.ex .tx { font-family: var(--serif); font-size: 46px; line-height: 1.2; }
+.ex .tx.big { font-size: 78px; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.08em; }
+body:not(.paper) .ex .tx.big { filter: drop-shadow(0 0 18px rgba(245, 143, 222, 0.45)); }
+
+/* 9 · billions */
+.bq .bqt { font-family: var(--serif); font-size: 50px; line-height: 1.3; max-width: 1540px; text-wrap: pretty; }
+.bq .ans { transition: opacity 0.6s; }
+.b2 { margin-top: 64px; }
+.b2 q { font-size: 40px; }
+section.act-b2 .bq-a { opacity: 0.32; }
+
+/* 10 · Fable's safeguards */
+.sg-lead q { font-size: 40px; }
+.sgs { margin-top: 48px; gap: 40px; }
+.sgs q { font-size: 38px; }
+.sgs .qb { transition: opacity 0.6s; }
+section.act-s2 .sg-1, section.act-s3 .sg-1, section.act-s3 .sg-2 { opacity: 0.4; }
+.sgs { margin-top: 0; }
+section.act-s1 .sg-lead { opacity: 0.4; }
+
+/* 11 · the last line, glowing like the CAISH mark (as in mockups/rsi) */
+@keyframes drift { to { background-position: 200% 50%; } }
+.finale { position: relative; max-width: 1500px; margin: 0 auto; text-align: center; filter: drop-shadow(0 0 40px rgba(188, 130, 243, 0.35)); }
+.finale .fq { position: relative; font-family: var(--serif); font-size: 76px; line-height: 1.24; color: #fff; text-wrap: balance; }
+body.paper .finale .fq { color: var(--ink); }
+.finale .fq::before, .finale .fq::after { content: attr(data-text); position: absolute; inset: 0; z-index: -1; color: transparent;
+  background: linear-gradient(90deg, #ffb061, #ff6778, #f58fde, #bc82f3, #8d9fff, #ffb061, #ff6778); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; animation: drift 8s linear infinite; }
+.finale .fq::before { filter: blur(10px); opacity: 0.95; }
+.finale .fq::after { filter: blur(30px); opacity: 1; }
+body.paper .finale { filter: none; }
+body.paper .finale .fq::before, body.paper .finale .fq::after { opacity: 0.35; }
+.finale .who { font-size: 26px; color: var(--graphite); margin-top: 44px; }
+
+/* ===================== beat 04a: Mythos Preview → Fable (April–June 2026) ===================== */
+.gw-more { font-family: var(--serif); font-size: 40px; line-height: 1.3; margin-top: 40px; max-width: 1500px; text-wrap: balance; }
+.gw-more q { quotes: "\201C" "\201D"; }
+.ca q { font-size: 46px; }
+.ca q.gated:not(.shown) { display: none; }   /* takes no space until its click, so "Kevin Roose" sits under the visible quote */
+.gw .pgrid .p { font-size: 36px; padding: 13px 0; }
+.gw .gl { font-size: 40px; margin-bottom: 20px; }
+.gw .gw-more { font-size: 36px; margin-top: 30px; }
+.fb { margin-top: 30px; gap: 24px; }
+.fb q { font-size: 40px; }
+.jb { margin-top: 56px; }
+.jb q { font-size: 46px; }
+.jb2 { margin-top: 48px; color: var(--graphite); }
+.m5 { margin-top: 10px; padding-top: 26px; border-top: 1px solid var(--rule); }
+.m5 .m5n { font-family: var(--serif); font-size: 40px; color: var(--accent); margin-bottom: 10px; }
+.m5 q { display: block; font-family: var(--serif); font-size: 40px; line-height: 1.3; quotes: "\201C" "\201D"; text-wrap: balance; }
+.ex .row { grid-template-columns: 240px 1fr; }
+.bq .ans.gated:not(.shown) { display: none; }   /* the attribution sits under the visible question until the answer arrives */
+.sgs .who.sgw { font-family: var(--serif); font-size: 32px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+
+<section class="beat-start" data-ruler="2026-04" data-ruler-from="2025-12"><div class="bloom"></div>
+  
+</section>
+
+
+
+<section data-ruler="2026-04">
+  <div class="bloom"></div>
+  <div class="frame ruled opener">
+    <div class="month">April 2026</div>
+    <div class="org fragment rise">Anthropic</div>
+    <h1 class="fragment rise">Claude <em>Mythos</em> Preview</h1>
+  </div>
+  
+</section>
+
+
+<section class="ac">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="qstack">
+      <div class="qb gw-q">
+        <q>AI models have reached a level of coding capability where they can surpass all but the most skilled humans at finding and exploiting software&nbsp;vulnerabilities.</q>
+        <div class="who">Anthropic</div>
+      </div>
+      <div class="qb gw-q fragment rise">
+        <q>We do not plan to make Claude Mythos Preview generally available … we need to make progress in developing cybersecurity (and other) safeguards that detect and block the model’s most dangerous&nbsp;outputs.</q>
+        <div class="who">Anthropic</div>
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section class="ac">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="gw">
+      <h2 class="mod">Project Glasswing</h2>
+      <div class="qb gw-q" style="margin-top:28px">
+        <q>an urgent attempt to put these capabilities to work for defensive&nbsp;purposes</q>
+      </div>
+      <div class="fragment rise" style="margin-top:44px">
+        <div class="gl">Launch partners:</div>
+        <div class="pgrid" id="pgrid"></div>
+      </div>
+      <div class="gw-more fragment rise">Plus <q>over 40 additional organizations that build or maintain critical software&nbsp;infrastructure</q></div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section class="ac">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="qstack mk">
+      <div class="qb mk-a dim">
+        <q><span class="hl" data-lit="m1">what if this is just marketing?</span><span class="part" data-gate="m2"> Telling people you can’t have access to a super powerful model breeds envy, envy breeds demand, demand breeds&nbsp;revenue.</span></q>
+        <div class="who">Derek Thompson, on his podcast Plain English</div>
+      </div>
+      <div class="qb fragment rise" data-act="r1" data-fragment-index="2">
+        <q>I don’t put a lot of credence in the it’s-all-marketing hype thing, not because I don’t think AI companies are prone to marketing hype, but because in this case, we actually have <span class="hl" data-lit="r2">the developers of some of these software tools saying that this thing has found vulnerabilities in their&nbsp;software</span>.</q>
+        <div class="who">Kevin Roose, The New York Times</div>
+      </div>
+    </div>
+    <span class="fragment" data-act="m1" data-fragment-index="0"></span>
+    <span class="fragment" data-act="m2" data-fragment-index="1"></span>
+    <span class="fragment" data-act="r2" data-fragment-index="3"></span>
+  </div>
+  
+</section>
+
+
+<section class="ac">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="qb ca">
+      <q>The security researcher Nicholas Carlini … He was saying things like, LLMs are better at cybersecurity research than I am. This thing has allowed me to find more bugs in a two-week period than I had in my entire career as a security&nbsp;researcher.</q>
+      <div class="who">Kevin Roose</div>
+    </div>
+    <div class="qb ar fragment rise" style="margin-top:64px">
+      <q>In six weeks, we found vulnerabilities which would have normally taken us five to seven years to&nbsp;find.</q>
+      <div class="who">Nikesh Arora, CEO of Palo Alto Networks</div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section class="ac">
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="qb bq bq-a dim">
+      <div class="bqt"><div>“how much would people be willing to pay for an automated cyber weapon that was capable of finding <span class="nw">zero-day</span> vulnerabilities in critical pieces of infrastructure?</div><div class="ans gated" data-gate="b1"><span class="key">I think the answer is probably billions of&nbsp;dollars.”</span></div></div>
+      <div class="who">Kevin Roose</div>
+    </div>
+    <div class="qb bq b2 gated" data-gate="b2">
+      <div class="bqt">“if Anthropic had just been in profit maximization mode, they probably could have found the compute to run some version of this and offer it to very high-paying customers and made some money from&nbsp;that.”</div>
+      <div class="who">Kevin Roose</div>
+    </div>
+    <span class="fragment" data-act="b1"></span>
+    <span class="fragment" data-act="b2"></span>
+  </div>
+  
+</section>
+
+</div></div>
+<script>
+/* Year ruler on every slide of the beat (Justin, 15 Oct): a slide without its own data-ruler takes the month of the
+   slide before it, and its frame makes room for the ruler. Set pieces (a big chart, a famous image) opt out with data-no-ruler. */
+(function () {
+  /* ?ruler=all (on this page, or on the talk shell that frames it): set pieces get the ruler too, each at its
+     data-ruler-all month if it has one, else the month before; body.ruler-all scopes the CSS that makes them fit. */
+  var ALL = /[?&]ruler=all/.test(location.search);
+  try { if (!ALL && window.parent !== window) ALL = /[?&]ruler=all/.test(window.parent.location.search); } catch (e) {}
+  if (ALL) document.body.classList.add('ruler-all');
+  var m = null;
+  document.querySelectorAll('.slides > section').forEach(function (s) {
+    if (s.dataset.ruler) { m = s.dataset.ruler; return; }
+    if (!m) return;
+    if (s.hasAttribute('data-no-ruler')) {
+      if (!ALL) return;
+      s.dataset.ruler = s.dataset.rulerAll || m;   // an explicit month here does not carry over to later slides
+    } else s.dataset.ruler = m;
+    s.querySelectorAll(':scope > .frame').forEach(function (f) { f.classList.add('ruled'); });
+  });
+})();
+</script>
+
+<div id="ruler"><div class="inner"></div></div>
+
+<script src="../../vendor/reveal/reveal.js"></script>
+<script src="../../vendor/reveal/plugin/notes/notes.js"></script>
+<script src="data.js"></script>
+<script>
+var STATIC = /[?&]static/.test(location.search);
+if (STATIC) document.documentElement.classList.add('static');
+
+/* ---------- 6 · Glasswing launch partners, from Anthropic's announcement (data.js) ---------- */
+(function () {
+  var g = document.getElementById('pgrid');
+  DATA.partners.forEach(function (n) { var d = document.createElement('div'); d.className = 'p'; d.textContent = n; g.appendChild(d); });
+})();
+
+/* ---------- auto-centre: wrap each .ac frame's content; keep what is visible centred ---------- */
+document.querySelectorAll('section.ac .frame').forEach(function (fr) {
+  var w = document.createElement('div'); w.className = 'acw';
+  while (fr.firstChild) w.appendChild(fr.firstChild);
+  fr.appendChild(w);
+});
+function hiddenIn(el, w) {
+  for (var e = el; e && e !== w; e = e.parentElement) {
+    if (e.classList.contains('fragment') && !e.classList.contains('visible')) return true;
+    if (e.classList.contains('gated') && !e.classList.contains('shown')) return true;
+  }
+  return false;
+}
+function centre(sec) {
+  var w = sec && sec.classList.contains('ac') && sec.querySelector('.acw');
+  if (!w) return;
+  var k = Reveal.getScale() || 1, cur = w.style.transform; w.style.transition = 'none'; w.style.transform = 'none';
+  var wr = w.getBoundingClientRect(), top = Infinity, bot = -Infinity;
+  (function walk(n) {   // count a block whole unless it holds clicks, then count its visible parts
+    Array.prototype.forEach.call(n.children, function (c) {
+      if (hiddenIn(c, w)) return;
+      var own = c.classList.contains('fragment') || c.classList.contains('gated');
+      if (!own && c.querySelector('.fragment, .gated')) { walk(c); return; }
+      var r = c.getBoundingClientRect(); if (r.height < 1) return;
+      top = Math.min(top, r.top); bot = Math.max(bot, r.bottom);
+    });
+  })(w);
+  w.style.transform = cur; void w.offsetHeight; w.style.transition = '';
+  if (top === Infinity) return;
+  var dy = ((wr.top + wr.height / 2) - (top + bot) / 2) / k;
+  w.style.transform = 'translateY(' + dy.toFixed(1) + 'px)';
+}
+
+/* ---------- year ruler (same as mockups/intro) ---------- */
+var MONTHS = ['2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'];
+var LETTERS = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+var ruler = document.getElementById('ruler'), rin = ruler.querySelector('.inner');
+var X0 = 200, X1 = 1720;
+function mx(i) { return X0 + (X1 - X0) * i / (MONTHS.length - 1); }
+(function build() {
+  var h = '<div class="track"></div><div class="past"></div>';
+  MONTHS.forEach(function (m, i) {
+    h += '<div class="tick" style="left:' + mx(i) + 'px"></div>';
+    h += '<div class="m" data-i="' + i + '" style="left:' + mx(i) + 'px">' + LETTERS[i] + '</div>';
+  });
+  h += '<div class="y" style="left:' + mx(0) + 'px">2025</div><div class="y" style="left:' + mx(3) + 'px">2026</div>';
+  h += '<div class="start" style="left:' + mx(0) + 'px"></div><div class="start-label" style="left:' + (mx(0) + 18) + 'px">I start at CAISH</div>';
+  h += '<div class="now-caret"></div>';
+  rin.innerHTML = h;
+})();
+function placeRuler() {
+  var k = Math.min(innerWidth / 1920, innerHeight / 1080);
+  var ox = (innerWidth - 1920 * k) / 2, oy = (innerHeight - 1080 * k) / 2;
+  rin.style.transform = 'translate(' + ox + 'px,' + (oy + (1080 - 150) * k) + 'px) scale(' + k + ')';
+  ruler.style.height = innerHeight + 'px'; ruler.style.top = 0;
+}
+addEventListener('resize', placeRuler); placeRuler();
+function setRuler(month) {
+  if (!month) { ruler.classList.remove('on'); return; }
+  ruler.classList.add('on');
+  var i = MONTHS.indexOf(month);
+  rin.querySelector('.now-caret').style.left = mx(i) + 'px';
+  rin.querySelector('.past').style.width = (mx(i) - mx(0)) + 'px';
+  rin.querySelectorAll('.m').forEach(function (e) { var j = +e.dataset.i; e.classList.toggle('done', j < i); e.classList.toggle('now', j === i); });
+}
+
+/* ---------- theme ---------- */
+try { if (localStorage.getItem('howard-theme') === 'paper') document.body.classList.add('paper'); } catch (e) {}
+if (/[?&]theme=paper/.test(location.search)) document.body.classList.add('paper');
+
+/* ---------- deck: plain cuts between slides ---------- */
+Reveal.initialize({
+  width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 4,
+  center: false, controls: false, progress: false, hash: true, history: false,
+  transition: 'none', backgroundTransition: 'none',
+  plugins: [ RevealNotes ],
+  keyboard: { 84: function () {   // T: glow / paper
+    document.body.classList.toggle('paper');
+    try { localStorage.setItem('howard-theme', document.body.classList.contains('paper') ? 'paper' : 'glow'); } catch (e) {}
+  } }
+});
+
+/* Fragments with data-act="x" set class act-x on their slide; [data-gate="x"] elements show with it; [data-lit="x"] highlights light up with it. */
+function syncActs(sec) {
+  if (!sec) return;
+  sec.querySelectorAll('.fragment[data-act]').forEach(function (f) {
+    var name = f.dataset.act, v = f.classList.contains('visible');
+    sec.classList.toggle('act-' + name, v);
+    sec.querySelectorAll('[data-gate="' + name + '"]').forEach(function (g) { g.classList.toggle('shown', v); });
+    sec.querySelectorAll('[data-lit="' + name + '"]').forEach(function (g) { g.classList.toggle('lit', v); });
+  });
+}
+/* Screenshot helper: ?static&s=H&f=N opens slide H with fragments up to N shown. */
+var QS = new URLSearchParams(location.search);
+if (QS.has('s')) Reveal.on('ready', function () { Reveal.slide(+QS.get('s'), 0, QS.has('f') ? +QS.get('f') : -1); });
+function sync() { var s = Reveal.getCurrentSlide(); setRuler(s && s.dataset.ruler); ruler.classList.toggle('first', !!(s && s.hasAttribute('data-ruler-start'))); syncActs(s); centre(s); }
+Reveal.on('ready', sync);
+Reveal.on('slidechanged', sync);
+Reveal.on('fragmentshown', function () { var s = Reveal.getCurrentSlide(); syncActs(s); centre(s); });
+Reveal.on('fragmenthidden', function () { var s = Reveal.getCurrentSlide(); syncActs(s); centre(s); });
+addEventListener('resize', function () { centre(Reveal.getCurrentSlide()); });
+</script>
+<script>
+/* Beat start (added when the beats were stitched into deck/talk/): the first slide shows only the year ruler,
+   and its caret glides from the previous beat's month (data-ruler-from) to this beat's month. */
+(function () {
+  var plain = setRuler;
+  setRuler = function (month) {
+    var s = Reveal.getCurrentSlide(), from = s && s.dataset.rulerFrom;
+    if (!month || !from || from === month || STATIC) return plain(month);
+    var els = document.querySelectorAll('#ruler .past, #ruler .now-caret');
+    els.forEach(function (e) { e.style.transition = 'none'; });
+    plain(from); void document.body.offsetWidth;
+    els.forEach(function (e) { e.style.transition = ''; });
+    requestAnimationFrame(function () { requestAnimationFrame(function () { plain(month); }); });
+  };
+  /* The talk shell (deck/talk/) calls this when it shows the deck, since the deck was loaded hidden. */
+  window.replayBeatStart = function () { var s = Reveal.getCurrentSlide(); if (s && s.dataset.rulerFrom) setRuler(s.dataset.ruler); };
+})();
+</script>
+</body>
+</html>

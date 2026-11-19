@@ -1,0 +1,1069 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recursive self-improvement</title>
+<link rel="stylesheet" href="../../vendor/reveal/reset.css">
+<link rel="stylesheet" href="../../vendor/reveal/reveal.css">
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+/* Same tokens as mockups/ai-bubble and mockups/emergent-misalignment: "glow" by default, T for caish.org "paper". */
+:root {
+  --paper: #050508;
+  --ink: #f2f1f6;
+  --graphite: rgba(235, 235, 245, 0.66);
+  --faint: rgba(235, 235, 245, 0.34);
+  --accent: #c9a6ff;
+  --accent-grad: linear-gradient(90deg, #ffb061, #ff6778 25%, #f58fde 50%, #bc82f3 75%, #8d9fff);
+  --caret-grad: linear-gradient(180deg, #f5b9ea 0%, #c686ff 48%, #8d9fff 100%);
+  --caret-glow: 0 0 10px rgba(198, 134, 255, 0.85), 0 0 22px rgba(141, 159, 255, 0.45);
+  --rule: rgba(235, 235, 245, 0.16);
+  --grid: rgba(235, 235, 245, 0.09);
+  --card-stroke: rgba(235, 235, 245, 0.2);
+  --card-bg: #0d0d13;
+  --bubble: #15151e;
+  --bubble-stroke: rgba(235, 235, 245, 0.08);
+  --line: #c9a6ff;
+  --line2: rgba(235, 235, 245, 0.5);
+  --thing: #ffb061;
+  --bad: #ff6778;
+  --bad-wash: rgba(255, 103, 120, 0.3);
+  --area-top: rgba(188, 130, 243, 0.32);
+  --c-kw: #8d9fff; --c-fn: #f58fde; --c-num: #ffb061; --c-str: #9fe0b0; --c-com: rgba(235, 235, 245, 0.4);
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --mono: 'Space Mono', ui-monospace, Menlo, monospace;
+}
+body.paper {
+  --paper: #fbfbfa;
+  --ink: #1a1a1a;
+  --graphite: #4a4a4a;
+  --faint: #a49b92;
+  --accent: #945947;
+  --accent-grad: linear-gradient(90deg, #945947, #945947);
+  --caret-grad: linear-gradient(180deg, #945947, #945947);
+  --caret-glow: none;
+  --rule: rgba(148, 89, 71, 0.28);
+  --grid: rgba(26, 26, 26, 0.08);
+  --card-stroke: rgba(26, 26, 26, 0.22);
+  --card-bg: #ffffff;
+  --bubble: #ffffff;
+  --bubble-stroke: rgba(26, 26, 26, 0.12);
+  --line: #945947;
+  --line2: #a49b92;
+  --thing: #a8661c;
+  --bad: #b0413e;
+  --bad-wash: rgba(176, 65, 62, 0.18);
+  --area-top: rgba(148, 89, 71, 0.22);
+  --c-kw: #3d4f9f; --c-fn: #8a3a78; --c-num: #a8661c; --c-str: #2f7a45; --c-com: #a49b92;
+}
+html, body { background: var(--paper); }
+.reveal { font-family: var(--mono); color: var(--ink); font-size: 32px; line-height: 1.5; }
+.reveal .slides { text-align: left; }
+.reveal .slides section { width: 1920px; height: 1080px; padding: 0; box-sizing: border-box; }
+.reveal .slide-background { background: var(--paper); }
+.reveal h1, .reveal h2 { font-family: var(--serif); font-weight: 400; color: var(--ink); margin: 0; letter-spacing: -0.005em; }
+.reveal h2 { font-size: 68px; line-height: 1.15; }
+.reveal em { font-style: italic; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.08em; }
+.reveal b { font-weight: 700; color: var(--ink); }
+:where(.reveal) p { margin: 0; }
+/* Content is centred vertically. Only slides that carry the year ruler reserve its 150px at the bottom. */
+.frame { position: absolute; inset: 0; padding: 92px 170px; display: flex; flex-direction: column; justify-content: center; }
+.frame.ruled { padding-bottom: 190px; }
+.month { font-family: var(--mono); font-size: 26px; color: var(--accent); margin-bottom: 18px; }
+.cap { font-size: 27px; color: var(--graphite); margin-top: 16px; }
+.reveal .slides section .fragment { transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal .slides section .fragment.rise { transform: translateY(14px); }
+.reveal .slides section .fragment.rise.visible { transform: none; }
+.gated { opacity: 0; transition: opacity 0.6s; }
+.gated.shown { opacity: 1; }
+.bloom { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 38% at 18% 112%, rgba(255, 103, 120, 0.13), transparent 70%),
+              radial-gradient(55% 40% at 82% 115%, rgba(141, 159, 255, 0.15), transparent 70%),
+              radial-gradient(40% 30% at 50% 120%, rgba(188, 130, 243, 0.12), transparent 70%); }
+body.paper .bloom { display: none; }
+.static *, .static *::before, .static *::after { transition: none !important; animation: none !important; }
+.punch { margin-top: 44px; font-family: var(--serif); font-size: 52px; line-height: 1.2; }
+.punch small { display: block; font-family: var(--mono); font-size: 24px; color: var(--graphite); margin-top: 12px; }
+
+/* ===== chat bubbles (User / Assistant / private reasoning), and code cards ===== */
+.chat { display: flex; flex-direction: column; gap: 16px; }
+.bub { border-radius: 20px; padding: 16px 28px 20px; background: var(--bubble); border: 1px solid var(--bubble-stroke); }
+.bub.user { align-self: flex-end; max-width: 88%; border-bottom-right-radius: 6px; }
+.bub.asst { align-self: flex-start; max-width: 96%; border-bottom-left-radius: 6px; }
+.bub.think { align-self: stretch; background: transparent; border: 2px dashed var(--card-stroke); }
+.bub.bad { border: 2px solid var(--bad); }
+body:not(.paper) .bub.bad { box-shadow: 0 0 46px rgba(255, 103, 120, 0.2); }
+.bub .role { font-size: 23px; color: var(--graphite); margin-bottom: 6px; }
+.bub .msg { font-family: var(--serif); font-size: 29px; line-height: 1.38; }
+.bub.think .msg { font-family: var(--mono); font-size: 28px; line-height: 1.5; color: var(--graphite); }
+.card { border: 1px solid var(--card-stroke); border-radius: 14px; padding: 18px 28px 22px; background: var(--card-bg); }
+body:not(.paper) .card { box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); }
+/* a highlight that is drawn only after its words have appeared (delay set by script) */
+.hl { box-shadow: inset 0 -0.45em 0 transparent; transition: box-shadow 0.5s, color 0.5s; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.shown .hl { color: var(--ink); box-shadow: inset 0 -0.45em 0 var(--bad-wash); }
+.code { font-family: var(--mono); font-size: 25px; line-height: 1.6; white-space: pre; color: var(--ink); margin-top: 4px; }
+.code .kw { color: var(--c-kw); } .code .fn { color: var(--c-fn); } .code .num { color: var(--c-num); } .code .str { color: var(--c-str); } .code .com { color: var(--c-com); }
+.hole { display: inline-block; outline: 3px solid var(--bad); outline-offset: 3px; border-radius: 4px; }
+body:not(.paper) .hole { box-shadow: 0 0 26px rgba(255, 103, 120, 0.4); }
+.note { font-size: 23px; color: var(--graphite); margin-top: 18px; line-height: 1.45; }
+/* reasoning that arrives a word at a time, like a model streaming */
+.stream .w { opacity: 0; transition: opacity 0.18s; }
+.stream.shown .w { opacity: 1; }
+.bignum { font-family: var(--serif); font-size: 132px; line-height: 1; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .bignum { filter: drop-shadow(0 0 18px rgba(245, 143, 222, 0.45)); }
+.bigwhat { font-size: 25px; color: var(--graphite); margin-top: 14px; line-height: 1.4; }
+.sg { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) .sg { filter: drop-shadow(0 0 14px rgba(245, 143, 222, 0.45)); }
+.reveal h2, .reveal q, .punch, .opener h1 { text-wrap: balance; }
+
+/* ===== 1 · the paper: the beat's opener (month, then who, then the title) ===== */
+.opener .org { font-family: var(--serif); font-size: 46px; color: var(--graphite); margin-top: 6px; }
+.reveal .opener h1 { font-size: 104px; line-height: 1.08; margin-top: 22px; }
+.opener .sub { font-family: var(--serif); font-size: 54px; line-height: 1.2; color: var(--graphite); margin-top: 18px; }
+
+
+/* ===== 6 · the chart ===== */
+svg.chart { display: block; overflow: visible; }
+svg.chart text { font-family: var(--mono); fill: var(--graphite); font-size: 24px; }
+svg.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+svg.chart .baseline { stroke: var(--rule); stroke-width: 1.5; }
+svg.chart .ln { fill: none; stroke: var(--line); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart .ln2 { fill: none; stroke: #8fd3c7; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart .ln-thing { fill: none; stroke: var(--thing); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; opacity: 0.9; }
+svg.chart .ar { stroke: none; }
+svg.chart .lab { font-size: 26px; }
+svg.chart .lab.l-mis { fill: var(--line); } svg.chart .lab.l-hack { fill: var(--thing); } svg.chart .lab.l-base { fill: #8fd3c7; }
+body.paper svg.chart .ln2 { stroke: #3d7f74; } body.paper svg.chart .lab.l-base { fill: #3d7f74; }
+svg.chart .ax-l { fill: var(--line); font-size: 22px; } svg.chart .ax-r { fill: var(--thing); font-size: 22px; }
+svg.chart .tick-y { text-anchor: end; } svg.chart .tick-x { text-anchor: middle; }
+svg.chart .onset { stroke: var(--bad); stroke-width: 3; stroke-dasharray: 3 9; stroke-linecap: round; }
+svg.chart .onset-lab { fill: var(--bad); font-size: 24px; }
+body:not(.paper) svg.chart .ln { filter: drop-shadow(0 0 8px rgba(188, 130, 243, 0.6)); }
+body:not(.paper) svg.chart .ln-thing { filter: drop-shadow(0 0 5px rgba(255, 176, 97, 0.35)); }
+.chart-cap { font-size: 24px; color: var(--graphite); margin-top: 8px; }
+.foot { font-size: 20px; line-height: 1.45; color: var(--graphite); margin-top: 26px; max-width: 1560px; }
+
+
+/* ===== shared: quotes, big labels ===== */
+.qb q { display: block; font-family: var(--serif); font-size: 44px; line-height: 1.28; quotes: "\201C" "\201D"; text-wrap: balance; }
+.qb .who { font-size: 23px; color: var(--graphite); margin-top: 12px; }
+.qstack { display: flex; flex-direction: column; gap: 54px; max-width: 1520px; }
+.kick { font-family: var(--mono); font-size: 26px; color: var(--accent); margin-bottom: 18px; }
+.reveal h2 { text-wrap: balance; }
+svg.chart .big { font-family: var(--serif); font-size: 46px; fill: var(--ink); }
+svg.chart .when { fill: var(--graphite); font-size: 23px; }
+svg.chart .dot { fill: var(--line); stroke: var(--paper); stroke-width: 3; }
+svg.chart .trend { stroke-width: 3; stroke-dasharray: 2 10; stroke-linecap: round; fill: none; }
+svg.chart .trend.a { stroke: var(--ink); opacity: 0.85; stroke-width: 4; } svg.chart .trend.b { stroke: var(--thing); }
+svg.chart .trend-lab { font-size: 25px; } svg.chart .trend-lab.a { fill: var(--ink); } svg.chart .trend-lab.b { fill: var(--thing); }
+svg.chart .ref { stroke: var(--graphite); stroke-width: 2; stroke-dasharray: 3 8; }
+svg.chart .bar { fill: var(--line2); }
+svg.chart .bar.hi { fill: url(#sirigrad); }
+svg.chart .bar.anthbar { fill: var(--anth); }
+svg.chart .bval { fill: var(--ink); font-size: 22px; text-anchor: middle; }
+.panel-t { font-size: 26px; margin-bottom: 8px; min-height: 78px; }
+.panel-t.a { color: var(--anth); } .panel-t.o { color: var(--thing); }
+.panel-s { font-size: 23px; color: var(--graphite); line-height: 1.45; margin-bottom: 16px; min-height: 62px; }
+.panel-s b { font-weight: 400; color: var(--ink); background: linear-gradient(transparent 60%, var(--bad-wash) 60%) no-repeat 0 0 / 0% 100%; }
+/* the highlight on "AI leads" draws itself a moment after the slide (and its words) appear */
+section.present .panel-s b { background-size: 100% 100%; transition: background-size 0.7s 1.2s; }
+.sg-in { transition: color 0.6s; }
+
+/* ===== 1 · opener ===== */
+.opener .defq { font-family: var(--serif); font-size: 40px; line-height: 1.32; color: var(--ink); margin-top: 30px; max-width: 1450px; text-wrap: balance; }
+.opener .defq q { quotes: "\201C" "\201D"; }
+.opener .defq .key { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.opener .byline { font-size: 24px; color: var(--graphite); margin-top: 18px; }
+
+/* ===== 2 · I. J. Good ===== */
+@property --spin { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes spin { to { --spin: 360deg; } }
+.good { display: grid; grid-template-columns: 420px 1fr; gap: 90px; align-items: center; margin-top: 10px; }
+.siri { position: relative; width: 420px; height: 580px; border-radius: 26px; }
+.siri::before, .siri::after { content: ""; position: absolute; border-radius: 32px; background: conic-gradient(from var(--spin), #ffb061, #ff6778, #f58fde, #bc82f3, #8d9fff, #ffb061); animation: spin 6s linear infinite; }
+.siri::before { inset: -22px; filter: blur(30px); opacity: 0.8; }
+.siri::after { inset: -5px; }
+.siri .photo { position: absolute; inset: 0; z-index: 1; border-radius: 26px; overflow: hidden; background: #000; }
+.siri img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; filter: grayscale(1) contrast(1.08); display: block; }
+.siri .tint { position: absolute; inset: 0; background: linear-gradient(160deg, #ffb061, #ff6778 30%, #f58fde 55%, #bc82f3 78%, #8d9fff); mix-blend-mode: color; opacity: 0.55; }
+.siri .name { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 70px 26px 22px; border-radius: 0 0 26px 26px; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.82) 50%);
+  font-family: var(--serif); font-size: 36px; color: #fff; text-align: center; }
+.siri .name small { display: block; font-family: var(--mono); font-size: 20px; color: rgba(255,255,255,0.78); margin-top: 6px; }
+.scan { position: relative; width: 1070px; border-radius: 14px; overflow: hidden; background: #f4f0e7; }
+body:not(.paper) .scan { filter: brightness(0.94); box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6); }
+body.paper .scan { box-shadow: 0 10px 30px rgba(26, 26, 26, 0.14); }
+.scan { padding-bottom: 22px; }
+.scan img { display: block; width: 100%; mix-blend-mode: multiply; }
+.scan svg { position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 22px); }
+.scan rect { mix-blend-mode: multiply; transform-box: fill-box; transform-origin: 0 50%; transform: scaleX(0); transition: transform 0.7s cubic-bezier(.3,.7,.3,1); }
+.scan rect.l2 { transition-delay: 0.55s; }
+section.act-g1 .scan .g1 rect, section.act-g2 .scan .g2 rect, section.act-g3 .scan .g3 rect, section.act-g4 .scan .g4 rect { transform: scaleX(1); }
+.scan-cap { font-size: 21px; color: var(--graphite); margin-top: 14px; }
+
+/* ===== 3 · the labs: one line each ===== */
+.labs { display: flex; flex-direction: column; gap: 34px; margin-top: 50px; max-width: 1580px; }
+.lab { display: grid; grid-template-columns: 400px 1fr; gap: 40px; align-items: baseline; transition: opacity 0.6s; }
+.lab .ln { font-family: var(--serif); font-size: 40px; color: var(--ink); }
+.lab .ln small { display: block; font-family: var(--mono); font-size: 21px; color: var(--graphite); margin-top: 4px; }
+.lab q { font-family: var(--serif); font-size: 36px; line-height: 1.3; quotes: "\201C" "\201D"; color: var(--ink); text-wrap: balance; }
+section.act-l2 .lab.l1, section.act-l3 .lab.l2, section.act-l4 .lab.l3 { opacity: 0.38; }
+section.act-l3 .lab.l1, section.act-l4 .lab.l1, section.act-l4 .lab.l2 { opacity: 0.38; }
+
+/* ===== 4, 5 · Karpathy ===== */
+.prompt { max-width: 1480px; border: 1px solid var(--card-stroke); border-radius: 16px; padding: 30px 40px 34px; background: var(--card-bg);
+  font-family: var(--mono); font-size: 28px; line-height: 1.6; color: var(--graphite); }
+.prompt b { color: var(--ink); }
+.prompt .hl { transition: box-shadow 0.6s 1.2s, color 0.6s 1.2s; }
+section.act-np .prompt .hl { color: var(--ink); box-shadow: inset 0 -0.5em 0 rgba(245, 143, 222, 0.32); }
+body.paper section.act-np .prompt .hl { box-shadow: inset 0 -0.5em 0 rgba(148, 89, 71, 0.22); }
+.kres { display: grid; grid-template-columns: 1120px 1fr; gap: 60px; align-items: center; margin-top: 30px; }
+.kres .chartimg { width: 1120px; border-radius: 12px; background: #fff; padding: 14px; box-sizing: border-box; }
+body:not(.paper) .kres .chartimg { filter: brightness(0.95); }
+.kres img { display: block; width: 100%; }
+.bigs { display: flex; flex-direction: column; gap: 46px; }
+.bign { font-family: var(--serif); font-size: 76px; line-height: 1; color: var(--ink); }
+.bigw { font-size: 23px; color: var(--graphite); margin-top: 10px; line-height: 1.4; }
+
+/* ===== 6 · METR: log, glowing labels, then linear ===== */
+svg.chart .ylab { transition: fill 0.5s, opacity 0.5s; }
+section.act-m6 svg.chart .ylab { fill: var(--ink); }
+body:not(.paper) section.act-m6 svg.chart .ylab { filter: drop-shadow(0 0 8px #f58fde) drop-shadow(0 0 18px #bc82f3); }
+.metr-note { font-size: 26px; color: var(--graphite); margin-top: 24px; max-width: 1500px; }
+
+/* ===== 7 · inside the labs ===== */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 26px 100px; margin-top: 24px; }
+.grid2 .qb q { font-size: 32px; }
+.grid2 > .qb { display: flex; flex-direction: column; justify-content: space-between; }
+.grid2 .qb .who { font-size: 21px; }
+
+/* ===== 8 · dates ===== */
+svg.chart .tl-axis { stroke: var(--rule); stroke-width: 2; }
+svg.chart .tl-year { fill: var(--graphite); font-size: 26px; text-anchor: middle; }
+svg.chart .today { stroke: var(--accent); stroke-width: 3; }
+svg.chart .today-lab { fill: var(--accent); font-size: 22px; }
+svg.chart .flag { stroke-width: 3; }
+svg.chart .flag-lab { fill: var(--ink); font-size: 25px; }
+svg.chart .flag-sub { fill: var(--graphite); font-size: 21px; }
+svg.chart .band { fill: var(--accent); opacity: 0.12; }
+svg.chart .check { fill: none; stroke: #8fd3c7; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+body.paper svg.chart .check { stroke: #3d7f74; }
+
+/* ===== 10 · normal technology: two columns, then Soares ===== */
+.vs2 { display: grid; grid-template-columns: 1fr 1fr; gap: 90px; margin-top: 40px; max-width: 1580px; align-items: start; }
+.vs2 .src { font-size: 22px; color: var(--graphite); margin-bottom: 14px; line-height: 1.4; min-height: 62px; }
+.vs2 .src i { color: var(--ink); }
+.vs2 q { display: block; font-family: var(--serif); font-size: 36px; line-height: 1.3; quotes: "\201C" "\201D"; text-wrap: balance; }
+
+/* ===== 11 · roon: posts as posts ===== */
+.posts { display: flex; flex-direction: column; gap: 22px; width: 1500px; margin: 30px auto 0; }   /* wide enough that "…since RLHF." ends line 1, so its "2017" tag sits clear */
+.post { box-sizing: border-box; }
+.post { border: 1px solid var(--card-stroke); border-radius: 18px; padding: 22px 30px 26px; background: var(--card-bg); }
+.post .ph { display: flex; align-items: baseline; gap: 14px; font-size: 22px; color: var(--graphite); margin-bottom: 10px; }
+.post .ph b { font-family: var(--serif); font-size: 30px; font-weight: 400; color: var(--ink); }
+.post .pt { font-family: var(--serif); font-size: 36px; line-height: 1.34; color: var(--ink); }
+.hlx { border-radius: 6px; padding: 0 4px; margin: 0 -4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; transition: background-color 0.6s 0.2s; }
+.hlx.lit { background-color: rgba(255, 103, 120, 0.42); color: #fff; }
+body.paper .hlx.lit { background-color: rgba(176, 65, 62, 0.22); color: var(--ink); }
+.yr { position: relative; }
+.yrtag { position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, -4px); font-family: var(--mono); font-size: 24px; line-height: 1; color: #fff; background: var(--bad, #ff6778); border-radius: 6px; padding: 4px 8px; white-space: nowrap; }
+.post .pt .hl2 { transition: box-shadow 0.6s 0.4s; }
+.post .pt .hl2 { border-radius: 6px; padding: 0 4px; margin: 0 -4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; transition: background-color 0.6s 0.4s; }
+section.act-p3 .post .pt .hl2 { background-color: rgba(255, 103, 120, 0.42); color: #fff; }
+body.paper section.act-p3 .post .pt .hl2 { background-color: rgba(176, 65, 62, 0.22); color: var(--ink); }
+
+/* ===== 12 · one try ===== */
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; margin-top: 20px; align-items: start; }
+.shot h3 { font-family: var(--serif); font-weight: 400; font-size: 46px; margin: 0 0 16px; color: var(--ink); }
+.shot .pic { height: 470px; border-radius: 14px; overflow: hidden; background: #000; }
+.shot .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shot .pic.sepia img { filter: sepia(0.25) contrast(1.05); }
+.shot .cap { font-family: var(--serif); font-size: 30px; line-height: 1.35; color: var(--graphite); margin-top: 16px; }
+.shot .cap b { font-family: var(--serif); }
+.shot .pic { height: 340px !important; }
+.bridge { font-family: var(--serif); font-size: 40px; line-height: 1.3; margin-top: 30px; color: var(--ink); text-wrap: balance; }
+.shot .cap b { font-weight: 400; color: var(--ink); }
+
+/* ===== 5 · safety policies + job posting ===== */
+.pol { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 60px; margin-top: 44px; max-width: 1580px; align-items: start; }
+.pol .pn { font-family: var(--serif); font-size: 36px; color: var(--ink); padding-bottom: 12px; border-bottom: 1px solid var(--rule); margin-bottom: 16px; }
+.pol q { display: block; font-family: var(--serif); font-size: 32px; line-height: 1.32; quotes: "\201C" "\201D"; color: var(--ink); }
+.pol .then { font-family: var(--serif); font-size: 32px; color: var(--bad); margin-top: 14px; }
+.job { margin-top: 52px; max-width: 1580px; border: 1px solid var(--card-stroke); border-radius: 16px; padding: 22px 30px 26px; background: var(--card-bg); }
+.job .jh { font-size: 21px; color: var(--graphite); }
+.job .jt { font-family: var(--serif); font-size: 40px; margin-top: 6px; }
+.job .jl { font-family: var(--serif); font-size: 28px; color: var(--graphite); margin-top: 10px; text-wrap: pretty; }
+
+/* ===== 11 · dated rows ===== */
+.drows { display: flex; flex-direction: column; gap: 22px; margin-top: 44px; max-width: 1580px; }
+.drow { display: grid; grid-template-columns: 300px 1fr 360px; gap: 36px; align-items: baseline; border-top: 1px solid var(--rule); padding-top: 18px; }
+.drow .dd { font-family: var(--serif); font-size: 46px; color: var(--ink); }
+.drow .dt { font-family: var(--serif); font-size: 34px; line-height: 1.3; color: var(--ink); }
+.drow .dt small { display: block; font-family: var(--mono); font-size: 21px; color: var(--graphite); margin-top: 6px; }
+.drow .dc { font-size: 24px; color: #8fd3c7; }
+body.paper .drow .dc { color: #3d7f74; }
+
+/* ===== round-2 review additions ===== */
+.loopname { text-align: center; font-family: var(--serif); font-size: 52px; margin-top: 10px; }
+.kicker2 { font-size: 26px; color: var(--graphite); margin-bottom: 30px; }
+.kbars { display: flex; flex-direction: column; gap: 26px; max-width: 1580px; }
+.kb { display: grid; grid-template-columns: 380px 1fr; align-items: center; }
+.kb .kl { font-family: var(--serif); font-size: 32px; line-height: 1.25; }
+.kb .kt { position: relative; height: 70px; }
+.kbar { position: absolute; left: 0; top: 0; bottom: 0; width: var(--w); border-radius: 0 6px 6px 0; background: var(--line2); }
+.kbar.hi { background: var(--accent-grad); }
+.kb .kv { position: absolute; top: 50%; transform: translateY(-50%); white-space: nowrap; font-family: var(--serif); font-size: 40px; }
+.bigs2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 50px; margin-top: 50px; max-width: 1580px; }
+
+/* ===== round 3 (Justin's rsi-v1 critique) ===== */
+/* the box row starts centred; the wrap moves so that what is on screen stays centred as the arcs and the name arrive */
+.loopwrap { transform: translateY(40px); transition: transform 0.8s cubic-bezier(.4,0,.2,1); }
+section.act-l3 .loopwrap { transform: translateY(-70px); }
+section.act-l5 .loopwrap { transform: translateY(18px); }
+section.act-rsi .loopwrap { transform: translateY(-35px); }
+.loopname { text-align: center; font-family: var(--serif); font-size: 56px; margin-top: 0; }
+.kwrap { display: grid; grid-template-columns: 1300px 1fr; gap: 40px; align-items: center; margin-top: 40px; }
+.kside .bign { font-size: 68px; }
+.pgrid { display: grid; grid-template-columns: 300px 1fr 1fr; gap: 0 50px; margin-top: 40px; max-width: 1580px; }
+.pgrid .ph { font-size: 23px; color: var(--graphite); padding-bottom: 12px; }
+.pgrid .pn, .pgrid .pt, .pgrid .pp { border-top: 1px solid var(--rule); padding: 20px 0 22px; }
+.pgrid .pn { font-family: var(--serif); font-size: 36px; }
+.pgrid q { quotes: "\201C" "\201D"; }
+.pgrid .pt { font-family: var(--serif); font-size: 30px; line-height: 1.3; color: var(--graphite); }
+.pgrid .pp { font-family: var(--serif); font-size: 30px; line-height: 1.3; color: var(--ink); }
+.lead { font-family: var(--serif); font-size: 42px; line-height: 1.3; margin-top: 50px; max-width: 1500px; text-wrap: balance; }
+.airA, .airB { transition: opacity 0.6s; }
+.airB .post { text-align: left; }
+.airB { position: absolute; left: 170px; right: 170px; top: 50%; transform: translateY(-50%); opacity: 0; text-align: center; }
+section.act-none .airA { opacity: 0; } section.act-none .airB { opacity: 1; }
+.air { display: grid; grid-template-columns: 760px 1fr; gap: 70px; align-items: center; margin-top: 30px; }
+.apic { position: relative; height: 560px; }
+.ap { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s; }
+.ap img { width: 100%; height: 480px; object-fit: cover; border-radius: 14px; display: block; }
+.ap1 img { filter: sepia(0.25) contrast(1.05); }
+.ap .apc { font-family: var(--serif); font-size: 26px; color: var(--graphite); margin-top: 14px; }
+.ap1 { opacity: 1; }
+section.act-w2 .ap1 { opacity: 0; } section.act-w2 .ap2 { opacity: 1; }
+section.act-w4 .ap2 { opacity: 0; } section.act-w4 .ap3 { opacity: 1; }
+.asteps { display: flex; flex-direction: column; gap: 30px; }
+.as { font-family: var(--serif); font-size: 34px; line-height: 1.3; color: var(--graphite); }
+.as b { font-weight: 400; color: var(--ink); }
+.probes { position: relative; height: 640px; margin-top: 24px; }
+.pr { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s; display: grid; grid-template-columns: 900px 1fr; gap: 60px; align-items: center; }
+.pr img { width: 900px; height: 600px; object-fit: cover; border-radius: 14px; display: block; background: #000; }
+.pr .prc { font-family: var(--serif); font-size: 36px; line-height: 1.35; color: var(--graphite); }
+.pr .prc b { font-weight: 400; color: var(--ink); display: block; margin-bottom: 10px; }
+.pr1 { opacity: 1; }
+section.act-p2 .pr1 { opacity: 0; } section.act-p2 .pr2 { opacity: 1; }
+section.act-p3 .pr2 { opacity: 0; } section.act-p3 .pr3 { opacity: 1; }
+svg.chart .hlring { fill: none; stroke: #f58fde; stroke-width: 4; }
+body:not(.paper) svg.chart .hlring { filter: drop-shadow(0 0 10px #f58fde); }
+svg.chart .hltxt { fill: var(--ink); font-family: var(--serif); font-size: 30px; }
+section.act-w3 .ap2 { opacity: 0; } section.act-w3 .ap4 { opacity: 1; }
+section.act-w4 .ap4 { opacity: 0; }
+.soares { margin: 56px 0 0 auto; max-width: 1120px; text-align: right; }
+.soares q { text-wrap: balance; font-size: 36px; line-height: 1.3; }
+.as, .ap .apc, .pr .prc, .post .pt, .lab q, .vs2 q, .panel-s, .qb q { text-wrap: pretty; }
+.reveal .qb q { text-wrap: balance; }
+/* space probes: each scene centred on the slide; then the three in a row, darkened; then the quote over them */
+.probes-h { position: absolute; top: 92px; left: 170px; }
+.probes { position: absolute; left: 170px; right: 170px; top: 50%; height: 600px; margin: 0; transform: translateY(-50%); }
+.pr img { transform-origin: 0 0; transition: transform 0.9s cubic-bezier(.4,0,.2,1), filter 0.7s; }
+.pr .prc { transition: opacity 0.4s; }
+section.act-row .pr { opacity: 1; }
+section.act-row .pr .prc { opacity: 0; }
+section.act-q .pr img { filter: brightness(0.12) blur(2px); transition: filter 0.6s; }
+section.act-row .pr1 img { transform: translate(0px, 133px) scale(0.5556); }
+section.act-row .pr2 img { transform: translate(540px, 133px) scale(0.5556); }
+section.act-row .pr3 img { transform: translate(1080px, 133px) scale(0.5556); }
+.probeq { position: absolute; left: 50%; top: 50%; width: 1380px; transform: translate(-50%, -50%); text-align: center; z-index: 2; }
+.probeq q { display: block; font-family: var(--serif); font-size: 46px; line-height: 1.3; color: #fff; quotes: "\201C" "\201D"; text-wrap: balance; text-shadow: 0 2px 24px rgba(0,0,0,0.8); }
+.probeq .who { font-size: 28px; color: #fff; margin-top: 24px; text-shadow: 0 2px 16px rgba(0,0,0,0.9); }
+.probeq .after { position: absolute; left: 0; right: 0; top: 100%; margin-top: 48px; }
+svg.chart .hltxt.sub { fill: var(--graphite); font-family: var(--mono); font-size: 24px; }
+.frame.grow { transition: transform 0.8s cubic-bezier(.4,0,.2,1); }
+.airB h2 { transition: transform 0.8s cubic-bezier(.4,0,.2,1); }
+section:not(.act-rn) .airB h2 { transform: translateY(170px); }
+
+/* ===== 13 · the last line, glowing like the CAISH mark ===== */
+@property --hue { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes drift { to { background-position: 200% 50%; } }
+.finale { position: relative; max-width: 1500px; margin: 0 auto; text-align: center; }
+.finale .fq { position: relative; font-family: var(--serif); font-size: 84px; line-height: 1.2; color: #fff; text-wrap: balance; }
+body.paper .finale .fq { color: var(--ink); }
+.finale .fq::before, .finale .fq::after { content: attr(data-text); position: absolute; inset: 0; z-index: -1; color: transparent;
+  background: linear-gradient(90deg, #ffb061, #ff6778, #f58fde, #bc82f3, #8d9fff, #ffb061, #ff6778); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; animation: drift 8s linear infinite; }
+.finale .fq::before { filter: blur(10px); opacity: 0.95; }
+.finale .fq::after { filter: blur(30px); opacity: 1; }
+.finale { filter: drop-shadow(0 0 40px rgba(188, 130, 243, 0.35)); }
+body.paper .finale { filter: none; }
+body.paper .finale .fq::before, body.paper .finale .fq::after { opacity: 0.35; }
+.finale .who { font-size: 26px; color: var(--graphite); margin-top: 40px; }
+
+/* ===== year ruler (same as mockups/intro; the "now" caret does not blink) ===== */
+#ruler { position: fixed; left: 0; right: 0; bottom: 0; height: 0; pointer-events: none; z-index: 30; opacity: 0; transition: opacity 0.8s; }
+#ruler.on { opacity: 1; }
+#ruler .inner { position: absolute; transform-origin: 0 0; width: 1920px; height: 150px; }
+#ruler .track { position: absolute; left: 170px; right: 170px; top: 52px; height: 1px; background: var(--rule); }
+#ruler .past { position: absolute; left: 200px; top: 51px;   /* starts at the first month (X0), so it ends exactly at the caret */ height: 3px; background: var(--accent-grad); box-shadow: var(--caret-glow); transition: width 1.4s cubic-bezier(.6,0,.2,1); }
+#ruler .m { position: absolute; top: 70px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 22px; color: var(--faint); }
+#ruler .m.done { color: var(--graphite); }
+#ruler .m.now { color: var(--ink); font-weight: 700; }
+#ruler .y { position: absolute; top: 104px; width: 60px; margin-left: -30px; text-align: center; font-family: var(--mono); font-size: 18px; color: var(--faint); }   /* centred under its month, like the month labels */
+#ruler .tick { position: absolute; top: 46px; width: 1px; height: 13px; background: var(--rule); }
+#ruler .start { position: absolute; top: 44px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: #ffb061; box-shadow: var(--caret-glow); }
+#ruler .start-label { position: absolute; top: 0; font-family: var(--mono); font-size: 20px; color: var(--accent); white-space: nowrap; }
+#ruler .start-label { display: none; } #ruler.first .start-label { display: block; }
+#ruler .now-caret { position: absolute; top: 39px; width: 4px; height: 28px; margin-left: -2px; border-radius: 2px; background: var(--caret-grad); box-shadow: var(--caret-glow); transition: left 1.4s cubic-bezier(.6,0,.2,1); }
+.opener .byline { font-size: 24px; color: var(--graphite); margin-top: 22px; }
+.rsi-hl { transition: color 0.6s; }
+section.act-hlrsi .rsi-hl { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body:not(.paper) section.act-hlrsi .rsi-hl { filter: drop-shadow(0 0 12px rgba(245, 143, 222, 0.5)); }
+/* Anthropic's orange for every "Anthropic" on a slide (Justin, 14 Oct) */
+:root { --anth: #d97757; } body.paper { --anth: #c15f3c; }
+.anth { } /* Anthropic orange retired (Justin, 15 Oct): the word takes its surrounding colour */
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+
+<section class="beat-start" data-ruler="2026-06" data-ruler-from="2026-06"><div class="bloom"></div>
+  
+</section>
+
+
+
+<section data-ruler="2026-06">
+  <div class="bloom"></div>
+  <div class="frame ruled opener grow">
+    <div class="org">Anthropic</div>
+    <h1 class="fragment rise"><span class="sg">When AI builds itself</span></h1>
+    <div class="fragment rise">
+      <div class="defq">Where AI building AI leads: <q>an AI system capable of fully autonomously designing and developing its own successor. This is called <span class="key">recursive self-improvement</span>.</q></div>
+      <div class="byline">Marina Favaro and Jack Clark</div>
+    </div>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="loopwrap">
+      <svg class="chart" id="loop" viewBox="0 -230 1580 610" width="1580" height="610" style="overflow:visible"></svg>
+      <div class="loopname gated" data-gate="rsi"><span class="sg">Recursive self-improvement</span> (RSI)</div>
+    </div>
+    <span class="fragment" data-act="l2"></span>
+    <span class="fragment" data-act="l3"></span>
+    <span class="fragment" data-act="l4"></span>
+    <span class="fragment" data-act="l5"></span>
+    <span class="fragment" data-act="rsi"></span>
+  </div>
+  
+</section>
+
+
+
+
+
+<section class="noanth">
+  <div class="bloom"></div>
+  <div class="frame grow">
+    <h2>The frontier labs, on AI that improves AI</h2>
+    <div class="labs">
+      <div class="lab l1 gated" data-gate="l1"><div class="ln">Google DeepMind<small>Demis Hassabis, asked about recursive self-improvement</small></div><q>All the leading labs are quite focused on that.</q></div>
+      <div class="lab l2 gated" data-gate="l2"><div class="ln">Anthropic<small>Anthropic Institute</small></div><q>we are delegating a growing share of AI development to AI systems themselves</q></div>
+      <div class="lab l3 gated" data-gate="l3"><div class="ln">OpenAI<small>Jakub Pachocki, chief scientist</small></div><q>we focus OpenAI research towards RSI as we believe it is the only way to remain at the frontier of AI research moving forward.</q></div>
+      <div class="job gated" data-gate="l4" style="margin-top:12px"><div class="jh">OpenAI is hiring · San Francisco · $295K–$445K</div>
+        <div class="jt">Research Engineer / Research Scientist / AI Systems Engineer, RSI</div>
+        <div class="jl">“We’re hiring research scientists, research engineers, and AI&nbsp;systems engineers to work on automating research at OpenAI.”</div></div>
+    </div>
+    <span class="fragment" data-act="l1"></span>
+    <span class="fragment" data-act="l2"></span>
+    <span class="fragment" data-act="l3"></span>
+    <span class="fragment" data-act="l4"></span>
+  </div>
+  
+</section>
+
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame grow">
+    <h2>How much of the labs’ research does AI do?</h2>
+    <div class="grid2">
+      <div>
+        <div class="panel-t a">Anthropic: share of its AI research work that Claude <i>leads</i></div>
+        <div class="panel-s">Each task is rated on a scale: no AI · AI assists · AI collaborates · <b>AI leads</b> · fully automated</div>
+        <svg class="chart" id="leads" viewBox="0 0 740 330" width="740" height="330"></svg>
+      </div>
+      <div class="gated" data-gate="oa">
+        <div class="panel-t o">OpenAI: AI-agent days per researcher day</div>
+        <div class="panel-s">Agents running on researchers’ behalf, 2026</div>
+        <svg class="chart" id="oaw" viewBox="0 0 740 330" width="740" height="330"></svg>
+      </div>
+      <div class="qb gated" data-gate="da"><q>recursive self-improvement … is starting to happen across the industry, including at Anthropic</q><div class="who">Dario Amodei</div></div>
+      <div class="qb gated" data-gate="jp"><q>Based on internal results, I have a strong expectation that this speed of progress could be sustained into recursive self-improvement.</q><div class="who">Jakub Pachocki</div></div>
+    </div>
+    <span class="fragment" data-act="ad"></span>
+    <span class="fragment" data-act="da"></span>
+    <span class="fragment" data-act="oa"></span>
+    <span class="fragment" data-act="od"></span>
+    <span class="fragment" data-act="jp"></span>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler>
+  <div class="bloom"></div>
+  <div class="frame">
+    <h2>How long can AI work on its own?</h2>
+    <div class="cap">METR, an independent AI evaluator: length of software task (in skilled-human time) the best AI agent completes 50% of the time</div>
+    <svg class="chart" id="metr" viewBox="0 0 1580 540" width="1580" height="540" style="margin-top:30px"></svg>
+    <span class="fragment" data-act="m1"></span>
+    <span class="fragment" data-act="m2"></span>
+    <span class="fragment" data-act="m3"></span>
+    <span class="fragment" data-act="m4"></span>
+    <span class="fragment" data-act="m5"></span>
+    <span class="fragment" data-act="m6"></span>
+    <span class="fragment" data-act="m7"></span>
+    <span class="fragment" data-act="m8"></span>
+    <span class="fragment" data-act="m9"></span>
+    <span class="fragment" data-act="m10"></span>
+  </div>
+  
+</section>
+
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame grow">
+    <h2>Is AI a normal technology?</h2>
+    <div class="vs2">
+      <div class="gated" data-gate="nk"><div class="src">Arvind Narayanan and Sayash Kapoor,<br><i>AI as Normal Technology</i></div>
+        <q>It is more likely that we will continue to see <span class="hlx" data-hl="nkh">a gradual increase in the role of automation in AI development</span> than a singular, discontinuous moment when recursive <span style="white-space:nowrap">self-improvement</span> is achieved.</q></div>
+      <div class="gated" data-gate="ed"><div class="src">Daniel Eth and Tom Davidson, <i>Will AI R&amp;D Automation Cause a Software Intelligence Explosion?</i></div>
+        <q>If [AI can improve itself through software alone], then hardware constraints are irrelevant for AI becoming incredibly powerful very quickly.</q></div>
+    </div>
+    <div class="qb gated soares" data-gate="ns"><q>Normal technologies cannot improve themselves. … Nor can AI – yet. But creating the sort of AI that can is the explicit purpose of the top AI labs.</q>
+      <div class="who">Nate Soares, president of MIRI, February 2026</div></div>
+    <span class="fragment" data-act="nk"></span>
+    <span class="fragment" data-act="nkh"></span>
+    <span class="fragment" data-act="ed"></span>
+    <span class="fragment" data-act="ns"></span>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame">
+    <div class="airA">
+      <h2>Airplanes</h2>
+      <div class="air">
+        <div class="apic">
+          <div class="ap ap1"><img src="../../assets/rsi-lilienthal-gliding-1895-crop.jpg" alt="Otto Lilienthal gliding, 1895"><div class="apc">Otto Lilienthal, 1895. Killed in a glider crash, 1896.</div></div>
+          <div class="ap ap2"><img src="../../assets/rsi-wright-windtunnel.jpg" alt="The Wright brothers' 1902 glider in flight"><div class="apc">The Wrights’ 1902 glider, designed from wind-tunnel tests of some 200 wing shapes.</div></div>
+          <div class="ap ap4"><img src="../../assets/rsi-atc-zurich-tower.jpg" alt="An air traffic controller in the tower at Zurich airport"><div class="apc">The control tower at Zurich airport.</div></div>
+          <div class="ap ap3"><svg class="chart" id="air" viewBox="0 0 700 420" width="700" height="420"></svg><div class="apc">Fatal accidents per million departures, commercial jets worldwide</div></div>
+        </div>
+        <div class="asteps">
+          <div class="as as1"><b>We tried, and people died.</b></div>
+          <div class="as as2 gated" data-gate="w2"><b>We worked out the physics.</b> Lift, drag, control.</div>
+          <div class="as as3 gated" data-gate="w3"><b>We learned how people and organizations fail.</b> Checklists, crash investigations, crew training.</div>
+          <div class="as as4 gated" data-gate="w4"><b>Today:</b> about one fatal accident per four million flights.</div>
+        </div>
+      </div>
+    </div>
+    <div class="airB">
+      <h2>For superintelligence, we have none of this.</h2>
+      <div class="post gated" data-gate="rn" style="width:1500px;box-sizing:border-box;margin:40px auto 0"><div class="ph"><b>roon</b> @tszzl · OpenAI researcher · 12 Oct 2026</div>
+        <div class="pt"><span class="hlx" data-hl="rnh">there have not been fundamental advancements in alignment since <span class="yr">RLHF<span class="yrtag gated" data-gate="rnh">2017</span></span></span>. <span class="gated" data-gate="rn2">most of the stuff remains at the level of folk theory rather than scientific or engineering disciplines.</span> <span class="gated" data-gate="rn3">the prediction that capabilities would race far ahead of interp and alignment&nbsp;has&nbsp;come&nbsp;true&nbsp;imo</span></div></div>
+    </div>
+    <span class="fragment" data-act="w2"></span>
+    <span class="fragment" data-act="w3"></span>
+    <span class="fragment" data-act="w4"></span>
+    <span class="fragment" data-act="none"></span>
+    <span class="fragment" data-act="rn"></span>
+    <span class="fragment" data-act="rn2"></span>
+    <span class="fragment" data-act="rn3"></span>
+    <span class="fragment" data-act="rnh"></span>
+  </div>
+  
+</section>
+
+
+<section data-no-ruler>
+  <div class="bloom"></div>
+  <div class="frame">
+    <h2 class="probes-h">Space probes</h2>
+    <div class="probes">
+      <div class="pr pr1"><img src="../../assets/rsi-mco-nasa.jpg" alt="Mars Climate Orbiter"><div class="prc"><b>Mars Climate Orbiter, 1999.</b> Lockheed Martin’s software gave thrust in imperial units; NASA’s expected metric. Lost.</div></div>
+      <div class="pr pr2"><img src="../../assets/rsi-mpl-nasa.jpg" alt="Mars Polar Lander"><div class="prc"><b>Mars Polar Lander, 1999.</b> When its legs unfolded on the way down, a sensor read the jolt as touchdown. It shut off its engine about 40 meters up.</div></div>
+      <div class="pr pr3"><img src="../../assets/rsi-viking1-nasa.jpg" alt="Viking 1 lander"><div class="prc"><b>Viking 1 lander, 1982.</b> A faulty command sent from Earth. Contact was never restored.</div></div>
+      <div class="probeq gated" data-gate="q"><q>An artificial superintelligence is like a space probe, in that we cannot test it in quite the same environment where it needs to work, and by default it is not retrievable or correctable once it rises high above us.</q>
+        <div class="after"><q class="q2 gated" data-gate="q2">Humanity only gets one shot at the real test.</q>
+        <div class="who gated" data-gate="qw">Eliezer Yudkowsky and Nate Soares</div></div></div>
+    </div>
+    <span class="fragment" data-act="p2"></span>
+    <span class="fragment" data-act="p3"></span>
+    <span class="fragment" data-act="row"></span>
+    <span class="fragment" data-act="q"></span>
+    <span class="fragment" data-act="q2"></span>
+    <span class="fragment" data-act="qw"></span>
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="bloom"></div>
+  <div class="frame grow">
+    <div class="posts">
+      <div class="post"><div class="ph"><b>roon</b> @tszzl · OpenAI researcher · 12 Oct 2026</div>
+        <div class="pt"><span class="hlx lit">there have not been fundamental advancements in alignment since <span class="yr">RLHF<span class="yrtag">2017</span></span></span>. most of the stuff remains at the level of folk theory rather than scientific or engineering disciplines. the prediction that capabilities would race far ahead of interp and alignment&nbsp;has&nbsp;come&nbsp;true&nbsp;imo</div></div>
+      <div class="post gated" data-gate="p2"><div class="ph"><b>roon</b> @tszzl</div>
+        <div class="pt">the researchers at all the labs would tell you in private and sometimes in public that alignment has not been solved. if this is true, then <span class="hl2">racing into RSI is a folly that is unprecedented in world history</span>. we will need to significantly slow the frontier of&nbsp;research&nbsp;very&nbsp;soon</div></div>
+    </div>
+    <span class="fragment" data-act="p2"></span>
+    <span class="fragment" data-act="p3"></span>
+  </div>
+  
+</section>
+
+</div></div>
+<script>
+/* Year ruler on every slide of the beat (Justin, 15 Oct): a slide without its own data-ruler takes the month of the
+   slide before it, and its frame makes room for the ruler. Set pieces (a big chart, a famous image) opt out with data-no-ruler. */
+(function () {
+  /* ?ruler=all (on this page, or on the talk shell that frames it): set pieces get the ruler too, each at its
+     data-ruler-all month if it has one, else the month before; body.ruler-all scopes the CSS that makes them fit. */
+  var ALL = /[?&]ruler=all/.test(location.search);
+  try { if (!ALL && window.parent !== window) ALL = /[?&]ruler=all/.test(window.parent.location.search); } catch (e) {}
+  if (ALL) document.body.classList.add('ruler-all');
+  var m = null;
+  document.querySelectorAll('.slides > section').forEach(function (s) {
+    if (s.dataset.ruler) { m = s.dataset.ruler; return; }
+    if (!m) return;
+    if (s.hasAttribute('data-no-ruler')) {
+      if (!ALL) return;
+      s.dataset.ruler = s.dataset.rulerAll || m;   // an explicit month here does not carry over to later slides
+    } else s.dataset.ruler = m;
+    s.querySelectorAll(':scope > .frame').forEach(function (f) { f.classList.add('ruled'); });
+  });
+})();
+</script>
+
+<div id="ruler"><div class="inner"></div></div>
+
+<script src="../../vendor/reveal/reveal.js"></script>
+<script src="../../vendor/reveal/plugin/notes/notes.js"></script>
+<script src="data.js"></script>
+<script>
+var STATIC = /[?&]static/.test(location.search);
+if (STATIC) document.documentElement.classList.add('static');
+var SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent, text) {
+  var e = document.createElementNS(SVGNS, tag);
+  for (var k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function ease(u) { u = Math.max(0, Math.min(1, u)); return u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; }
+
+/* A line that reveals itself left to right (a growing clip rect). */
+function Reveal1(svg, pts, opt) {
+  this.opt = opt;
+  var defs = svg.querySelector('defs') || el('defs', {}, svg);
+  var key = opt.id || svg.id, gid = key + '-g', cid = key + '-c';
+  var g = el('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+  el('stop', { offset: 0, style: 'stop-color:var(--area-top)' }, g);
+  el('stop', { offset: 1, style: 'stop-color:var(--area-top);stop-opacity:0' }, g);
+  var cp = el('clipPath', { id: cid }, defs);
+  this.clip = el('rect', { x: 0, y: -400, width: 0, height: 2000 }, cp);
+  var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1); }).join(' ');
+  var body = el('g', { 'clip-path': 'url(#' + cid + ')' }, svg);
+  if (opt.area !== false) el('path', { class: 'ar', d: d + ' L' + pts[pts.length - 1].x + ' ' + opt.y0 + ' L' + pts[0].x + ' ' + opt.y0 + ' Z', fill: 'url(#' + gid + ')' }, body);
+  el('path', { class: opt.cls || 'ln', d: d }, body);
+  this.cur = 0; this.from = 0; this.to = 0; this.t0 = 0;
+}
+Reveal1.prototype.go = function (x, instant) {
+  if (x === this.to) return;
+  this.from = this.cur; this.to = x; this.t0 = performance.now();
+  if (instant || STATIC) { this.cur = x; this.clip.setAttribute('width', x); }
+};
+Reveal1.prototype.tick = function (now) {
+  if (this.cur === this.to) return;
+  var u = (now - this.t0) / (this.opt.dur || 1400);
+  this.cur = u >= 1 ? this.to : this.from + (this.to - this.from) * ease(u);
+  this.clip.setAttribute('width', this.cur);
+};
+var charts = [];   // {sec, stages:[{act, x}], line}
+function gate(node, act) { node.classList.add('gated'); node.setAttribute('data-gate', act); return node; }
+
+/* ---------- streaming text: wrap every word so it can fade in after the one before ---------- */
+document.querySelectorAll('.stream .msg').forEach(function (msg) {
+  var k = 0, per = 40;
+  (function walk(n) {
+    Array.prototype.slice.call(n.childNodes).forEach(function (c) {
+      if (c.nodeType === 3) {
+        var frag = document.createDocumentFragment();
+        c.textContent.split(/(\s+)/).forEach(function (t) {
+          if (!t) return;
+          if (/^\s+$/.test(t)) { frag.appendChild(document.createTextNode(t)); return; }
+          var s = document.createElement('span'); s.className = 'w'; s.textContent = t;
+          s.style.transitionDelay = (k++ * per) + 'ms'; frag.appendChild(s);
+        });
+        c.parentNode.replaceChild(frag, c);
+      } else walk(c);
+    });
+  })(msg);
+  msg.querySelectorAll('.hl').forEach(function (h) {
+    var ws = h.querySelectorAll('.w'), last = ws[ws.length - 1];
+    h.style.transitionDelay = (parseInt(last.style.transitionDelay, 10) + 250) + 'ms';
+  });
+});
+/* highlights outside streamed text wait for their card to fade in */
+document.querySelectorAll('.hl').forEach(function (h) { if (!h.style.transitionDelay) h.style.transitionDelay = '700ms'; });
+
+
+/* A label in the deck's one style: big number, and under it when. */
+function bigLabel(g, x, y, num, when, anchor) {
+  el('text', { class: 'big', x: x, y: y, 'text-anchor': anchor || 'start' }, g, num);
+  el('text', { class: 'when', x: x, y: y + 34, 'text-anchor': anchor || 'start' }, g, when);
+}
+function sirigrad(svg) {   // one gradient per chart: a url() into a hidden slide's SVG doesn't render
+  var defs = svg.querySelector('defs') || el('defs', {}, svg);
+  var lg = el('linearGradient', { id: 'sirigrad-' + svg.id, x1: 0, y1: 1, x2: 1, y2: 0 }, defs);
+  ['#ffb061', '#ff6778', '#f58fde', '#bc82f3', '#8d9fff'].forEach(function (c, k) { el('stop', { offset: k / 4, 'stop-color': c }, lg); });
+}
+function t(d) { return new Date(d + (d.length === 7 ? '-15' : '') + 'T00:00:00Z').getTime(); }
+var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var anims = [];   // per-frame callbacks
+
+/* ---------- 3 · the loop (Justin, 15 Oct, afternoon):
+   1 Human researchers → AI research → Better AI
+   2 Human researchers → AI researchers → AI research → Better AI
+   3 the same, plus the improvement loop below (Better AI makes better AI researchers); the humans are still there
+   4 AI researchers → AI research → Better AI, with the loop
+   5 an arc over the top, mirroring the one below, closes the loop
+   6 "Recursive self-improvement (RSI)" ---------- */
+(function () {
+  var svg = document.getElementById('loop'); sirigrad(svg);
+  var Y = 70, W = 330, H = 110, G = 80;
+  var x3 = [0, 1, 2].map(function (i) { return 215 + i * (W + G); }), x4 = [0, 1, 2, 3].map(function (i) { return 10 + i * (W + G); });
+  function box(label, cls) {
+    var g = el('g', { class: 'mv ' + cls }, svg);
+    el('rect', { x: 0, y: Y - H / 2, width: W, height: H, rx: 18, class: 'lbox' }, g);
+    el('text', { x: W / 2, y: Y + 10, 'text-anchor': 'middle', class: 'ltxt' }, g, label);
+  }
+  function arrow(cls) {   // drawn from x = 0 to the gap's width; moved into place by CSS
+    var g = el('g', { class: 'mv ' + cls }, svg), a = 14, b = G - 14;
+    el('line', { x1: a, x2: b - 3, y1: Y, y2: Y, class: 'larr' }, g);
+    el('path', { d: 'M' + (b - 16) + ' ' + (Y - 12) + ' L' + (b - 2) + ' ' + Y + ' L' + (b - 16) + ' ' + (Y + 12), class: 'larr' }, g);
+  }
+  box('Human researchers', 'bH'); box('AI researchers', 'bR'); box('AI research', 'bA'); box('Better AI', 'bB');
+  arrow('aH'); arrow('aR'); arrow('aA');
+  // the arrow back (bottom), drawn in the three-box layout and slid right while the humans are still there
+  var gb = el('g', { class: 'mv bk' }, svg), xa = x3[0] + W / 2, xb = x3[2] + W / 2, yb = Y + H / 2 + 14, yc = 300;
+  el('path', { d: 'M' + xb + ' ' + yb + ' C ' + xb + ' ' + yc + ', ' + xa + ' ' + yc + ', ' + xa + ' ' + (yb + 6), class: 'lback' }, gb);
+  el('path', { d: 'M' + (xa - 16) + ' ' + (yb + 24) + ' L' + xa + ' ' + (yb + 4) + ' L' + (xa + 16) + ' ' + (yb + 24), class: 'lback' }, gb);
+  el('text', { x: 790, y: 0.25 * yb + 0.75 * yc + 72, 'text-anchor': 'middle', class: 'lbacktxt' }, gb, 'Better AI makes better AI researchers');
+  // the top arc, mirroring the bottom one, closes the loop: from AI researchers over the top to Better AI
+  var gt = gate(el('g', {}, svg), 'l5'), yt = Y - H / 2 - 14, yd = 2 * Y - yc;
+  el('path', { d: 'M' + xa + ' ' + yt + ' C ' + xa + ' ' + yd + ', ' + xb + ' ' + yd + ', ' + xb + ' ' + (yt - 6), class: 'lback' }, gt);
+  el('path', { d: 'M' + (xb - 16) + ' ' + (yt - 24) + ' L' + xb + ' ' + (yt - 4) + ' L' + (xb + 16) + ' ' + (yt - 24), class: 'lback' }, gt);
+  // positions per state (1 arrival, 2 l2, 3 l3, 4 l4); later states keep state 4's layout
+  var dx = x4[1] - x3[0];
+  var pos = {
+    bH: [x3[0], x4[0], x4[0], x4[0]], bR: [x4[1], x4[1], x4[1], x3[0]], bA: [x3[1], x4[2], x4[2], x3[1]], bB: [x3[2], x4[3], x4[3], x3[2]],
+    aH: [x3[0] + W, x4[0] + W, x4[0] + W, x4[0] + W], aR: [x4[1] + W, x4[1] + W, x4[1] + W, x3[0] + W], aA: [x3[1] + W, x4[2] + W, x4[2] + W, x3[1] + W],
+    bk: [dx, dx, dx, 0]
+  };
+  var hide = { bR: [1], aR: [1], bH: [4], aH: [4], bk: [1, 2] };   // hidden in these states (1-based)
+  var css = '#loop .mv{transition:transform .9s cubic-bezier(.4,0,.2,1),opacity .6s}'
+    + '#loop .lbox{fill:var(--card-bg);stroke:var(--card-stroke);stroke-width:2}#loop .ltxt{fill:var(--ink);font-family:var(--serif);font-size:31px}'
+    + '#loop .bR .lbox{fill:url(#sirigrad-loop);stroke:none}#loop .bR .ltxt{fill:#fff}#loop .bB .lbox{stroke:var(--line)}'
+    + '#loop .larr{fill:none;stroke:var(--graphite);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}'
+    + '#loop .lback{fill:none;stroke:#f58fde;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}'
+    + 'body:not(.paper) #loop .lback{filter:drop-shadow(0 0 10px #f58fde)}#loop .lbacktxt{fill:#f58fde;font-size:30px}';
+  var pre = ['', 'section.act-l2 ', 'section.act-l3 ', 'section.act-l4 '];
+  for (var k in pos) pos[k].forEach(function (x, st) {
+    css += pre[st] + '#loop .' + k + '{transform:translate(' + x + 'px,0);opacity:' + ((hide[k] || []).indexOf(st + 1) >= 0 ? 0 : 1) + '}';
+  });
+  var tag = document.createElement('style'); tag.textContent = css; document.head.appendChild(tag);
+})();
+
+/* ---------- 6 · METR: log scale with the bend, glowing axis, then the same data on a linear scale ---------- */
+(function () {
+  var svg = document.getElementById('metr'), M = DATA.metr, sec = svg.closest('section');
+  var L = 150, R = 1380, T = 20, B = 460, x0 = t('2019-01-01'), x1 = t('2026-09-01');
+  var y0 = Math.log10(0.05), y1 = Math.log10(3000), LINMAX = 1200;
+  function X(d) { return L + (R - L) * (t(d) - x0) / (x1 - x0); }
+  function YL(m) { return B - (B - T) * (Math.log10(m) - y0) / (y1 - y0); }
+  function YN(m) { return B - (B - T) * m / LINMAX; }
+  var u = 0, uTo = 0, uFrom = 0, t0 = 0;           // 0 = log, 1 = linear
+  function Y(m) { return YL(m) + (YN(m) - YL(m)) * u; }
+  el('line', { class: 'baseline', x1: L, x2: R, y1: B, y2: B }, svg);
+  for (var yr = 2019; yr <= 2026; yr++) { el('line', { class: 'baseline', x1: X(yr + '-01-01'), x2: X(yr + '-01-01'), y1: B, y2: B + 12 }, svg); el('text', { class: 'tick-x', x: X(yr + '-01-01'), y: B + 42 }, svg, yr); }
+  // log axis (fades out when linear), linear axis (fades in)
+  var glog = el('g', {}, svg), glin = el('g', { style: 'opacity:0' }, svg);
+  [[1 / 6, '10 seconds'], [1, '1 minute'], [10, '10 minutes'], [60, '1 hour'], [1440, '1 day']].forEach(function (p) {
+    el('line', { class: 'gridline', x1: L, x2: R, y1: YL(p[0]), y2: YL(p[0]) }, glog);
+    el('text', { class: 'tick-y ylab', x: L - 14, y: YL(p[0]) + 8 }, glog, p[1]);
+  });
+  [[360, '6 hours'], [720, '12 hours'], [1080, '18 hours']].forEach(function (p) {
+    el('line', { class: 'gridline', x1: L, x2: R, y1: YN(p[0]), y2: YN(p[0]) }, glin);
+    el('text', { class: 'tick-y', x: L - 14, y: YN(p[0]) + 8 }, glin, p[1]);
+  });
+  // the data line, revealed left to right; redrawn while morphing
+  var defs = el('defs', {}, svg), cp = el('clipPath', { id: 'metr-c' }, defs), clip = el('rect', { x: 0, y: -400, width: 0, height: 2000 }, cp);
+  var body = el('g', { 'clip-path': 'url(#metr-c)' }, svg), path = el('path', { class: 'ln' }, body);
+  var dots = M.map(function (r) { return el('circle', { class: 'dot', r: 7 }, body); });
+  // two trend lines with METR's own doubling times, fitted through each period's frontier models
+  function fitFixed(rows, days) {   // intercept of log2(min) = days^-1 * t + c, least squares with fixed slope
+    var k = 1 / days, c = 0; rows.forEach(function (r) { c += Math.log2(r.min) - k * t(r.date) / 864e5; }); c /= rows.length;
+    return function (d) { return Math.pow(2, k * t(d) / 864e5 + c); };
+  }
+  var fa = fitFixed(M.filter(function (r) { return r.date < '2024-01-01' && r.min > 0.15; }), 196);
+  var fb = fitFixed(M.filter(function (r) { return r.date >= '2024-01-01'; }), 88.6);
+  var gtr = el('g', {}, svg), gta = el('g', {}, gtr), gtb = el('g', {}, gtr);
+  var ta = el('path', { class: 'trend a' }, gta), tb = el('path', { class: 'trend b' }, gtb);
+  el('text', { class: 'trend-lab a', x: X('2021-07-01'), y: YL(fa('2021-06-01')) - 26, 'text-anchor': 'end' }, gta, 'doubling every ~7 months');
+  el('text', { class: 'trend-lab b', x: X('2024-02-01'), y: YL(fb('2024-02-01')) + 70 }, gtb, 'every ~3 months since 2024');
+  // big labels (log view only)
+  var gpt4 = M.filter(function (r) { return r.model === 'GPT-4'; })[0], last = M[M.length - 1];
+  var g1 = gate(el('g', {}, svg), 'm1'), g3 = gate(el('g', {}, svg), 'm2');
+  bigLabel(g1, X(gpt4.date) - 18, YL(gpt4.min) - 46, Math.round(gpt4.min) + ' minutes', 'GPT-4, Mar 2023', 'end');
+  bigLabel(g3, X(last.date) - 70, YL(last.min) - 40, Math.round(last.min / 60) + ' hours', 'Claude Mythos Preview, Apr 2026', 'end');
+  function draw() {
+    path.setAttribute('d', M.map(function (r, i) { return (i ? 'L' : 'M') + X(r.date).toFixed(1) + ' ' + Y(r.min).toFixed(1); }).join(' '));
+    M.forEach(function (r, i) { dots[i].setAttribute('cx', X(r.date)); dots[i].setAttribute('cy', Y(r.min)); });
+    ta.setAttribute('d', 'M' + X('2021-06-01') + ' ' + YL(fa('2021-06-01')) + ' L' + X('2024-01-01') + ' ' + YL(fa('2024-01-01')));
+    tb.setAttribute('d', 'M' + X('2023-10-01') + ' ' + YL(fb('2023-10-01')) + ' L' + X('2026-07-01') + ' ' + YL(fb('2026-07-01')));
+    glog.style.opacity = 1 - u; glin.style.opacity = u;
+    var clear = sec.classList.contains('act-m5');
+    gta.style.opacity = sec.classList.contains('act-m3') && !clear ? 1 : 0; gtb.style.opacity = sec.classList.contains('act-m4') && !clear ? 1 : 0;
+    g1.style.opacity = g1.classList.contains('shown') && !clear ? 1 : 0; g3.style.opacity = g3.classList.contains('shown') && !clear ? 1 : 0;
+    var lp = M[M.length - 1]; hl.setAttribute('cx', X(lp.date)); hl.setAttribute('cy', Y(lp.min)); hlt.setAttribute('transform', 'translate(' + (X(lp.date) - 36) + ',' + (Y(lp.min) + 10) + ')'); hld.setAttribute('x', X(lp.date) + 36); hld.setAttribute('y', Y(lp.min) + 10);
+  }
+  var ghl = gate(el('g', {}, svg), 'm8'), hl = el('circle', { r: 22, class: 'hlring' }, ghl), hlt = el('g', {}, svg);
+  var lpd = M[M.length - 1].date, hld = el('text', { class: 'hltxt' }, ghl, MON[+lpd.slice(5, 7) - 1] + ' ' + lpd.slice(0, 4));
+  gate(el('text', { class: 'hltxt', x: 0, y: 0, 'text-anchor': 'end' }, hlt, 'The last model METR measured.'), 'm9');
+  var gsub = gate(el('g', {}, hlt), 'm10');
+  el('text', { class: 'hltxt sub', x: 0, y: 34, 'text-anchor': 'end' }, gsub, 'Since then, the best models’ time horizons');
+  el('text', { class: 'hltxt sub', x: 0, y: 64, 'text-anchor': 'end' }, gsub, 'have been too long for its tasks to measure.');
+  draw();
+  var stage = { m1: X(gpt4.date) + 8, m2: R + 10 };
+  var line = { clip: clip, cur: 0, to: 0, from: 0, t0: 0, go: function (x, instant) { if (x === this.to) return; this.from = this.cur; this.to = x; this.t0 = performance.now(); if (instant || STATIC) { this.cur = x; clip.setAttribute('width', x); } },
+    tick: function (now) { if (this.cur !== this.to) { var k = (now - this.t0) / 1500; this.cur = k >= 1 ? this.to : this.from + (this.to - this.from) * ease(k); clip.setAttribute('width', this.cur); } } };
+  charts.push({ sec: sec, line: line, stages: [{ act: 'm1', x: stage.m1 }, { act: 'm2', x: stage.m2 }] });
+  anims.push(function (now) {
+    var want = sec.classList.contains('act-m7') ? 1 : 0;
+    if (want !== uTo) { uFrom = u; uTo = want; t0 = now; }
+    if (STATIC) u = uTo; else if (u !== uTo) { var k = (now - t0) / 1600; u = k >= 1 ? uTo : uFrom + (uTo - uFrom) * ease(k); }
+    draw();
+  });
+})();
+
+/* ---------- 7 · Anthropic: share of R&D work Claude leads (monthly bars, Anthropic orange) ---------- */
+(function () {
+  var svg = document.getElementById('leads'), D = DATA.leads;
+  var L = 50, R = 720, T = 60, B = 290, YMAX = 30, bw = (R - L) / D.length;
+  function Y(v) { return B - (B - T) * v / YMAX; }
+  [0, 10, 20, 30].forEach(function (v) {
+    el('line', { class: v ? 'gridline' : 'baseline', x1: L, x2: R, y1: Y(v), y2: Y(v) }, svg);
+    el('text', { class: 'tick-y', x: L - 10, y: Y(v) + 8 }, svg, v + '%');
+  });
+  var gd = gate(el('g', {}, svg), 'ad');   // the data layer arrives on a click (Justin, 15 Oct)
+  D.forEach(function (r, i) {
+    var x = L + i * bw + bw * 0.18, w = bw * 0.64, last = i === D.length - 1, h = Math.max(3, B - Y(r.v));
+    el('rect', { class: 'bar' + (last ? ' anthbar' : ''), x: x, y: B - h, width: w, height: h, rx: 3 }, gd);
+    el('text', { class: 'tick-x', x: x + w / 2, y: B + 34 }, svg, MON[+r.m.slice(5) - 1]);
+    if (!last) el('text', { class: 'bval', x: x + w / 2, y: B - h - 12 }, gd, r.v < 1 ? '<1%' : r.v + '%');
+  });
+  var lr = D[D.length - 1], xl = L + (D.length - 1) * bw + bw / 2;
+  bigLabel(gd, xl, Y(lr.v) - 52, lr.v + '%', 'Aug 2026', 'middle');
+})();
+
+/* ---------- 7 · OpenAI: agent workdays per researcher workday ---------- */
+(function () {
+  var svg = document.getElementById('oaw'), D = DATA.openai;
+  var L = 50, R = 610, T = 60, B = 290, YMAX = 3.5, x0 = t(D[0].d), x1 = t(D[D.length - 1].d);
+  function X(d) { return L + (R - L) * (t(d) - x0) / (x1 - x0); }
+  function Y(v) { return B - (B - T) * v / YMAX; }
+  [0, 1, 2, 3].forEach(function (v) {
+    el('line', { class: v ? 'gridline' : 'baseline', x1: L, x2: R, y1: Y(v), y2: Y(v) }, svg);
+    el('text', { class: 'tick-y', x: L - 10, y: Y(v) + 8 }, svg, v);
+  });
+  el('line', { class: 'ref', x1: L, x2: R, y1: Y(1), y2: Y(1) }, svg);
+  el('text', { class: 'when', x: L + 8, y: Y(1) - 40, style: 'font-size:20px' }, svg, 'as many agent days');
+  el('text', { class: 'when', x: L + 8, y: Y(1) - 14, style: 'font-size:20px' }, svg, 'as researcher days');
+  ['2026-05-15', '2026-06-15', '2026-07-15', '2026-08-15'].forEach(function (d) { el('text', { class: 'tick-x', x: X(d), y: B + 34 }, svg, MON[+d.slice(5, 7) - 1]); });
+  var line = new Reveal1(svg, D.map(function (r) { return { x: X(r.d), y: Y(r.v) }; }), { y0: B, cls: 'ln-thing', area: false, dur: 1500 });
+  var last = D[D.length - 1];
+  var gl = gate(el('g', {}, svg), 'od'); bigLabel(gl, X('2026-07-12'), Y(3.05), last.v.toFixed(1) + ' days', 'Aug 2026', 'end');
+  el('line', { class: 'ref', x1: X('2026-07-15'), x2: X(last.d) - 10, y1: Y(3.15), y2: Y(last.v), style: 'stroke-dasharray:none;stroke-width:1.5' }, gl);
+  charts.push({ sec: svg.closest('section'), line: line, stages: [{ act: 'od', x: R + 10 }] });
+})();
+
+/* ---------- 13 · aviation: fatal accidents per million departures (Boeing) ---------- */
+(function () {
+  var svg = document.getElementById('air'), D = DATA.aviation;
+  var L = 60, R = 640, T = 30, B = 360, YMAX = 40, x0 = D[0].y, x1 = D[D.length - 1].y;
+  function X(y) { return L + (R - L) * (y - x0) / (x1 - x0); }
+  function Y(v) { return B - (B - T) * v / YMAX; }
+  [0, 20, 40].forEach(function (v) {
+    el('line', { class: v ? 'gridline' : 'baseline', x1: L, x2: R, y1: Y(v), y2: Y(v) }, svg);
+    el('text', { class: 'tick-y', x: L - 10, y: Y(v) + 8 }, svg, v);
+  });
+  [1960, 1980, 2000, 2020].forEach(function (y) { el('text', { class: 'tick-x', x: X(y), y: B + 36 }, svg, y); });
+  var line = new Reveal1(svg, D.map(function (r) { return { x: X(r.y), y: Y(r.v) }; }), { y0: B, dur: 1800 });
+  var g = gate(el('g', {}, svg), 'w4'), f = D[0], l = D[D.length - 1];
+  bigLabel(g, X(f.y) + 26, Y(f.v) + 16, Math.round(f.v), String(f.y));
+  bigLabel(g, X(l.y) + 6, Y(l.v) - 80, String(l.v), String(l.y), 'end');
+  charts.push({ sec: svg.closest('section'), line: line, stages: [{ act: 'w4', x: R + 10 }] });
+})();
+
+/* ---------- year ruler (same as mockups/intro) ---------- */
+var MONTHS = ['2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10'];
+var LETTERS = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+var ruler = document.getElementById('ruler'), rin = ruler.querySelector('.inner');
+var X0 = 200, X1 = 1720;
+function mx(i) { return X0 + (X1 - X0) * i / (MONTHS.length - 1); }
+(function build() {
+  var h = '<div class="track"></div><div class="past"></div>';
+  MONTHS.forEach(function (m, i) {
+    h += '<div class="tick" style="left:' + mx(i) + 'px"></div>';
+    h += '<div class="m" data-i="' + i + '" style="left:' + mx(i) + 'px">' + LETTERS[i] + '</div>';
+  });
+  h += '<div class="y" style="left:' + mx(0) + 'px">2025</div><div class="y" style="left:' + mx(3) + 'px">2026</div>';
+  h += '<div class="start" style="left:' + mx(0) + 'px"></div><div class="start-label" style="left:' + (mx(0) + 18) + 'px">I start at CAISH</div>';
+  h += '<div class="now-caret"></div>';
+  rin.innerHTML = h;
+})();
+function placeRuler() {
+  var k = Math.min(innerWidth / 1920, innerHeight / 1080);
+  var ox = (innerWidth - 1920 * k) / 2, oy = (innerHeight - 1080 * k) / 2;
+  rin.style.transform = 'translate(' + ox + 'px,' + (oy + (1080 - 150) * k) + 'px) scale(' + k + ')';
+  ruler.style.height = innerHeight + 'px'; ruler.style.top = 0;
+}
+addEventListener('resize', placeRuler); placeRuler();
+function setRuler(month) {
+  if (!month) { ruler.classList.remove('on'); return; }
+  ruler.classList.add('on');
+  var i = MONTHS.indexOf(month);
+  rin.querySelector('.now-caret').style.left = mx(i) + 'px';
+  rin.querySelector('.past').style.width = (mx(i) - mx(0)) + 'px';
+  rin.querySelectorAll('.m').forEach(function (e) { var j = +e.dataset.i; e.classList.toggle('done', j < i); e.classList.toggle('now', j === i); });
+}
+
+/* ---------- theme ---------- */
+try { if (localStorage.getItem('howard-theme') === 'paper') document.body.classList.add('paper'); } catch (e) {}
+if (/[?&]theme=paper/.test(location.search)) document.body.classList.add('paper');
+
+/* ---------- deck: plain cuts between slides (no cross-fade glow) ---------- */
+/* "Anthropic" in Anthropic's orange wherever it appears on a slide (never in the notes). Runs after charts are drawn. */
+(function () {
+  document.querySelectorAll('.slides section:not(.noanth)').forEach(function (sec) {
+    var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+      return /Anthropic/.test(n.nodeValue) && !n.parentNode.closest('aside.notes') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; } });
+    var list = []; while (w.nextNode()) list.push(w.currentNode);
+    list.forEach(function (n) {
+      var svg = n.parentNode instanceof SVGElement, f = document.createDocumentFragment();
+      n.nodeValue.split(/(Anthropic)/).forEach(function (p) {
+        if (!p) return;
+        if (p !== 'Anthropic') { f.appendChild(document.createTextNode(p)); return; }
+        var s = svg ? document.createElementNS('http://www.w3.org/2000/svg', 'tspan') : document.createElement('span');
+        s.setAttribute('class', 'anth'); s.textContent = p; f.appendChild(s);
+      });
+      n.parentNode.replaceChild(f, n);
+    });
+  });
+})();
+
+Reveal.initialize({
+  width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 4,
+  center: false, controls: false, progress: false, hash: true, history: false,
+  transition: 'none', backgroundTransition: 'none',
+  plugins: [ RevealNotes ],
+  keyboard: { 84: function () {   // T: glow / paper
+    document.body.classList.toggle('paper');
+    try { localStorage.setItem('howard-theme', document.body.classList.contains('paper') ? 'paper' : 'glow'); } catch (e) {}
+  } }
+});
+
+/* Fragments with data-act="x" set class act-x on their slide; [data-gate="x"] elements show with it. */
+function syncActs(sec, entering) {
+  if (!sec) return;
+  var on = {};
+  sec.querySelectorAll('.fragment[data-act]').forEach(function (f) {
+    var name = f.dataset.act, v = f.classList.contains('visible');
+    on[name] = v;
+    sec.classList.toggle('act-' + name, v);
+    sec.querySelectorAll('[data-gate="' + name + '"]').forEach(function (g) { g.classList.toggle('shown', v); });
+    sec.querySelectorAll('[data-hl="' + name + '"]').forEach(function (g) { g.classList.toggle('lit', v); });   // highlights, drawn after their words
+  });
+  charts.forEach(function (c) {
+    if (c.sec !== sec) return;
+    var x = 0;
+    c.stages.forEach(function (s) { if (on[s.act]) x = s.x; });
+    c.line.go(x, entering && x === 0);
+  });
+  recentre(sec);
+}
+/* Slides marked .frame.grow keep what is visible centred: on arrival the first block sits in the middle,
+   and the whole moves up as later clicks add blocks below (Justin's rule). Measured with offsetTop, which ignores transforms. */
+function recentre(sec) {
+  var fr = sec && sec.querySelector('.frame.grow'); if (!fr || !fr.offsetHeight) return;   // hidden slides have no layout
+  var top = Infinity, bot = -Infinity;
+  fr.querySelectorAll(':scope > *, :scope > .labs > *, :scope > .posts > *, :scope > .vs2 > *, :scope > .grid2 > *').forEach(function (b) {
+    if ((b.classList.contains('fragment') && (b.dataset.act || !b.classList.contains('visible'))) || b.classList.contains('labs') || b.classList.contains('posts') || b.classList.contains('vs2') || b.classList.contains('grid2') || b.tagName === 'ASIDE') return;
+    if (b.classList.contains('gated') && !b.classList.contains('shown')) return;
+    if (!b.offsetParent) return;
+    var y = b.offsetTop + (b.offsetParent === fr ? 0 : b.offsetParent.offsetTop);
+    top = Math.min(top, y); bot = Math.max(bot, y + b.offsetHeight);
+  });
+  var cs = getComputedStyle(fr), mid = (parseFloat(cs.paddingTop) + fr.offsetHeight - parseFloat(cs.paddingBottom)) / 2;
+  if (top < Infinity) fr.style.transform = 'translateY(' + Math.round(mid - (top + bot) / 2) + 'px)';
+}
+/* Screenshot helper: ?static&s=H&f=N opens slide H with fragments up to N shown. */
+var QS = new URLSearchParams(location.search);
+if (QS.has('s')) Reveal.on('ready', function () { Reveal.slide(+QS.get('s'), 0, QS.has('f') ? +QS.get('f') : -1); });
+function sync() { var s = Reveal.getCurrentSlide(); setRuler(s && s.dataset.ruler); ruler.classList.toggle('first', !!(s && s.hasAttribute('data-ruler-start'))); syncActs(s, true); }
+Reveal.on('ready', sync);
+if (document.fonts) document.fonts.ready.then(function () { document.querySelectorAll('.frame.grow').forEach(function (f) { recentre(f.closest('section')); }); });
+Reveal.on('slidechanged', sync);
+Reveal.on('fragmentshown', function () { syncActs(Reveal.getCurrentSlide(), false); });
+Reveal.on('fragmenthidden', function () { syncActs(Reveal.getCurrentSlide(), false); });
+function frame(now) { charts.forEach(function (c) { c.line.tick(now); }); anims.forEach(function (f) { f(now); }); requestAnimationFrame(frame); }
+requestAnimationFrame(frame);
+</script>
+<script>
+/* Beat start (added when the beats were stitched into deck/talk/): the first slide shows only the year ruler,
+   and its caret glides from the previous beat's month (data-ruler-from) to this beat's month. */
+(function () {
+  var plain = setRuler;
+  setRuler = function (month) {
+    var s = Reveal.getCurrentSlide(), from = s && s.dataset.rulerFrom;
+    if (!month || !from || from === month || STATIC) return plain(month);
+    var els = document.querySelectorAll('#ruler .past, #ruler .now-caret');
+    els.forEach(function (e) { e.style.transition = 'none'; });
+    plain(from); void document.body.offsetWidth;
+    els.forEach(function (e) { e.style.transition = ''; });
+    requestAnimationFrame(function () { requestAnimationFrame(function () { plain(month); }); });
+  };
+  /* The talk shell (deck/talk/) calls this when it shows the deck, since the deck was loaded hidden. */
+  window.replayBeatStart = function () { var s = Reveal.getCurrentSlide(); if (s && s.dataset.rulerFrom) setRuler(s.dataset.ruler); };
+})();
+</script>
+</body>
+</html>
